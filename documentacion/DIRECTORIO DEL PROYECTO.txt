@@ -1,0 +1,59 @@
+project_dipaso_pwa/
+│── shell/                           # Main host (container)
+│   │── public/                      # Static files (favicon, manifest.json for PWA)
+│   │── src/
+│   │   │── assets/                  # Global images, logos, icons
+│   │   │── components/              # Reusable UI components (buttons, inputs, tables, modals)
+│   │   │   │── Button/
+│   │   │   │   │── Button.tsx
+│   │   │   │   │── Button.css
+│   │   │   │── Navbar/
+│   │   │   │   │── Navbar.tsx
+│   │   │   │   │── Navbar.css
+│   │   │   │── ...
+│   │   │── layouts/                 # Global layouts (Dashboard, AuthLayout, etc.)
+│   │   │   │── DashboardLayout.tsx
+│   │   │   │── AuthLayout.tsx
+│   │   │── pages/                   # Routes handled by React Router
+│   │   │   │── Home/
+│   │   │   │   │── HomePage.tsx
+│   │   │   │── Login/
+│   │   │   │   │── LoginPage.tsx
+│   │   │   │── Dashboard/
+│   │   │   │   │── DashboardPage.tsx
+│   │   │── routes/                  # Centralized route definitions
+│   │   │   │── index.tsx            # React Router configuration
+│   │   │── services/                # API services (REST, GraphQL, etc.)
+│   │   │── utils/                   # Helpers and utilities
+│   │   │── main.tsx                 # Vite entry point
+│   │   │── App.tsx                  # Root App component
+│   │── vite.config.ts               # Vite + Module Federation config
+│
+│── iam-administration/              # Microfrontend 1 (IAM: users, roles, permissions)
+│   │── src/
+│   │   │── App.tsx
+│   │   │── pages/...
+│   │   │── components/...
+│   │── vite.config.ts
+│
+│── pos-billing/                     # Microfrontend 2 (POS: billing)
+│   │── src/...
+│   │── vite.config.ts
+│
+│── pos-cash/                        # Microfrontend 3 (POS: cash)
+│   │── src/...
+│   │── vite.config.ts
+│
+│── pos-inventory/                   # Microfrontend 4 (POS: inventory)
+│   │── src/...
+│   │── vite.config.ts
+│
+│── pos-clients/                     # Microfrontend 5 (POS: clients/customers)
+│   │── src/...
+│   │── vite.config.ts
+│
+│── pos-audit/                       # Microfrontend 6 (POS: audit logs)
+│   │── src/...
+│   │── vite.config.ts
+│
+└── README.md

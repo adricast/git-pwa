@@ -1,0 +1,22 @@
+{
+  "name": "project_dipaso_pwa",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm:start-shell\" \"npm:start-iam\" \"npm:start-billing\" \"npm:start-cash\" \"npm:start-inventory\" \"npm:start-clients\" \"npm:start-audit\"",
+    "start-shell": "cd shell && npm install && npm run dev",
+    "start-iam": "cd iam-administration && npm install && npm run dev",
+    "start-billing": "cd pos-billing && npm install && npm run dev",
+    "start-cash": "cd pos-cash && npm install && npm run dev",
+    "start-inventory": "cd pos-inventory && npm install && npm run dev",
+    "start-clients": "cd pos-clients && npm install && npm run dev",
+    "start-audit": "cd pos-audit && npm install && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "vite-plugin-pwa": "^1.0.3"
+  },
+  "dependencies": {
+    "axios": "^1.12.2"
+  }
+}

@@ -1,0 +1,138 @@
+.dashboard-grid {
+  display: grid;
+  gap: 1rem; /* gap-4 */
+  grid-template-columns: repeat(1, 1fr);
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .widget {
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* shadow */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    &.widget-user {
+      background-color: #f3f4f6; /* gray-100 */
+      img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid #d1d5db; /* gray-300 */
+        margin-bottom: 0.5rem;
+        object-fit: cover;
+      }
+      .username {
+        font-weight: 600;
+        color: #374151; /* gray-700 */
+        margin-bottom: 0.25rem;
+      }
+      .role {
+        font-size: 0.875rem; /* text-sm */
+        color: #6b7280; /* gray-500 */
+      }
+    }
+
+    &.widget-company {
+      background-color: #e5e7eb; /* gray-200 */
+      img {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 2px solid #d1d5db;
+        margin-bottom: 0.5rem;
+        object-fit: cover;
+      }
+      h2 {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+      .branch {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    &.widget-clock {
+      background-color: #d1d5db; /* gray-300 */
+      .clock {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 4px solid #3b82f6; /* blue-500 */
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .hand-hour, .hand-minute, .hand-second {
+          position: absolute;
+          bottom: 50%;
+          left: 50%;
+          transform-origin: bottom center;
+          border-radius: 50%;
+        }
+
+        .hand-hour {
+          width: 4px;
+          height: 25%;
+          background-color: #facc15; /* yellow-500 */
+        }
+        .hand-minute {
+          width: 3px;
+          height: 35%;
+          background-color: #22c55e; /* green-500 */
+        }
+        .hand-second {
+          width: 2px;
+          height: 40%;
+          background-color: #ef4444; /* red-500 */
+        }
+
+        .center-dot {
+          width: 8px;
+          height: 8px;
+          background-color: #1f2937; /* gray-800 */
+          border-radius: 50%;
+          position: absolute;
+        }
+      }
+
+      .time {
+        font-family: monospace;
+        font-weight: bold;
+        color: #374151;
+      }
+
+      .date {
+        font-family: monospace;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+    }
+
+    &.widget-other {
+      background-color: #f9fafb; /* gray-50 */
+      h2 {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        font-size: 0.875rem;
+        color: #374151;
+      }
+    }
+  }
+}

@@ -1,0 +1,212 @@
+@use "sass:color";
+@import "./variables.scss";
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $sidebar-width;
+  height: 100%;
+  background: $primary-color; // color principal
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: all $transition-speed ease;
+  z-index: 50;
+
+  &.compact {
+    width: $sidebar-collapsed-width;
+  }
+
+  &.mobile-open {
+    display: flex;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+
+    &.center {
+      text-align: center;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .user-avatar, .user-avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: $secondary-color; // color secundario
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.5rem;
+    }
+
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+
+  .branch-selector {
+    margin-bottom: 1rem;
+
+    .branch-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background: $secondary-color; // secundario
+      color: #fff;
+      padding: 0.5rem;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background $transition-speed ease;
+
+      &:hover {
+        background: color.adjust($secondary-color, $lightness: -5%);
+      }
+
+      .branch-icon { margin-right: 0.5rem; }
+      .branch-chevron.rotated { transform: rotate(180deg); }
+    }
+
+    .branch-options {
+      background: $secondary-color; // secundario
+      margin-top: 0.5rem;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+
+      .branch-option {
+        padding: 0.5rem;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: background $transition-speed ease;
+
+        &:hover { background: color.adjust($secondary-color, $lightness: 10%); }
+        &.selected { background: darken($primary-color, 10%); }
+      }
+    }
+  }
+
+  .menu-items {
+    flex-grow: 1;
+    margin-top: 1rem;
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.3rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: background $transition-speed ease, transform 0.2s ease;
+
+      &:hover {
+        background: $secondary-color;
+        transform: translateX(3px);
+      }
+
+      &.active {
+        background: darken($primary-color, 10%);
+      }
+
+      .item-icon { margin-right: 0.5rem; font-size: 1.1rem; }
+      .item-label { white-space: nowrap; }
+      .item-tooltip {
+        display: none;
+        position: absolute;
+        left: 100%;
+        margin-left: 0.5rem;
+        background: #111827;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+    }
+  }
+}
+
+/* Botón toggle mobile */
+.nav-toggle-mobile {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: $secondary-color; // secundario
+  color: #fff;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  z-index: 60;
+  cursor: pointer;
+  transition: background $transition-speed ease;
+
+  &:hover {
+    background: color.adjust($secondary-color, $lightness: -5%);
+  }
+}
+
+/* Botón cerrar */
+.nav-close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #dc2626;
+  border: none;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background $transition-speed ease;
+
+  &:hover {
+    background: darken(#dc2626, 5%);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar {
+    transform: translateX(-100%);
+    position: fixed;
+      // 1. Posicionamiento Fijo (Obligatorio en móvil)
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        
+        // 2. Ocultar el navbar en móvil cuando NO está abierta
+        // Si no tiene la clase 'mobile-open' (porque isVisible es false), se esconde.
+        transform: translateX(-100%);
+        transition: transform 0.3s ease; // Usa $transition-speed si está definida
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+
+        // 3. Mostrar cuando tiene la clase `mobile-open`
+        &.mobile-open {
+            transform: translateX(0); /* Mostrar */
+            // 4. Ocultar elementos que no caben
+                .user-info, .branch-selector, .compact-toggle {
+                    display: none;
+                }
+
+                // 5. Mostrar el botón de cerrar
+                .nav-close-btn {
+                    display: block; // Visible solo en móvil
+                    // ... resto de estilos del botón (position: absolute, z-index, etc.)
+                }
+       }
+    }
+}

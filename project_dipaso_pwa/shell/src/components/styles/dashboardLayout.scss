@@ -206,6 +206,15 @@
   .header-right {
     display: flex;
     align-items: center;
+    flex-shrink: 0; // Asegura que no se colapsen los botones y el avatar.
+  }
+ .header-center {
+    flex-grow: 1;         // Permite que este elemento ocupe todo el espacio restante.
+    display: flex;        // Usar flexbox dentro para alinear el breadcrumb.
+    align-items: center;  // Centra el breadcrumb verticalmente.
+    padding: 0 1rem;
+    overflow: hidden;     // Evita desbordamiento si la ruta es muy larga.
+    min-width: 0;         // Importante para Flexbox en el manejo de desbordamiento de texto.
   }
 
   .header-btn {

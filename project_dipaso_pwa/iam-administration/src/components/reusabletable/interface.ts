@@ -24,9 +24,12 @@ export interface ReusableTableProps {
  buttons?: ButtonConfig[];
  selectableField?: string;
  onRowSelect?: (row: any | null) => void;
+loading: boolean; 
+ emptyMessage?: string; 
  styles?: {
- selectedRowClass?: string;
- rowHoverClass?: string;
+    selectedRowClass?: string;
+    rowHoverClass?: string;
+
  };
  selectedRows?: any[];
  setSelectedRows?: (rows: any[]) => void;

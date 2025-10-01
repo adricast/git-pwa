@@ -4,7 +4,7 @@ import { authSensor } from "./../hooks/sensors/authSensor";
 import { AuthRepository } from "./../db/authRepository";
 import { syncUserToken } from "./../workers/syncAuthWorker"; // Importar el worker de sincronización
 import type { Auth } from "./../models/api/authModel";
-import {} from "./../routes/appRoutes"
+import {} from "../configurations/routes/appRoutes"
 const authRepo = new AuthRepository();
 const TOKEN_KEY = "auth_token";
 

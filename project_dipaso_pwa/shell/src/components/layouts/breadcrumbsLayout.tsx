@@ -1,45 +1,50 @@
-// src/components/layout/Breadcrumbs.tsx
+// src/components/layout/breadcrumbsLayout.tsx
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
+// 🎯 Importamos el tipo desde su archivo dedicado
+import { type BreadcrumbItem } from './../breadcrumb/interface'; 
+// 🎯 Importamos los estilos SCSS puros
+import './../styles/breadcrumbsLayout.scss'; 
 
-interface BreadcrumbItem {
-  label: string;
-  url: string;
-}
+// Ya no hay 'export interface BreadcrumbItem' aquí, solo la usamos.
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  activeColor?: string;  // color del breadcrumb activo
-  textColor?: string;    // color de los demás
-  separator?: string;    // separador entre items
+  activeColor?: string;
+  textColor?: string;
+  separator?: string;
 }
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   items,
-  activeColor = "#4f46e5", // violeta tailwind
-  textColor = "#2c3e50",   // gris oscuro
+  activeColor = "#4f46e5",
+  textColor = "#2c3e50",
   separator = "→",
 }) => {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex flex-wrap items-center text-sm mb-2" aria-label="breadcrumb">
+    // 🎯 Clases CSS puras aplicadas
+    <nav className="breadcrumbs-nav" aria-label="breadcrumb">
       {items.map((crumb, index) => (
-        <span key={crumb.url} className="flex items-center">
+        <span key={crumb.url} className="breadcrumb-item">
           <button
             onClick={() => index !== items.length - 1 && navigate(crumb.url)}
             style={{
               color: index === items.length - 1 ? activeColor : textColor,
               cursor: index === items.length - 1 ? "default" : "pointer",
             }}
-            className={`px-2 py-1 rounded transition-colors duration-200 hover:bg-gray-100 font-medium ${
-              index === items.length - 1 ? "font-bold" : ""
+            className={`breadcrumb-button ${
+              index === items.length - 1 ? "active" : ""
             }`}
           >
             {crumb.label}
           </button>
           {index < items.length - 1 && (
-            <span className="mx-1 text-gray-400">{separator}</span>
+            <span style={{ color: textColor }} className="breadcrumb-separator">
+              {separator}
+            </span>
           )}
         </span>
       ))}

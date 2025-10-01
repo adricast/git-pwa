@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useEffect, useState } from "react";
-import { AppRoutes } from "./routes/appRoutes"; // 👈 importamos las rutas
+import { AppRoutes } from "./configurations/routes/appRoutes"; // 👈 importamos las rutas
 import { authSensor } from "./hooks/sensors/authSensor";
 import { initAuthService } from "./services/authServices";
 

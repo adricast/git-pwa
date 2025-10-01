@@ -1,11 +1,11 @@
 // src/routes/appRoutes.tsx
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../pages/loginPage/loginPage";
-import DashboardLayout from "../components/dashboard/dashboardLayout";
-import DashboardHome from "../pages/dashboardPage/dashboardPage";
+import LoginPage from "../../pages/loginPage/loginPage";
+import DashboardLayout from "../../components/dashboard/dashboardLayout";
+import DashboardHome from "../../pages/dashboardPage/dashboardPage";
 
-const IAMPage = lazy(() => import("../pages/iamPage/iamPage"));
+const IAMPage = lazy(() => import("../../pages/iamPage/iamPage"));
 
 interface AppRoutesProps {
   isAuthenticated: boolean;

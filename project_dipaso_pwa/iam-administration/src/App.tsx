@@ -3,11 +3,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminPage from './features/principal/adminPage';
-import GroupCardManagerWrapper from './features/usersgroup/groupcardmanagerwrapper';
+//import GroupCardManagerWrapper from './features/usersgroup/groupcardmanagerwrapper';
 import { ErrorBoundary } from './hooks/ErrorBoundary';
 
 import './input.css';
 import './output.css';
+import GroupManagement from './features/usersgroup/groupuserLayout';
 
 
 export interface AppProps {
@@ -27,7 +28,7 @@ export const App: React.FC<AppProps> = ({ standalone = false }) => {
     <Routes>
       <Route path="/" element={<AdminPage />}>
         {/* ⬅️ ESTE ERA EL USO DIRECTO DEL COMPONENTE */}
-        <Route path="usergroup" element={<GroupCardManagerWrapper />} />
+        <Route path="usergroup" element={<GroupManagement />} />
         {/* Otras subrutas irían aquí */}
       </Route>
       <Route path="*" element={<div>Página no encontrada en el MFE</div>} />

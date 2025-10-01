@@ -15,4 +15,5 @@ export interface Group {
 
   /** Fecha de última modificación */
   lastModifiedAt: string;
+  isActive? : boolean;
 }

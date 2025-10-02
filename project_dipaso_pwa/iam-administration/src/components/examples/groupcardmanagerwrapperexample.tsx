@@ -1,8 +1,8 @@
 // src/features/usersgroup/GroupCardManagerWrapper.tsx
 import React, { useEffect } from 'react';
-import CardManager from '../../components/layout/cardmanager2Layout';
-import { useCardManager } from './../../components/cardcontainer2/usercardmanager';
-import GroupManagement from './groupuserLayout';
+import CardManager from '../layout/cardmanager2Layout';
+import { useCardManager } from '../cardcontainer2/usercardmanager';
+import GroupManagement from '../../features/usersgroup/groupuserLayout';
 import { FaUsers } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; 
 // Componente que sirve solo como título de la tarjeta

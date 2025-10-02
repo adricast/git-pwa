@@ -24,6 +24,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "../shell/src/components/masterpassword", "../shell/src/components/layouts/masterpasswordLayout.tsx"]
 }
 

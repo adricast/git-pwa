@@ -1,17 +1,19 @@
+// groupuserLayout.tsx (CORREGIDO)
+
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 // Importamos getActiveGroups y softDeleteGroupsMassive
 import type { Group } from "../../models/api/groupModel";
 // Importaciones del servicio (asumiendo que las rutas están correctas)
 import { getActiveGroups, softDeleteGroupsMassive, createGroup, updateGroup } from "../../services/groupuserServices"; 
 
-import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout";
-import DialogoReutilizable from "../../components/layout/dialogLayout"; 
-import AddEditGroupContent from "./addeditgroup";
-import ReusableTable from "../../components/layout/reusabletableLayout"; 
+import DeleteConfirmationDialog from "../layout/deletedialogLayout";
+import DialogoReutilizable from "../layout/dialogLayout"; 
+import AddEditGroupContent from "../../features/usersgroup/addeditgroup";
+import ReusableTable from "../layout/reusabletableLayout"; 
 import { v4 as uuidv4 } from "uuid";
-// 🔑 Importaciones para la gestión de fichas
-import { FaUsers } from 'react-icons/fa'; 
-import { useCardManager } from '../../components/cardcontainer2/usercardmanager'; 
+// ❌ ELIMINADA: Importaciones para la gestión de fichas (FaUsers, useCardManager)
+// import { FaUsers } from 'react-icons/fa'; 
+// import { useCardManager } from './../../components/cardcontainer2/usercardmanager'; 
 
 import "./../styles/groupuserLayout.scss"; 
 
@@ -22,6 +24,7 @@ export type GroupManagementRef = {
     handleDeleteFromShortcut: () => void;
 };
 
+// 🎯 CAMBIO 1: Eliminado el hook useCardManager
 const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -29,24 +32,21 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false); 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Group | null>(null);
-    const [loading, setLoading] = useState(true); // 🎯 Estado de carga para mostrar al usuario
+    const [loading, setLoading] = useState(true); 
 
-    const { addCard, isCardOpen, updateCard, removeCard } = useCardManager(); 
+    // ❌ ELIMINADA: Desestructuración de useCardManager
+    // const { addCard, isCardOpen, updateCard, removeCard } = useCardManager(); 
 
-    // 🎯 1. CORRECCIÓN CLAVE: Implementar try...catch para capturar errores de cifrado/HMAC
+    // 🎯 1. Implementar try...catch para capturar errores de cifrado/HMAC
     const loadGroups = useCallback(async () => {
         setLoading(true);
         try {
-            // Llama a getActiveGroups(), que ahora incluye descifrado y verificación HMAC
             const dataFromService: Group[] = await getActiveGroups(); 
             
-            // Si la respuesta del servicio es [Group, Group, ...]
             const normalized: Group[] = dataFromService.map(g => ({
-                // Asegúrate de usar group.groupId del servicio, que es 'user_group_id' mapeado
                 groupId: g.groupId ?? uuidv4(), 
                 groupName: g.groupName,
                 description: g.description ?? "",
-                // Asegúrate de que los campos opcionales estén presentes si son necesarios:
                 isActive: g.isActive ?? true, 
                 lastModifiedAt: g.lastModifiedAt ?? new Date().toISOString(),
                 users: g.users ?? [],
@@ -55,10 +55,8 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
             setGroups(normalized);
             
         } catch (error) {
-            // ¡ESTE ES EL ERROR QUE PROBABLEMENTE ESTÁS IGNORANDO!
             console.error("🔴 Error al cargar grupos activos (falla HMAC/Descifrado):", error);
-            // Podrías mostrar un toast o mensaje de error al usuario aquí
-            setGroups([]); // Asegura que la tabla no se intente renderizar con datos rotos
+            setGroups([]);
         } finally {
             setLoading(false);
             setSelectedRows([]);
@@ -68,41 +66,16 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
 
     useEffect(() => { loadGroups(); }, [loadGroups]);
 
-    // ... (El resto de funciones y lógica del componente se mantiene igual)
-
-    const handleOpenGroupDialog = () => {
-        setSelectedGroup(null);
+    // 🎯 CAMBIO 2: Lógica de Apertura del Diálogo (Usado para CREAR)
+    const handleOpenGroupDialog = (groupToEdit: Group | null = null) => {
+        setSelectedGroup(groupToEdit); // Si es null, es creación; si no, es edición.
         setIsGroupDialogOpen(true);
     };
     
-    const handleOpenEditCard = useCallback((group: Group) => {
-        const editCardId = `group-edit-${group.groupId}`; 
-        
-        const cardTitle = (
-            <><FaUsers style={{ marginRight: '8px' }} /> Editar Grupo: {group.groupName}</>
-        );
-
-        const onCloseEdit = () => {
-            if (removeCard) {
-                removeCard(editCardId);
-            }
-        };
-
-        const cardContent = (
-            <AddEditGroupContent
-                group={group} 
-                onSave={handleSaveGroup}
-                onClose={onCloseEdit}
-            />
-        );
-
-        if (isCardOpen(editCardId)) {
-            updateCard(editCardId, cardTitle, cardContent);
-        } else {
-            addCard(cardTitle, cardContent, editCardId);
-        }
-
-    }, [addCard, isCardOpen, updateCard, removeCard]);
+    // 🎯 CAMBIO 3: Función de Apertura para EDITAR (llama a handleOpenGroupDialog con datos)
+    const handleOpenEditDialog = useCallback((group: Group) => {
+        handleOpenGroupDialog(group);
+    }, []);
 
     
     const handleSaveGroup = async (group: Group | null, groupName: string, description: string) => {
@@ -115,10 +88,12 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
 
                 setGroups(prev => prev.map(g => g.groupId === updatedGroup.groupId ? updatedGroup : g));
                 
-                const editCardId = `group-edit-${updatedGroup.groupId}`;
-                if (removeCard) {
-                    removeCard(editCardId);
-                }
+                // ❌ ELIMINADO: Lógica de cerrar la Card de edición
+                // const editCardId = `group-edit-${updatedGroup.groupId}`;
+                // if (removeCard) {
+                //     removeCard(editCardId);
+                // }
+                
             } else {
                 const newGroupData: Omit<Group, "groupId"> = { 
                     groupName,
@@ -129,9 +104,9 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                 };
                 const newGroup: Group = await createGroup(newGroupData);
                 setGroups(prev => [...prev, newGroup]);
-                setIsGroupDialogOpen(false);
             }
             
+            setIsGroupDialogOpen(false); // 🎯 Cerramos el diálogo después de guardar
             loadGroups(); 
         } catch (error) {
             console.error(isEditing ? "Error al actualizar el grupo:" : "Error al crear el grupo:", error);
@@ -158,10 +133,11 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
         }
     };
 
+    // 🎯 CAMBIO 4: Actualizar useImperativeHandle para usar Diálogo de Edición
     useImperativeHandle(ref, () => ({
-        handleOpenGroupModal: () => handleOpenGroupDialog(),
+        handleOpenGroupModal: () => handleOpenGroupDialog(), // Abrir para Crear
         handleEditFromShortcut: () => { 
-            if (selectedRows.length === 1) handleOpenEditCard(selectedRows[0]);
+            if (selectedRows.length === 1) handleOpenEditDialog(selectedRows[0]);
         },
         handleDeleteFromShortcut: () => {
             if (selectedRows.length > 0) {
@@ -176,7 +152,8 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
         { 
             field: "groupName", 
             header: "Nombre del Grupo",
-            onCellClick: handleOpenEditCard 
+            // 🎯 CAMBIO 5: Llamar a handleOpenEditDialog al hacer click en la celda
+            onCellClick: handleOpenEditDialog 
         },
         { field: "description", header: "Descripción" },
     ];
@@ -186,7 +163,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
             label: "Agregar",
             color: "btn-primary", 
             textColor: "text-light",
-            onClick: () => handleOpenGroupDialog(),
+            onClick: () => handleOpenGroupDialog(), // Abrir para Crear (selectedGroup es null)
         },
         {
             label: "Editar",
@@ -194,7 +171,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
             textColor: "text-light",
             onClick: (selectedRows?: Group[]) => {
                 if (selectedRows && selectedRows.length === 1) {
-                    handleOpenEditCard(selectedRows[0]);
+                    handleOpenEditDialog(selectedRows[0]); // 🎯 Llamar a handleOpenEditDialog
                 }
             },
         },
@@ -224,7 +201,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                     onRowSelect={(row) => setSelectedGroup(row)} 
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
-                    loading={loading} // 🎯 Mostrar estado de carga
+                    loading={loading}
                     emptyMessage={
                         loading 
                         ? "Cargando grupos..." 
@@ -233,14 +210,17 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                 />
             </div>
         
-        {/* DIÁLOGO REUTILIZABLE: SOLO PARA CREACIÓN */}
+        {/* DIÁLOGO REUTILIZABLE: Usado tanto para CREAR como para EDITAR */}
         <DialogoReutilizable
-            isOpen={isGroupDialogOpen && selectedGroup === null} 
+            // 🎯 CAMBIO 6: Abrir si isGroupDialogOpen es true
+            isOpen={isGroupDialogOpen} 
             onClose={() => setIsGroupDialogOpen(false)}
-            titulo={"Crear Nuevo Grupo"} 
+            // 🎯 CAMBIO 7: Título dinámico
+            titulo={selectedGroup ? `Editar Grupo: ${selectedGroup.groupName}` : "Crear Nuevo Grupo"} 
             >
             <AddEditGroupContent
-                group={null}
+                // 🎯 CAMBIO 8: Pasar el grupo seleccionado para edición
+                group={selectedGroup}
                 onSave={handleSaveGroup}
                 onClose={() => setIsGroupDialogOpen(false)}
             />

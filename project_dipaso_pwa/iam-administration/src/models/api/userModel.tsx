@@ -2,8 +2,8 @@
 
 // Usuario
 export interface User {
-  userId?: string;       // UUID del backend
-  tempId?: string;       // ID temporal offline
+  userId?: string|number;       // UUID del backend
+  tempId?: string|number;       // ID temporal offline
   username: string;
   identification: string;
   email: string;

@@ -1,7 +1,7 @@
 // src/components/AdminPage.tsx
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import OptionCard from "../../components/layout/optioncardLayout";
+import OptionCard from "../layout/optioncardLayout";
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaCog } from "react-icons/fa";
 
 // Importamos los estilos SCSS

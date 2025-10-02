@@ -88,6 +88,17 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
                   className={`table-btn ${btnClass} ${btn.textColor || 'text-light'}`}
                   disabled={disabled}
                 >
+                  {/* 🔑 CAMBIO CLAVE: Renderiza el icono si existe */}
+                  {btn.icon && (
+                    <span 
+                      style={{ 
+                        marginRight: '8px', 
+                        display: 'flex', 
+                        alignItems: 'center' 
+                      }}>
+                        {btn.icon}
+                    </span>
+                  )}
                   {btn.label}
                 </button>
               );
@@ -167,9 +178,9 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
             ))}
             {paginatedData.length === 0 && (
               <tr>
-                 <td colSpan={columns.length + (selectableField ? 1 : 0)} className="no-data-cell">
-                     {data.length === 0 ? "No hay datos para mostrar." : `No se encontraron resultados para "${searchTerm}"`}
-                 </td>
+                   <td colSpan={columns.length + (selectableField ? 1 : 0)} className="no-data-cell">
+                      {data.length === 0 ? "No hay datos para mostrar." : `No se encontraron resultados para "${searchTerm}"`}
+                   </td>
               </tr>
             )}
           </tbody>

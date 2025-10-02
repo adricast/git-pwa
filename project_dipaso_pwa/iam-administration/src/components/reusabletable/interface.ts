@@ -7,6 +7,7 @@ export interface ButtonConfig {
  color?: string; // Clase SCSS (ej. 'btn-delete')
  textColor?: string;
  onClick: (selectedRows?: any[]) => void;
+ icon?: React.ReactNode;
 }
 
 export interface TableColumn {

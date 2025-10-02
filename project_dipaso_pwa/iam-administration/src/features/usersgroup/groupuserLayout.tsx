@@ -1,21 +1,28 @@
-// groupuserLayout.tsx (CORREGIDO)
+// 📁 GroupManagement.tsx (FINAL CON PARAMETRIZACIÓN)
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-// Importamos getActiveGroups y softDeleteGroupsMassive
+// 🟢 Solo necesitamos el hook para interactuar con el contexto
+import { useScreenContainer } from "./../../components/screencontainer/usescreencontainer"; 
+
 import type { Group } from "./../../models/api/groupModel";
-// Importaciones del servicio (asumiendo que las rutas están correctas)
-import { getActiveGroups, softDeleteGroupsMassive, createGroup, updateGroup } from "./../../services/groupuserServices"; 
+// ❌ Eliminada la importación directa de services
+// 🟢 NUEVO: Importamos la configuración parametrizada
+import { groupServiceConfig } from "./groupserviceconfig"; 
 
 import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
-import DialogoReutilizable from "./../../components/layout/dialogLayout"; 
 import AddEditGroupContent from "./addeditgroup";
 import ReusableTable from "./../../components/layout/reusabletableLayout"; 
 import { v4 as uuidv4 } from "uuid";
-// ❌ ELIMINADA: Importaciones para la gestión de fichas (FaUsers, useCardManager)
-// import { FaUsers } from 'react-icons/fa'; 
-// import { useCardManager } from './../../components/cardcontainer2/usercardmanager'; 
 
 import "./../styles/groupuserLayout.scss"; 
+import { FaSyncAlt } from "react-icons/fa"; 
+// 🟢 Desestructuramos las funciones del objeto de configuración
+const { 
+    getActiveGroups, 
+    softDeleteGroupsMassive, 
+    createGroup, 
+    updateGroup 
+} = groupServiceConfig; 
 
 
 export type GroupManagementRef = {
@@ -24,20 +31,17 @@ export type GroupManagementRef = {
     handleDeleteFromShortcut: () => void;
 };
 
-// 🎯 CAMBIO 1: Eliminado el hook useCardManager
 const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
+    // 🟢 CAMBIO CRÍTICO: Obtenemos openScreen y closeTopScreen
+    const { openScreen, closeTopScreen } = useScreenContainer();
+
     const [groups, setGroups] = useState<Group[]>([]);
-    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+   
     const [selectedRows, setSelectedRows] = useState<Group[]>([]);
-    const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false); 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Group | null>(null);
     const [loading, setLoading] = useState(true); 
 
-    // ❌ ELIMINADA: Desestructuración de useCardManager
-    // const { addCard, isCardOpen, updateCard, removeCard } = useCardManager(); 
-
-    // 🎯 1. Implementar try...catch para capturar errores de cifrado/HMAC
     const loadGroups = useCallback(async () => {
         setLoading(true);
         try {
@@ -60,21 +64,35 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
         } finally {
             setLoading(false);
             setSelectedRows([]);
-            setSelectedGroup(null); 
+        
         }
     }, []);
 
     useEffect(() => { loadGroups(); }, [loadGroups]);
 
-    // 🎯 CAMBIO 2: Lógica de Apertura del Diálogo (Usado para CREAR)
-    const handleOpenGroupDialog = (groupToEdit: Group | null = null) => {
-        setSelectedGroup(groupToEdit); // Si es null, es creación; si no, es edición.
-        setIsGroupDialogOpen(true);
+    
+    // 🟢 FUNCIÓN PRINCIPAL DE APERTURA: Crea el contenido y llama a openScreen
+    const handleOpenGroupScreen = (groupToEdit: Group | null = null) => {
+        const title = groupToEdit 
+            ? `Editar Grupo: ${groupToEdit.groupName}` 
+            : "Crear Nuevo Grupo";
+        
+        // 🟢 Creamos el componente AddEditGroupContent de forma dinámica
+        const content = (
+            <AddEditGroupContent
+                group={groupToEdit} 
+                onSave={handleSaveGroup}
+                // closeTopScreen cierra la instancia actual, ideal para la duplicidad
+                onClose={closeTopScreen} 
+            />
+        );
+        
+        // 🟢 Abrimos la pantalla con el título Y el componente de contenido
+        openScreen(title, content); 
     };
     
-    // 🎯 CAMBIO 3: Función de Apertura para EDITAR (llama a handleOpenGroupDialog con datos)
-    const handleOpenEditDialog = useCallback((group: Group) => {
-        handleOpenGroupDialog(group);
+    const handleOpenEditScreen = useCallback((group: Group) => {
+        handleOpenGroupScreen(group);
     }, []);
 
     
@@ -88,13 +106,8 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
 
                 setGroups(prev => prev.map(g => g.groupId === updatedGroup.groupId ? updatedGroup : g));
                 
-                // ❌ ELIMINADO: Lógica de cerrar la Card de edición
-                // const editCardId = `group-edit-${updatedGroup.groupId}`;
-                // if (removeCard) {
-                //     removeCard(editCardId);
-                // }
-                
             } else {
+                // 🔑 TIPO DE DATO CORRECTO PARA LLAMAR AL SERVICIO
                 const newGroupData: Omit<Group, "groupId"> = { 
                     groupName,
                     description,
@@ -106,19 +119,19 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                 setGroups(prev => [...prev, newGroup]);
             }
             
-            setIsGroupDialogOpen(false); // 🎯 Cerramos el diálogo después de guardar
+            closeTopScreen(); // 🟢 Cerrar la pantalla superior después de guardar
             loadGroups(); 
         } catch (error) {
             console.error(isEditing ? "Error al actualizar el grupo:" : "Error al crear el grupo:", error);
         }
     };
     
-    // 🎯 2. Función para la ELIMINACIÓN LÓGICA MASIVA (Soft Delete)
     const handleSoftDeleteMassive = async () => {
         if (selectedRows.length === 0) return;
         
         try {
-            const groupIds = selectedRows.map(g => g.groupId);
+            // 🔑 El ID puede ser string o number, el servicio lo acepta
+            const groupIds: (string | number)[] = selectedRows.map(g => g.groupId);
             
             await softDeleteGroupsMassive(groupIds); 
             
@@ -133,11 +146,11 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
         }
     };
 
-    // 🎯 CAMBIO 4: Actualizar useImperativeHandle para usar Diálogo de Edición
+    // Lógica para atajos de teclado o acciones desde otros componentes
     useImperativeHandle(ref, () => ({
-        handleOpenGroupModal: () => handleOpenGroupDialog(), // Abrir para Crear
+        handleOpenGroupModal: () => handleOpenGroupScreen(), 
         handleEditFromShortcut: () => { 
-            if (selectedRows.length === 1) handleOpenEditDialog(selectedRows[0]);
+            if (selectedRows.length === 1) handleOpenEditScreen(selectedRows[0]);
         },
         handleDeleteFromShortcut: () => {
             if (selectedRows.length > 0) {
@@ -152,18 +165,27 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
         { 
             field: "groupName", 
             header: "Nombre del Grupo",
-            // 🎯 CAMBIO 5: Llamar a handleOpenEditDialog al hacer click en la celda
-            onCellClick: handleOpenEditDialog 
+            // Llamar a handleOpenEditScreen al hacer click en la celda
+            onCellClick: handleOpenEditScreen 
         },
         { field: "description", header: "Descripción" },
     ];
 
     const buttons = [
+         {
+            label: "",
+            color: "btn-primary", // 🔑 Clase para el color de fondo
+            textColor: "text-light",  // 🔑 Clase para el color del texto (oscuro
+            // 🔑 USAMOS la nueva propiedad 'icon'
+            icon: <FaSyncAlt className={loading ? "spin-icon" : ""} />, 
+            onClick: () => loadGroups(), // Llama a la función de carga
+            disabled: loading // Deshabilitado mientras está cargando
+        },
         {
             label: "Agregar",
             color: "btn-primary", 
             textColor: "text-light",
-            onClick: () => handleOpenGroupDialog(), // Abrir para Crear (selectedGroup es null)
+            onClick: () => handleOpenGroupScreen(), // Abrir para Crear
         },
         {
             label: "Editar",
@@ -171,7 +193,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
             textColor: "text-light",
             onClick: (selectedRows?: Group[]) => {
                 if (selectedRows && selectedRows.length === 1) {
-                    handleOpenEditDialog(selectedRows[0]); // 🎯 Llamar a handleOpenEditDialog
+                    handleOpenEditScreen(selectedRows[0]);
                 }
             },
         },
@@ -198,7 +220,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                     columns={columns}
                     buttons={buttons}
                     selectableField="groupId"
-                    onRowSelect={(row) => setSelectedGroup(row)} 
+                   
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
                     loading={loading}
@@ -209,24 +231,12 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                     }
                 />
             </div>
-        
-        {/* DIÁLOGO REUTILIZABLE: Usado tanto para CREAR como para EDITAR */}
-        <DialogoReutilizable
-            // 🎯 CAMBIO 6: Abrir si isGroupDialogOpen es true
-            isOpen={isGroupDialogOpen} 
-            onClose={() => setIsGroupDialogOpen(false)}
-            // 🎯 CAMBIO 7: Título dinámico
-            titulo={selectedGroup ? `Editar Grupo: ${selectedGroup.groupName}` : "Crear Nuevo Grupo"} 
-            >
-            <AddEditGroupContent
-                // 🎯 CAMBIO 8: Pasar el grupo seleccionado para edición
-                group={selectedGroup}
-                onSave={handleSaveGroup}
-                onClose={() => setIsGroupDialogOpen(false)}
-            />
-        </DialogoReutilizable>
             
-        {/* DIÁLOGO DE CONFIRMACIÓN DE ELIMINACIÓN */}
+            {/* ❌ CRÍTICO: El ScreenContainerLayout y su contenido NO se renderizan aquí.
+                El Layout ahora se encarga de renderizar el contenido dinámico del stack 
+                (incluyendo AddEditGroupContent) en un componente de nivel superior (ej. la página principal o AdminPage).
+            */}
+                
             <DeleteConfirmationDialog
                 open={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
@@ -237,7 +247,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                 itemNameKey="groupName" 
                 actionType="eliminar lógicamente"
             />
-       
+        
         </div>
     );
 });

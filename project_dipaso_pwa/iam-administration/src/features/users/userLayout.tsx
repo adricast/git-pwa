@@ -249,12 +249,13 @@ const UserManagement = forwardRef<UserManagementRef>((_, ref) => {
     const buttons = [
         // Botón de Refrescar
         {
-            label: "", 
-            color: "btn-secondary", 
-            textColor: "text-dark", 
+            label: "",
+            color: "btn-primary", // 🔑 Clase para el color de fondo
+            textColor: "text-light",  // 🔑 Clase para el color del texto (oscuro
+            // 🔑 USAMOS la nueva propiedad 'icon'
             icon: <FaSyncAlt className={loading ? "spin-icon" : ""} />, 
-            onClick: () => loadUsers(), 
-            disabled: loading 
+            onClick: () => loadUsers(), // Llama a la función de carga
+            disabled: loading // Deshabilitado mientras está cargando
         },
         {
             label: "Agregar",

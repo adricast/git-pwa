@@ -11,7 +11,7 @@ import { groupServiceConfig } from "./groupserviceconfig";
 
 import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
 import AddEditGroupContent from "./addeditgroup";
-import ReusableTable from "./../../components/layout/reusabletableLayout"; 
+import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 import { v4 as uuidv4 } from "uuid";
 
 import "./../styles/groupuserLayout.scss"; 

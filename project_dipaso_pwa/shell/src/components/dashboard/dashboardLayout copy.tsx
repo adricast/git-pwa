@@ -50,13 +50,6 @@ const defaultMenuItems: NavItem[] = [
 interface DashboardLayoutProps {
     menuItems?: NavItem[];
 }
-// Nueva Interfaz de Tipos para el Contexto del Outlet
-export interface DashboardContext {
-    user: Auth | null; // El objeto de usuario completo
-    userName: string;
-    selectedBranch: string;
-    branches: { id: string; name: string }[];
-}
 
 // 🔑 1. WRAPPER: Proveedores que deben ser globales para toda la Shell
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
@@ -78,16 +71,14 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     const { addNotification } = useNotification(); 
     const { requestAuthorization } = useMasterPassword(); 
 
-  
+    const [authenticatedUser, setAuthenticatedUser] = useState<Auth | null>(null);
     const [userPhotoUrl] = useState(
-        // ✅ CORRECCIÓN FINAL: Ruta absoluta desde la raíz de la carpeta 'public'
-        "/assets/users/default.png" 
+        "https://www.dropbox.com/scl/fi/1sg0k9814ewulaq4xz97b/desarrollomovil2.png?raw=1"
     );
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
-    const [isLoading, setIsLoading] = useState(true); 
-    const [authenticatedUser, setAuthenticatedUser] = useState<Auth | null>(null);
+
     const itemsToRender = menuItems && menuItems.length > 0 ? menuItems : defaultMenuItems;
 
     const toggleSidebar = () => setSidebarVisible(prev => !prev);
@@ -119,24 +110,13 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
         );
     }, [requestAuthorization, navigate, authenticatedUser]);
 
- // Efecto para cargar el usuario (autenticación)
+
+    // Efecto para cargar el usuario (autenticación)
     useEffect(() => {
         const loadUser = async () => {
-            try {
-                const user = await authService.getAuthenticatedUser();
-                console.log("🟢 Usuario cargado de authService:", user); 
-                if (user) {
-                    setAuthenticatedUser(user);
-                } else {
-                    navigate("/login");
-                }
-            } catch (error) {
-                console.error("Error al cargar el usuario:", error);
-                navigate("/login");
-            } finally {
-                // 🔑 CLAVE: Marcar como cargado (haya éxito o error)
-                setIsLoading(false); 
-            }
+            const user = await authService.getAuthenticatedUser();
+            if (user) setAuthenticatedUser(user);
+            else navigate("/login");
         };
         loadUser();
     }, [navigate]);
@@ -208,24 +188,6 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
             window.removeEventListener('keydown', disableKeyCombos);
         };
     }, []); // Se ejecuta solo una vez al montar
-    if (isLoading) {
-        // Esto previene que se renderice el dashboard *mientras* se verifica la sesión.
-        return (
-            <div 
-                className="dashboard-loading-screen" 
-                style={{ 
-                    height: '100vh', 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    fontSize: '1.2rem',
-                    color: '#34495e'
-                }}
-            >
-                Cargando sesión de usuario...
-            </div>
-        );
-    }
     const breadcrumbs: BreadcrumbItem[] = pathParts.map((part, idx) => {
         const url = "/" + pathParts.slice(0, idx + 1).join("/");
         const label =
@@ -288,12 +250,7 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                                 onClick={toggleUserMenu}
                                 style={{ cursor: "pointer", marginRight: "0.5rem" }}
                             >
-                                {/* 🎯 CAMBIO CLAVE: Usamos "Usuario" como fallback. 
-                                Si el componente se está renderizando, la carga ya terminó (gracias a `if (isLoading)`). 
-                                Si authenticatedUser es null aquí, es porque falló la sesión y ya debió redirigir, 
-                                pero "Usuario" es un mejor fallback que el mensaje de "Cargando..." que confunde.
-                                */}
-                                {authenticatedUser?.username || "Usuario"}
+                                {authenticatedUser?.username || "Cargando..."}
                             </span>
 
                             {showUserMenu && (
@@ -339,11 +296,10 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                 <main className="dashboard-main">
                     <Outlet
                         context={{
-                            user: authenticatedUser, 
                             userName: authenticatedUser?.username || "Usuario",
                             selectedBranch: "03", 
                             branches,
-                        }as DashboardContext}
+                        }}
                     />
                 </main>
             </div>

@@ -1,126 +1,78 @@
-import React, { useState, useEffect } from "react";
-// 🟢 Importamos el tipo User
-import type { User } from "../../models/api/userModel"; 
-import "./../styles/addeditgroup.scss"; 
-// ⚠️ Nota: Si no tienes una interfaz 'Group' en el proyecto, esto puede ser un error de importación.
-// Asumimos que la lógica solo debe usar 'User' en este archivo.
+// src/components/AddEditUserContent.tsx (El código permanece inalterado)
 
-/**
- * Formulario de creación / edición de usuarios
- * NOTA: El componente ha sido renombrado internamente a AddEditUserContent.
- */
+import React, { useCallback, useMemo } from "react";
+import type { User } from "../../models/api/userModel";
+import DynamicForm from "../../components/dinamicform/dynamicformProvider"; // Ajusta la ruta
+import { userFormSections } from "./userformconfig"; // 🛑 Carga la nueva configuración de 2 y 1 columna
+
+import "./../../components/styles/dynamicform.scss"; 
+interface UserFormData {
+    username: string;
+    identification: string;
+    email: string;
+}
+
 const AddEditUserContent: React.FC<{
-  // ✅ FIX 1: Cambiamos 'group' a 'user'
-  user: User | null; 
-  // ✅ FIX 2: Nueva firma para onSave (4 argumentos)
-  onSave: (user: User | null, username: string, identification: string, email: string) => Promise<void>; 
-  onClose: () => void;
-// ✅ FIX 3: Desestructuramos 'user' en lugar de 'group'
-}> = ({ user, onSave, onClose }) => { 
-  // ✅ FIX 4: Cambiamos estados a campos de usuario
-  const [username, setUsername] = useState("");
-  const [identification, setIdentification] = useState("");
-  const [email, setEmail] = useState("");
+    user: User | null;
+    onSave: (user: User | null, username: string, identification: string, email: string) => Promise<void>; 
+    onClose: () => void;
+}> = ({ user, onSave, onClose }) => {
+    const formActions = useMemo(() => ([
+            // El botón de Cancelar debe ir antes del de Guardar si quieres que esté a la izquierda
+            {
+                label: 'Cancelar',
+                type: 'button' as const, // Importante: type='button' evita que se dispare el submit
+                // Asumiendo que tu DynamicForm soporta propiedades de estilo (o Tailwind/CSS)
+                outlined: true, // Ejemplo: Para un estilo de botón secundario/transparente
+                onClick: onClose,
+                // Puedes añadir más estilos o clases aquí si tu DynamicForm las soporta
+                // className: "group-form__button group-form__button--secondary" 
+            }
+    ]), [onClose]);
+    const initialData = useMemo(() => {
+        // ... Lógica de inicialización
+        if (user) {
+            return { username: user.username || "", identification: user.identification || "", email: user.email || "" };
+        }
+        return { username: "", identification: "", email: "" };
+    }, [user]);
 
-  // ✅ FIX 5: La validación requiere que todos los campos de usuario estén llenos
-  const isFormValid = username.trim().length > 0 && identification.trim().length > 0 && email.trim().length > 0;
+    const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
+        const userData = data as UserFormData;
+        
+        // La lógica del onSubmit sigue siendo la misma: limpiar y llamar a onSave.
+        await onSave(
+            user, 
+            userData.username.trim(), 
+            userData.identification.trim(),
+            userData.email.trim()
+        );
+    }, [user, onSave]);
 
-  useEffect(() => {
-    // ✅ FIX 6: Cargamos datos de 'user' si existe
-    if (user) {
-      setUsername(user.username);
-      setIdentification(user.identification);
-      setEmail(user.email);
-    } else {
-      setUsername("");
-      setIdentification("");
-      setEmail("");
-    }
-  }, [user]);
+    return (
+        <div className="group-form-wrapper">
+            {/*
+            <h3 className="group-form__title">
+                {user ? "Editar Usuario" : "Crear Nuevo Usuario"}
+            </h3>
+             */
+            }
+            
 
-  const handleSave = () => {
-    if (isFormValid) {
-      // ✅ FIX 7: Pasamos los 4 argumentos del usuario
-      onSave(user, username.trim(), identification.trim(), email.trim()); 
-    }
-  };
-
-  return (
-    <form
-      className="group-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSave();
-      }}
-    >
-      <h3 className="group-form__title">
-        {user ? "Editar Usuario" : "Crear Nuevo Usuario"}
-      </h3>
-      
-      {/* ------------------------------------------- */}
-      {/* 🟢 Campo: Nombre de Usuario (username) */}
-      {/* ------------------------------------------- */}
-      <label className="group-form__label" htmlFor="username">
-        Nombre de Usuario
-      </label>
-      <input
-        id="username"
-        className="group-form__input"
-        placeholder="Nombre de usuario (Obligatorio)"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-
-      {/* ------------------------------------------- */}
-      {/* 🟢 Campo: Identificación (identification) */}
-      {/* ------------------------------------------- */}
-      <label className="group-form__label" htmlFor="identification">
-        Identificación
-      </label>
-      <input
-        id="identification"
-        className="group-form__input"
-        placeholder="Identificación (Obligatorio)"
-        value={identification}
-        onChange={(e) => setIdentification(e.target.value)}
-      />
-
-      {/* ------------------------------------------- */}
-      {/* 🟢 Campo: Correo Electrónico (email) */}
-      {/* ------------------------------------------- */}
-      <label className="group-form__label" htmlFor="email">
-        Correo Electrónico
-      </label>
-      <input
-        id="email"
-        type="email"
-        className="group-form__input"
-        placeholder="Correo electrónico (Obligatorio)"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <div className="group-form__actions">
-        <button
-          type="button"
-          className="group-form__button group-form__button--secondary"
-          onClick={onClose}
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className={`group-form__button group-form__button--primary ${
-            !isFormValid ? "group-form__button--disabled" : ""
-          }`}
-          disabled={!isFormValid}
-        >
-          {user ? "Actualizar" : "Crear"}
-        </button>
-      </div>
-    </form>
-  );
+            {/* El DynamicForm renderiza automáticamente las dos secciones (2 y 1 columna) */}
+        
+            <DynamicForm
+                sections={userFormSections}
+                initialData={initialData}
+                onSubmit={handleDynamicSubmit}
+                // Este es el botón "Guardar" / "Actualizar"
+                buttonText={user ? "Actualizar Grupo" : "Crear Usuario"}
+                className="group-form" // Usamos la clase CSS de tu formulario original
+                actions={formActions} // Inyectamos el botón de Cancelar aquí
+            />
+          
+        </div>
+    );
 };
 
-// ⚠️ Nota: Renombra la exportación por defecto para reflejar el contenido.
 export default AddEditUserContent;

@@ -142,8 +142,12 @@ export async function createGroup(groupData: Omit<Group, "groupId">): Promise<Gr
         const response = await api.post<EncryptedResponse>(
             groupRouteApi.group, 
             { group_name: groupData.groupName, description: groupData.description },
-            { headers: { "Transaction-Id": transactionId } } 
+            { headers: { "Transaction-Id": transactionId } 
+          
+            } 
+            
         );
+        console.log(groupData.groupName +' '+ groupData.description);
         const decryptedData = decryptAndVerifyResponse(response.data);
         return mapGroupFromApi(decryptedData);
     } catch (error: any) {

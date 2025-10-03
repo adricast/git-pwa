@@ -5,6 +5,8 @@ import App from "./App"; // ✅ default import
 import "./input.css"
 import "./output.css";
 import './index.css';
+
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>

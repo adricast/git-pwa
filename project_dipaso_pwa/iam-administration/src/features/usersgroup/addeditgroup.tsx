@@ -1,92 +1,100 @@
-import React, { useState, useEffect } from "react";
-import type { Group } from "../../models/api/groupModel";
-import "./../styles/addeditgroup.scss"; // 👈 Importamos el SCSS
+// src/components/AddEditGroupContent.tsx (VERSIÓN CON DYNAMIC FORM)
+
+import React, { useCallback, useMemo } from "react";
+// Asumiendo que Group está en "../../models/api/groupModel"
+import type { Group } from "../../models/api/groupModel"; 
+// 🛑 Importamos el DynamicFormProvider (el principal)
+import DynamicForm from "../../components/dinamicform/dynamicformProvider"; // Ajusta la ruta si es necesario
+// 🛑 Importamos el schema
+import { groupFormSections } from "./groupformconfig"; // Ajusta la ruta
+import "./../../components/styles/dynamicform.scss";  // Mantenemos tu SCSS para estilos adicionales
+// NOTA: Para que esto funcione, DynamicForm y sus interfaces deben aceptar la prop 'actions'
+
+// --- Tipado de los datos del formulario que DynamicForm devolverá ---
+interface GroupFormData {
+    groupName: string;
+    description: string;
+}
 
 /**
- * Formulario de creación / edición de grupos
+ * Formulario de creación / edición de grupos refactorizado con DynamicForm.
  */
 const AddEditGroupContent: React.FC<{
-  group: Group | null;
-  // 🔑 CORRECCIÓN: La prop onSave ahora acepta 3 argumentos, incluyendo el grupo actual.
-  onSave: (group: Group | null, groupName: string, description: string) => void; 
-  onClose: () => void;
+    group: Group | null;
+    // La prop onSave ahora es llamada DENTRO del onSubmit del DynamicForm
+    onSave: (group: Group | null, groupName: string, description: string) => void; 
+    onClose: () => void;
 }> = ({ group, onSave, onClose }) => {
-  const [groupName, setGroupName] = useState("");
-  const [description, setDescription] = useState("");
 
-  const isFormValid = groupName.trim().length > 0;
+    // 1. Preparamos los datos iniciales para el formulario dinámico
+    const initialData = useMemo(() => {
+        if (group) {
+            return {
+                groupName: group.groupName || "",
+                description: group.description || "",
+            };
+        }
+        return {
+            groupName: "",
+            description: "",
+        };
+    }, [group]);
 
-  useEffect(() => {
-    if (group) {
-      setGroupName(group.groupName);
-      setDescription(group.description || "");
-    } else {
-      setGroupName("");
-      setDescription("");
-    }
-  }, [group]);
+    // 2. Definimos el handler onSubmit que será ejecutado por DynamicForm
+    const handleDynamicSubmit = useCallback((data: Record<string, any>) => {
+        const groupData = data as GroupFormData;
+        
+        // Llamamos a tu lógica de guardado, pasando los datos limpios que recibimos
+        onSave(
+            group, 
+            groupData.groupName.trim(), 
+            groupData.description.trim()
+        );
+    }, [group, onSave]);
 
-  const handleSave = () => {
-    if (isFormValid) {
-      // 🔑 CORRECCIÓN: Pasamos el objeto 'group' (que es null si es creación)
-      onSave(group, groupName.trim(), description.trim()); 
-    }
-  };
+    // 3. Definimos el botón "Cancelar" usando la estructura de 'actions'
+    const formActions = useMemo(() => ([
+        // El botón de Cancelar debe ir antes del de Guardar si quieres que esté a la izquierda
+        {
+            label: 'Cancelar',
+            type: 'button' as const, // Importante: type='button' evita que se dispare el submit
+            // Asumiendo que tu DynamicForm soporta propiedades de estilo (o Tailwind/CSS)
+            outlined: true, // Ejemplo: Para un estilo de botón secundario/transparente
+            onClick: onClose,
+            // Puedes añadir más estilos o clases aquí si tu DynamicForm las soporta
+            // className: "group-form__button group-form__button--secondary" 
+        }
+    ]), [onClose]);
 
-  return (
-    <form
-      className="group-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSave();
-      }}
-    >
-      <h3 className="group-form__title">
-        {group ? "Editar Grupo" : "Crear Nuevo Grupo"}
-      </h3>
 
-      <label className="group-form__label" htmlFor="groupName">
-        Nombre del Grupo
-      </label>
-      <input
-        id="groupName"
-        className="group-form__input"
-        placeholder="Nombre del grupo (Obligatorio)"
-        value={groupName}
-        onChange={(e) => setGroupName(e.target.value)}
-      />
+    return (
+        <div className="group-form-wrapper">
+            {/**
+                 
+                <h3 className="group-form__title">
+                    {group ? "Editar Grupo" : "Crear Nuevo Grupo"}
+                </h3>
+                
+             */}
+         
 
-      <label className="group-form__label" htmlFor="description">
-        Descripción
-      </label>
-      <textarea
-        id="description"
-        className="group-form__textarea"
-        placeholder="Descripción (Opcional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <div className="group-form__actions">
-        <button
-          type="button"
-          className="group-form__button group-form__button--secondary"
-          onClick={onClose}
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          className={`group-form__button group-form__button--primary ${
-            !isFormValid ? "group-form__button--disabled" : ""
-          }`}
-          disabled={!isFormValid}
-        >
-          {group ? "Actualizar" : "Crear"}
-        </button>
-      </div>
-    </form>
-  );
+            {/* 🛑 DynamicForm maneja los dos botones internamente:
+                 - El botón de envío (type="submit") se define por 'buttonText'.
+                 - El botón de cancelar se inyecta en 'actions'.
+            */}
+            <DynamicForm
+                sections={groupFormSections}
+                initialData={initialData}
+                onSubmit={handleDynamicSubmit}
+                // Este es el botón "Guardar" / "Actualizar"
+                buttonText={group ? "Actualizar Grupo" : "Crear Grupo"}
+                className="group-form" // Usamos la clase CSS de tu formulario original
+                actions={formActions} // Inyectamos el botón de Cancelar aquí
+            />
+            
+            {/* 🛑 Eliminamos el bloque de botones de acción manual */}
+        </div>
+    );
 };
 
 export default AddEditGroupContent;

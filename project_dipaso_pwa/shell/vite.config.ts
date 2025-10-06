@@ -37,7 +37,11 @@ export default defineConfig({
       name: 'shell',
       remotes: {
         iamAdmin: 'http://localhost:3001/assets/remoteEntry.js',
-       
+        posBilling: 'http://localhost:3002/assets/remoteEntry.js',
+        posCash: 'http://localhost:3003/assets/remoteEntry.js',
+        posInventory: 'http://localhost:3004/assets/remoteEntry.js',
+        posClients: 'http://localhost:3005/assets/remoteEntry.js',
+        posAudit: 'http://localhost:3006/assets/remoteEntry.js',
       },
       shared: ['react', 'react-dom', 'react-router-dom'],
       exposes:{},

@@ -5,8 +5,8 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import {
     FaBars, FaAngleLeft, FaAngleRight, FaHome,
     FaFileInvoiceDollar, FaCashRegister,
-    FaBoxOpen, FaClipboardCheck, FaChartLine,
-    FaCog, FaBell
+    FaBoxOpen, FaClipboardCheck, 
+    FaCog, FaBell,FaUsers
 } from "react-icons/fa";
 import { authService } from "../../services/authServices";
 import type { Auth } from "../../models/api/authModel"; 
@@ -40,10 +40,10 @@ const branches = [
 const defaultMenuItems: NavItem[] = [
     { label: "Inicio", path: "/dashboard", icon: <FaHome /> },
     { label: "Facturación", path: "/dashboard/billing", icon: <FaFileInvoiceDollar /> },
-    { label: "Caja", path: "/dashboard/cashregister", icon: <FaCashRegister /> },
-    { label: "Inventario", path: "/dashboard/inventary", icon: <FaBoxOpen /> },
+    { label: "Caja", path: "/dashboard/cash", icon: <FaCashRegister /> },
+    { label: "Inventario", path: "/dashboard/inventory", icon: <FaBoxOpen /> },
     { label: "Auditoría", path: "/dashboard/audit", icon: <FaClipboardCheck /> },
-    { label: "Reportes", path: "/dashboard/report", icon: <FaChartLine /> },
+    { label: "Clientes", path: "/dashboard/client", icon: <FaUsers/> },
     { label: "Administración", path: "/dashboard/admin", icon: <FaCog /> },
 ];
 

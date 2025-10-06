@@ -1,0 +1,227 @@
+// 🛑 IMPORTACIÓN DE VARIABLES: Necesaria para que el compilador reconozca tus colores.
+@import 'variables.scss'; 
+
+// --- CONFIGURACIÓN DE ESPACIOS ---
+$gap-size: 10px; // Reducido de 20px a 16px para un look más compacto
+$form-max-width: 90%; // Nuevo: Límite de ancho para profesionalismo
+
+.dynamic-form-container {
+    display: flex;
+    flex-direction: column;
+    padding: $gap-size * 1.2; // Padding del contenedor ligeramente reducido
+    // ✅ Max-width y centrado para aspecto profesional
+    width: $form-max-width; 
+    margin: 0 auto; 
+    // Uso de variables importadas
+    border: 1px solid $border-color;
+    border-radius: 12px; // Ligeramente más redondeado
+    background-color: $white;
+    gap: $gap-size * 1.2; // Separación entre secciones
+    // ✅ Sombra sutil para darle profundidad
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+}
+
+// ----------------------------------------------------
+// 1. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
+// ----------------------------------------------------
+
+.dynamic-form-section {
+    // Reducimos el padding bottom para un look más tight
+    padding-bottom: $gap-size / 2; 
+    
+    h3 {
+        margin-top: 0;
+        margin-bottom: $gap-size;
+        padding-bottom: 8px; // Aumentamos un poco el padding inferior del título
+        border-bottom: 2px solid $primary-color; // Línea de separación más destacada
+        color: $text-color; 
+        font-weight: 700; // Un poco más audaz
+        font-size: 1.25rem; // Tamaño ligeramente mayor para títulos de sección
+        }
+}
+
+.dynamic-section-fields-grid {
+    display: grid;
+    gap: $gap-size; // Uso del nuevo $gap-size
+}
+
+// Layout de 1 Columna (Si la configuración es columns: 1)
+.dynamic-section-columns-1 .dynamic-section-fields-grid {
+    grid-template-columns: 1fr; 
+}
+
+// Layout de 2 Columnas (1 columna en móvil, 2 en pantallas >= 640px)
+.dynamic-section-columns-2 .dynamic-section-fields-grid {
+    grid-template-columns: 1fr; // Móvil
+    
+     @media (min-width: 640px) { // Usamos un breakpoint común (sm)
+         grid-template-columns: repeat(2, 1fr); // Dos columnas
+     }
+}
+
+// Layout de 3 Columnas (1 columna en móvil, 3 en pantallas >= 1024px)
+.dynamic-section-columns-3 .dynamic-section-fields-grid {
+     grid-template-columns: 1fr; // Móvil
+    
+     @media (min-width: 1024px) { // Usamos un breakpoint común (lg)
+       grid-template-columns: repeat(3, 1fr); // Tres columnas
+     }
+}
+
+
+// ----------------------------------------------------
+// 2. ESTILOS DE CAMPOS INDIVIDUALES 
+// ----------------------------------------------------
+
+.dynamic-form-group {
+    display: flex;
+    flex-direction: column;
+
+    label {
+    font-weight: 600;
+    margin-bottom: 4px; // Reducido de 6px a 4px (Menos padding vertical)
+    color: $text-color; 
+    font-size: 0.9rem; // Ligeramente más pequeño y profesional
+     }
+}
+
+.required-star {
+    color: $error-color; 
+    margin-left: 4px;
+}
+
+.dynamic-form-input {
+    padding: 8px 12px; // Reducido de 10px a 8px verticalmente y 12px horizontalmente
+    border: 1px solid lighten($border-color, 10%); // Borde más suave
+    border-radius: 8px; // Ligeramente más redondeado
+    font-size: 1rem;
+    box-sizing: border-box; 
+    width: 100%;
+    transition: all 0.2s ease; // Transición más genérica y rápida
+    background-color: $card-bg; 
+    
+    // ✅ Estilos para un aspecto más limpio y al enfoque
+    &:hover {
+        border-color: $border-color;
+    }
+
+    &:focus {
+        border-color: $primary-color; 
+        outline: none;
+        // ✅ Sombra de enfoque más sutil y limpia (solo en la parte inferior y color)
+        box-shadow: 0 1px 0 0 $primary-color; 
+    }
+}
+
+// Estilo específico para textarea
+textarea.dynamic-form-input {
+    resize: vertical;
+    min-height: 100px; // Aumentado ligeramente para mejor UX
+}
+
+
+// ----------------------------------------------------
+// 3. ESTILOS DE CAMPOS ESPECIALES (CHECKBOX Y RADIO)
+// ----------------------------------------------------
+
+// Contenedor para alinear checkbox/radio con su etiqueta
+.dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px; // Espacio entre el input y la etiqueta
+}
+
+.dynamic-form-checkbox-group {
+    input[type="checkbox"] {
+    cursor: pointer;
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: 4px;
+   }
+
+ .checkbox-label {
+    color: $text-color;
+    cursor: pointer;
+    font-weight: 500;
+ }
+}
+
+.dynamic-form-radio-group {
+    .radio-label {
+        color: $text-color;
+        cursor: pointer;
+        font-weight: 500;
+        input[type="radio"] {
+        cursor: pointer;
+        min-width: 16px;
+        min-height: 16px;
+        }
+    }
+}
+
+
+// ----------------------------------------------------
+// 4. BOTONES DE ACCIÓN (UNIFICADOS)
+// ----------------------------------------------------
+
+// 🛑 CONTENEDOR DE BOTONES 
+.dynamic-form-actions-wrapper {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 10px; // Reducido el gap de 12px a 10px
+    margin-top: $gap-size;
+    padding-top: $gap-size; // Aumentamos para mayor separación visual
+    border-top: 1px solid lighten($border-color, 10%); // Separador sutil
+}
+
+/* 🛑 Estilo Base del Botón (Unificado: aplica a submit y acciones) */
+.dynamic-form-submit-btn { 
+    padding: 10px 18px; // Padding ligeramente reducido
+    border-radius: 8px; // Ligeramente más redondeado
+    cursor: pointer;
+    font-size: 0.95rem; // Tamaño de fuente un poco más pequeño
+    font-weight: 600;
+    transition: all 0.2s ease; // Transición más suave
+    white-space: nowrap;
+    line-height: 1.2; // Mejor alineación
+    border: none;
+}
+
+/* 🛑 Estilo Primario (Guardar/Submit) */
+.dynamic-form-submit-btn--primary {
+    background-color: $primary-color; 
+    color: #fff; // Aseguramos un color blanco de texto
+    
+    &:hover:not(:disabled) {
+        // ✅ Color de hover más oscuro/saturado
+        background-color: darken($primary-color, 8%); 
+        transform: translateY(-1px); // Efecto sutil de elevación
+        box-shadow: 0 2px 4px rgba($primary-color, 0.3); // Sombra al pasar el mouse
+    }
+}
+
+/* 🛑 Estilo Secundario (Cancelar/Acciones) */
+.dynamic-form-submit-btn--secondary {
+    background-color: transparent; 
+    color: $text-color; 
+    border: 1px solid $border-color; 
+    font-weight: 500;
+    
+    &:hover:not(:disabled) {
+        background-color: $light-gray; 
+        border-color: $light-gray;
+        color: $text-color;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* 🛑 Estilo Deshabilitado (para el botón de submit) */
+.dynamic-form-submit-btn:disabled {
+    background-color: $light-gray !important;
+    color: #999 !important; // Color más suave
+    cursor: not-allowed;
+    opacity: 0.8; // Menos opacidad
+    transform: none;
+    box-shadow: none;
+}

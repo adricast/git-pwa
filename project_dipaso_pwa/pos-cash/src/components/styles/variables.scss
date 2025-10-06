@@ -1,0 +1,21 @@
+// src/styles/variables.scss (MODIFICACIÓN)
+
+$primary-color: #806EAF;
+$secondary-color: #8578B4;
+$text-color: #1f2937;
+$background-color: #f3f4f6;
+
+$header-height: 40px; // 🔑 AJUSTE CLAVE: Reducido de 60px a 40px.
+$header-height-sm: 30px; 
+
+$sidebar-width: 250px;
+$sidebar-collapsed-width: 80px;
+$transition-speed: 0.3s;
+$card-bg: #ffffff;
+$card-shadow: rgba(0,0,0,0.1);
+$border-color: #DCDCDC; 
+$error-color: #E24A4A;
+$success-color: #4AE24A;
+$info-color: #4A6AE2;
+$light-gray: #eceff1;
+$white: #ffff;

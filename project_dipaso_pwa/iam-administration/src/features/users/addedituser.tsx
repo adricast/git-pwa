@@ -1,11 +1,15 @@
 // src/components/AddEditUserContent.tsx (El código permanece inalterado)
 
+// src/components/AddEditUserContent.tsx
+
 import React, { useCallback, useMemo } from "react";
 import type { User } from "../../models/api/userModel";
-import DynamicForm from "../../components/dinamicform/dynamicformProvider"; // Ajusta la ruta
-import { userFormSections } from "./userformconfig"; // 🛑 Carga la nueva configuración de 2 y 1 columna
+// 🛑 CORRECCIÓN: Usar el nuevo DynamicFormProvider con soporte multi-sección
+import DynamicForm from "../../components/multisectiondinamicform/dynamicformProvider"; // Ajusta la ruta a tu nuevo componente
+import { userFormSections } from "./userformconfig"; 
 
-import "./../../components/styles/dynamicform.scss"; 
+import "./../../components/styles/multisectiondynamicform.scss"; 
+
 interface UserFormData {
     username: string;
     identification: string;
@@ -18,21 +22,23 @@ const AddEditUserContent: React.FC<{
     onClose: () => void;
 }> = ({ user, onSave, onClose }) => {
     const formActions = useMemo(() => ([
-            // El botón de Cancelar debe ir antes del de Guardar si quieres que esté a la izquierda
+            // El botón de Cancelar
             {
                 label: 'Cancelar',
-                type: 'button' as const, // Importante: type='button' evita que se dispare el submit
-                // Asumiendo que tu DynamicForm soporta propiedades de estilo (o Tailwind/CSS)
-                outlined: true, // Ejemplo: Para un estilo de botón secundario/transparente
+                type: 'button' as const, 
+                outlined: true, 
                 onClick: onClose,
-                // Puedes añadir más estilos o clases aquí si tu DynamicForm las soporta
-                // className: "group-form__button group-form__button--secondary" 
             }
     ]), [onClose]);
+    
     const initialData = useMemo(() => {
         // ... Lógica de inicialización
         if (user) {
-            return { username: user.username || "", identification: user.identification || "", email: user.email || "" };
+            return { 
+                username: user.username || "", 
+                identification: user.identification || "", 
+                email: user.email || "" 
+            };
         }
         return { username: "", identification: "", email: "" };
     }, [user]);
@@ -51,15 +57,8 @@ const AddEditUserContent: React.FC<{
 
     return (
         <div className="group-form-wrapper">
-            {/*
-            <h3 className="group-form__title">
-                {user ? "Editar Usuario" : "Crear Nuevo Usuario"}
-            </h3>
-             */
-            }
             
-
-            {/* El DynamicForm renderiza automáticamente las dos secciones (2 y 1 columna) */}
+            {/* El DynamicForm renderiza automáticamente las secciones con paginación */}
         
             <DynamicForm
                 sections={userFormSections}
@@ -67,7 +66,7 @@ const AddEditUserContent: React.FC<{
                 onSubmit={handleDynamicSubmit}
                 // Este es el botón "Guardar" / "Actualizar"
                 buttonText={user ? "Actualizar Grupo" : "Crear Usuario"}
-                className="group-form" // Usamos la clase CSS de tu formulario original
+                className="group-form" 
                 actions={formActions} // Inyectamos el botón de Cancelar aquí
             />
           

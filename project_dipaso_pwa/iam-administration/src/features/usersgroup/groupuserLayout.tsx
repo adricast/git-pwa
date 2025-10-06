@@ -196,6 +196,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                     handleOpenEditScreen(selectedRows[0]);
                 }
             },
+            isVisible: (selectedRows: any[]) => selectedRows.length === 1,
         },
         {
             label: "Eliminar",

@@ -11,10 +11,16 @@ export default defineConfig({
       exposes: {
         './AuditApp': './src/App.tsx' // Componente principal expuesto
       },
-      shared: ['react', 'react-dom', 'react-router-dom']
+      shared: ['react', 'react-dom','react-router-dom'],
 
     })
   ],
+  build: {
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
+    modulePreload:false
+  },
   server: {
     port: 3006 // Puerto de desarrollo del MFE
   }

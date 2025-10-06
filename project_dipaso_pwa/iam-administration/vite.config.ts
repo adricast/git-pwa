@@ -10,6 +10,7 @@ export default defineConfig({
       filename: 'remoteEntry.js',
       exposes: {
         './AdminPage': './src/app.tsx',
+        
       },
       shared: ['react', 'react-dom','react-router-dom'],
       remotes: {},

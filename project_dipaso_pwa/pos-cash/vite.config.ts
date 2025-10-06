@@ -11,9 +11,16 @@ export default defineConfig({
       exposes: {
         './CashApp': './src/App.tsx'   // Componente principal que el shell consumirá
       },
-      shared: ['react', 'react-dom']   // Evita duplicar React y ReactDOM
+      
+      shared: ['react', 'react-dom','react-router-dom'],    // Evita duplicar React y ReactDOM
     })
   ],
+    build: {
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
+    modulePreload:false
+  },
   server: {
     port: 3003  // Puerto independiente para desarrollo
   }

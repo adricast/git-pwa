@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import AdminPage from './features/principal/adminPage';
+//import GroupCardManagerWrapper from './features/usersgroup/groupcardmanagerwrapper';
+import { ErrorBoundary } from './hooks/ErrorBoundary';
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+//import './input.css';
+//import './output.css';
+//import GroupManagement from './features/usersgroup/groupuserLayout';
+//import UserManagement from './features/users/userLayout';
+
+
+export interface AppProps {
+  standalone?: boolean; // true si se ejecuta independiente
 }
 
-export default App
+export const App: React.FC<AppProps> = ({ standalone = false }) => {
+  useEffect(() => {
+    if (standalone) {
+      console.log("🟢 MFE: Modo Standalone ACTIVO. Esperando h-screen en el contenedor.");
+    } else {
+      console.log("🔵 MFE: Modo Host ACTIVO. El Host debe proporcionar la altura.");
+    }
+  }, [standalone]);
+
+  const appRoutes = (
+    <Routes>
+      <Route path="/" element={<AdminPage />}>
+        {/* ⬅️ ESTE ERA EL USO DIRECTO DEL COMPONENTE *
+        <Route path="usergroup" element={<GroupManagement />} />
+        <Route path="user" element={<UserManagement />} />
+        
+        /}
+        
+        {/* Otras subrutas irían aquí */}
+      </Route>
+      <Route path="*" element={<div>Página no encontrada en el MFE</div>} />
+    </Routes>
+  );
+
+  // Modo Standalone: Requiere BrowserRouter
+  if (standalone) {
+    return (
+      <ErrorBoundary fallback={<div>¡Oops! Algo salió mal 😢</div>}>
+        {/* 🎯 CORRECCIÓN 1: RESTAURADO h-screen w-full */}
+        <div className="h-screen w-full">
+          <BrowserRouter>
+            {appRoutes}
+          </BrowserRouter>
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+  // Modo Host: Retorna solo las rutas
+  return appRoutes;
+};
+
+export default App;

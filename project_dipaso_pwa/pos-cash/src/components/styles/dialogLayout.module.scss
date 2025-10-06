@@ -1,0 +1,86 @@
+// Importa tus variables corporativas. 
+// Asegúrate de que la ruta sea correcta para tu proyecto (ej: '../../styles/variables').
+@import './variables'; 
+
+// --- OVERLAY (Fondo oscuro) ---
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    // Usamos rgba para el fondo semitransparente
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; // Asegura que esté por encima de todo
+}
+
+// --- CONTENIDO DEL DIÁLOGO (La caja movible) ---
+.dialogoContenido {
+    background-color: $card-bg;
+    color: $text-color;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 500px;
+    max-width: 90%;
+    // Usamos tu variable de sombra
+    box-shadow: 0 8px 16px $card-shadow; 
+    position: absolute; // **Clave para el movimiento**
+    // No usamos 'transition' en 'transform' para el movimiento, ya que el arrastre debe ser instantáneo.
+    // Solo si deseas una animación inicial al abrir.
+    
+    // El cursor se gestiona en el JS/TSX para cambiar a 'grabbing' al arrastrar
+    cursor: auto; 
+    
+    // El padding general aplica al contenido interno, no al encabezado que es arrastrable.
+}
+
+// --- ENCABEZADO (Zona de arrastre) ---
+.dialogoEncabezado {
+    // Estilos del contenedor del título y botón de cerrar
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    // Ajustamos los márgenes y paddings para que la línea divisoria se vea limpia
+    margin: -20px -20px 15px -20px; // Estira el encabezado a los bordes
+    padding: 20px 20px 10px 20px; 
+    
+    border-bottom: 1px solid $border-color;
+    cursor: grab; // Indica al usuario que puede arrastrar
+    user-select: none; // Evita seleccionar texto al arrastrar
+    
+    // Pequeño contraste con el fondo para resaltar la zona de arrastre
+    background-color: lighten($card-bg, 1%); 
+}
+
+// Estilo para el Título
+.dialogoEncabezado h2 {
+    margin: 0;
+    color: $text-color;
+    font-size: 1.25rem;
+}
+
+// --- BOTÓN DE CERRAR ('X') ---
+.cerrarBoton {
+    background: none;
+    border: none;
+    color: $secondary-color; // Un color que se vea bien en el encabezado
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0; 
+    line-height: 1; // Asegura que la 'X' se vea centrada
+    transition: color $transition-speed;
+
+    &:hover {
+        color: $error-color; // Usa el color de error para la acción de cerrar
+    }
+}
+
+// Contenido interno (donde se inyectan los children)
+.dialogoContenido > .dialogo-contenido {
+    // Aquí puedes poner estilos específicos para el área de contenido si es necesario
+    padding-top: 10px;
+}

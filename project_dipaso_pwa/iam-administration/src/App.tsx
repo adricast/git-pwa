@@ -10,6 +10,7 @@ import './input.css';
 import './output.css';
 import GroupManagement from './features/usersgroup/groupuserLayout';
 import UserManagement from './features/users/userLayout';
+import PeopleManagement from './features/person/peopleLayout';
 
 
 export interface AppProps {
@@ -31,6 +32,7 @@ export const App: React.FC<AppProps> = ({ standalone = false }) => {
         {/* ⬅️ ESTE ERA EL USO DIRECTO DEL COMPONENTE */}
         <Route path="usergroup" element={<GroupManagement />} />
         <Route path="user" element={<UserManagement />} />
+         <Route path="person" element={< PeopleManagement/>} />
         {/* Otras subrutas irían aquí */}
       </Route>
       <Route path="*" element={<div>Página no encontrada en el MFE</div>} />

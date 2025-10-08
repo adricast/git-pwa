@@ -4,3 +4,8 @@ export const groupRouteApi = {
   group: "/iam-user-groups/",
  
 };
+
+export const peopleRouteApi = {
+  person: "/iam-people/",
+ 
+};

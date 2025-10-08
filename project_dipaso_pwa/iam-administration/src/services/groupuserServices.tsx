@@ -6,8 +6,9 @@ import CryptoJS from "crypto-js";
 
 // 🔑 CLAVES DE ENTORNO
 // ----------------------------------------------------------------------
-const HMAC_KEY = import.meta.env.VITE_SECRET_KEY || "MiClaveSecreta"; 
-const AES_KEY_STRING = import.meta.env.VITE_FERNET_KEY || "ClaveDe32BytesAES"; 
+
+const HMAC_KEY = import.meta.env.VITE_SECRET_KEY; 
+const AES_KEY_STRING = import.meta.env.VITE_FERNET_KEY ; 
 const AES_KEY_WORD_ARRAY = CryptoJS.enc.Base64.parse(AES_KEY_STRING); // ✅ CORREGIDO!
 
 

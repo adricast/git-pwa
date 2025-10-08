@@ -48,19 +48,12 @@
                 
         // Contenedor de la cuadrícula de opciones (visible solo en la ruta base)
         .menu-grid {
-            display: flex;
+            display: grid;
             // Crea columnas que se ajustan automáticamente, con un tamaño mínimo de 150px
-            flex-wrap: wrap; // Permite que las tarjetas salten a la siguiente línea si no caben
-            gap: 1.5rem; // Mantiene el espacio entre tarjetas (puedes cambiarlo a 10px si quieres)
-            margin-bottom: 2rem; 
-            // ✅ Nuevo: Centramos el grupo de tarjetas
-            justify-content: center; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 1.5rem; // Espacio entre tarjetas
+            margin-bottom: 2rem; // Separación con el área de contenido (Outlet)
             
-            // ✅ Nuevo: Limitamos el ancho para que no se estire demasiado en pantallas gigantes
-            // Esto es opcional, pero ayuda a que el menú no se vaya a los extremos.
-            max-width: 1000px; 
-            margin-left: auto; // Centra el contenedor completo
-            margin-right: auto; // Centra el contenedor completo
             // Estilo de los enlaces/tarjetas
             a {
                 text-decoration: none; // Quitar el subrayado de los Link

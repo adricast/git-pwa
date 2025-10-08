@@ -1,8 +1,19 @@
 // src/components/forms/DynamicField.tsx
 
-import React, { type InputHTMLAttributes, type TextareaHTMLAttributes, type ReactElement } from 'react';
-import type { FormField } from './interface'; // Ajusta la ruta
-import { useDynamicFormContext } from './dynamicformContext'; // Ajusta la ruta
+import React, {
+    type InputHTMLAttributes,
+    type TextareaHTMLAttributes,
+    type ReactElement
+} from 'react';
+// ✅ RUTA CORREGIDA: De `./interface` a `../../interfaces/dynamicForm.interface`
+import type { 
+    FormField, 
+    NestedFormField // 🆕 AGREGADO: Importamos el tipo para el formulario anidado
+} from './interface'; 
+// ✅ RUTA CORREGIDA: De `./dynamicformContext` a `../../contexts/dynamicformContext`
+import { useDynamicFormContext } from './dynamicformContext';
+// 🆕 AGREGADO: Necesario para renderizar las secciones internas del formulario anidado
+import DynamicSection from './dynamicsection'; 
 
 interface DynamicFieldProps {
     field: FormField;
@@ -13,53 +24,55 @@ interface DynamicFieldProps {
  * y lo conecta al estado del formulario a través del contexto.
  */
 const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
-    
+
     // 1. Consumir el Contexto y obtener datos
     const { formData, handleChange } = useDynamicFormContext();
     const currentValue = formData[field.name];
-    
+
     // [Avanzado] Lógica de visibilidad condicional
     // Si la función isVisible existe, la ejecuta para determinar si el campo debe ser visible.
     const isVisible = field.isVisible ? field.isVisible(formData) : true;
     if (!isVisible) return null;
 
     // 2. Handlers y Props Comunes
-    
+
     // Handler general para inputs de texto, número, select y textarea
     const onCommonChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         // El valor (e.target.value) se envía al hook, donde se procesan las conversiones a number/string
         handleChange(field.name, e.target.value);
     };
 
-    // Handler específico para checkbox
+    // Handler especial para checkboxes
     const onCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Los checkbox envían un booleano (e.target.checked), que el hook convierte a boolean
-        handleChange(field.name, e.target.checked); 
-    };
-    
-    // Props comunes para la mayoría de los inputs
-    const commonProps: Partial<InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>> = {
-        id: field.name,
-        name: field.name,
-        placeholder: field.placeholder || field.label,
-        required: field.required || false,
-        className: "dynamic-form-input", 
-        // Parámetros específicos de HTML pasados por la configuración (ej. min, max, autoFocus)
-        ...field.inputProps, 
+        // Para checkbox, el valor es booleano (e.target.checked)
+        handleChange(field.name, e.target.checked);
     };
 
-    // 3. Renderizado Condicional por Tipo de Campo
-    const renderInput = () => {
+    // Handler especial para date (el hook se encarga del formato)
+    const onDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange(field.name, e.target.value);
+    };
+
+    // Propiedades comunes para todos los campos (input, select, textarea)
+    const commonProps = {
+        id: field.name,
+        name: field.name,
+        placeholder: field.placeholder || '',
+        required: field.required || false,
+        disabled: field.disabled || false,
+        className: 'dynamic-form-input', // Clase base para estilos
+    };
+
+    // 3. Renderizado del Input (Switch/Case por tipo)
+    const renderInput = (): ReactElement => {
         switch (field.type) {
             case 'select':
                 return (
-                    <select 
-                        {...commonProps} 
-                        value={currentValue ?? ''} 
-                        onChange={onCommonChange as any}
-                        // Usamos 'as any' para evitar el error de tipado con select/textarea en commonProps
+                    <select
+                        {...commonProps as React.SelectHTMLAttributes<HTMLSelectElement>}
+                        value={currentValue ?? ''}
+                        onChange={onCommonChange}
                     >
-                        <option value="" disabled>{field.placeholder || `Seleccionar ${field.label}`}</option>
                         {field.options?.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
@@ -69,66 +82,89 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
                 );
             case 'textarea':
                 return (
-                    <textarea 
-                        {...commonProps as TextareaHTMLAttributes<HTMLTextAreaElement>} 
-                        value={currentValue ?? ''} 
-                        onChange={onCommonChange as any} 
-                        rows={4} 
+                    <textarea
+                        {...commonProps as TextareaHTMLAttributes<HTMLTextAreaElement>}
+                        value={currentValue ?? ''}
+                        onChange={onCommonChange}
                     />
                 );
             case 'checkbox':
-                // Nota: Los checkbox usan 'checked' en lugar de 'value'
                 return (
-                    <div className="dynamic-form-checkbox-group">
-                        <input 
-                            type="checkbox" 
-                            {...commonProps} 
-                            checked={!!currentValue} // Usa !! para asegurar el booleano
-                            onChange={onCheckboxChange} 
-                        />
-                        <label htmlFor={field.name} className="checkbox-label">
-                            {field.label}{field.required && <span className="required-star">*</span>}
-                        </label>
-                    </div>
+                    // El valor del checkbox es booleano
+                    <input
+                        type="checkbox"
+                        {...commonProps as InputHTMLAttributes<HTMLInputElement>}
+                        checked={currentValue === true} // Debe ser booleano
+                        onChange={onCheckboxChange}
+                        // Quitamos la clase de estilo base para que el CSS de checkbox aplique
+                        className='dynamic-form-checkbox'
+                    />
+                );
+            case 'date':
+                return (
+                    <input
+                        type="date"
+                        {...commonProps as InputHTMLAttributes<HTMLInputElement>}
+                        // Formato de fecha esperado por el input type="date"
+                        value={currentValue || ''}
+                        onChange={onDateChange}
+                    />
+                );
+            case 'custom':
+                // Si es un componente custom, lo renderizamos y le pasamos los datos
+                return field.component ? (
+                    <field.component
+                        value={currentValue}
+                        onChange={handleChange} // Pasamos el handler central
+                        formData={formData} // Pasamos todos los datos para lógica avanzada
+                        field={field}
+                    />
+                ) : (
+                    <div className='dynamic-form-error'>Componente custom no definido.</div>
                 );
             case 'radio':
-                // Renderizar un grupo de radio buttons
                 return (
                     <div className="dynamic-form-radio-group">
                         {field.options?.map(option => (
-                            <label key={option.value} className="radio-label">
+                            <label key={option.value} className="dynamic-form-radio-label">
                                 <input
                                     type="radio"
-                                    name={field.name} // IMPORTANTE: Mismo nombre para el grupo
+                                    {...commonProps as InputHTMLAttributes<HTMLInputElement>}
                                     value={option.value}
                                     checked={currentValue === option.value}
                                     onChange={onCommonChange}
-                                    required={field.required}
-                                    // Se usa 'defaultChecked' en lugar de 'checked' si el componente no fuera controlado
                                 />
                                 {option.label}
                             </label>
                         ))}
                     </div>
                 );
-            case 'custom':
-                // Permite inyectar cualquier componente React (ej. selector de fecha de librería externa)
-                // Se clona el elemento para inyectar props de valor y cambio
-                if (!field.component) return null;
+            // 🆕 CASO AGREGADO Y CORREGIDO: Renderizado de Formularios Anidados
+            case 'nestedForm': { // 💡 FIX: Abrimos bloque de código para evitar "no-case-declarations"
+                // Hacemos un casting seguro para acceder a 'sections'
+                const nestedField = field as NestedFormField; 
                 
-                return React.cloneElement(field.component as ReactElement, { 
-                    // Estas son las props que estás inyectando
-                    value: currentValue, 
-                    // Asegúrate que tu componente custom acepte una prop onChange
-                    onChange: (v: any) => handleChange(field.name, v),
-                    ...field.inputProps, // Permite pasar props al componente custom
-                } as any); 
-            
-            default: // text, email, password, number
                 return (
-                    <input 
-                        type={field.type} 
-                        {...commonProps as InputHTMLAttributes<HTMLInputElement>} 
+                    <div className="dynamic-form-nested-container">
+                        {/* Aplicamos el label del campo padre al formulario anidado */}
+                        {nestedField.label && <h4>{nestedField.label}</h4>}
+                        
+                        {/* Iteramos sobre las secciones internas del NestedForm. 
+                            DynamicSection llama a DynamicField, que usa el contexto 
+                            del formulario padre para el estado y validación.
+                        */}
+                        {nestedField.sections.map((section, index) => (
+                            <DynamicSection key={index} section={section} />
+                        ))}
+                    </div>
+                );
+            } // 💡 FIX: Cerramos bloque de código
+                
+            default: // text, email, password, number, file, etc.
+                return (
+                    <input
+                        type={field.type}
+                        {...commonProps as InputHTMLAttributes<HTMLInputElement>}
                         value={currentValue ?? ''}
                         onChange={onCommonChange}
                     />
@@ -136,10 +172,29 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
         }
     };
 
-    // 4. Estructura de Campo (El label se renderiza diferente para checkbox)
+    // 4. Estructura de Campo (El label se renderiza diferente para checkbox y anidados)
+    
+    // Si es un formulario anidado, el label ya se incluyó en renderInput (con <h4>), y no necesita el wrapper estándar de DynamicField.
+    // Simplemente devolvemos el renderizado del NestedForm completo.
+    if (field.type === 'nestedForm') {
+        return renderInput();
+    }
+    
+    // Lógica especial para Checkbox
     if (field.type === 'checkbox') {
-        // Para checkbox, el label se renderiza junto al input en renderInput()
-        return <div className="dynamic-form-group checkbox-wrapper">{renderInput()}</div>;
+        return (
+            <div className="dynamic-form-group checkbox-wrapper">
+
+                {/* 1. CHECKBOX (Input) - VA PRIMERO para la izquierda */}
+                <div className="dynamic-form-checkbox-group">
+                    {renderInput()}
+                </div>
+                {/* 2. Etiqueta de texto (LABEL) - VA SEGUNDO para la derecha */}
+                <label htmlFor={field.name}>
+                    {field.label}{field.required && <span className="required-star">*</span>}
+                </label>
+            </div>
+        );
     }
 
     // Renderizado estándar para la mayoría de los campos (Label encima del input)

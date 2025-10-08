@@ -1,58 +1,129 @@
 // src/interfaces/dynamicForm.interface.ts
 
 // Usar 'import type { ... }' es la forma correcta de importar tipos
-// cuando 'verbatimModuleSyntax' está habilitado, lo cual resuelve el error ts(1484).
-// Asegúrate de que este archivo sea el único que importa ReactNode si es el único que lo usa.
-import type { InputHTMLAttributes, TextareaHTMLAttributes, ReactNode } from 'react';
+import type { 
+    ReactNode, 
+    ComponentType,
+    InputHTMLAttributes, 
+    TextareaHTMLAttributes
+} from 'react';
+
+// ----------------------------------------------------------------------
+// TIPOS BASE
+// ----------------------------------------------------------------------
 
 /** Props para botones de acción personalizados */
 export interface DynamicButtonProps {
-  label: string;              // Texto del botón
-  color?: string;             // Color de fondo (ej: '#4CAF50')
-  textColor?: string;         // Color del texto (ej: '#ffffff')
-  onClick?: () => void;       // Acción al hacer clic
-  type?: 'button' | 'submit' | 'reset'; // Tipo nativo del botón (incluye 'reset')
-  disabled?: boolean;         // Estado deshabilitado
-  outlined?: boolean;         // Opción de estilo "outlined"
+    label: string; // Texto del botón
+    color?: string;// Color de fondo (ej: '#4CAF50')
+    textColor?: string; // Color del texto (ej: '#ffffff')
+    onClick?: () => void;// Acción al hacer clic
+    type?: 'button' | 'submit' | 'reset'; // Tipo nativo del botón (incluye 'reset')
+    disabled?: boolean; // Estado deshabilitado
+    outlined?: boolean; // Opción de estilo "outlined"
 }
 
 /** Tipos de datos de entrada que maneja el formulario */
 export type FieldType = 
-    | "text" 
-    | "email" 
-    | "password" 
-    | "number" 
-    | "select" 
-    | "textarea" 
-    | "checkbox" 
-    | "radio"
-    | "custom"; // Para inyectar componentes React
+| "text" 
+| "email" 
+| "password" 
+| "number" 
+| "select" 
+| "textarea" 
+| "checkbox" 
+| "radio"
+| "custom" // Para inyectar componentes React
+| "date"
+| "nestedForm"; // PARA FORMULARIOS ANIDADOS
 
-/** Opciones para campos 'select' y 'radio' */
-export interface SelectOption {
-    value: string | number;
+/** Estructura para una opción dentro de un campo 'select' o 'radio'. */
+export interface OptionItem {
     label: string;
+    value: string | number; 
 }
 
-/** Configuración de un campo individual */
-export interface FormField {
-    name: string;
-    label: string;
-    type: FieldType;
-    placeholder?: string;
-    required?: boolean;
-    // Para 'select' y 'radio'
-    options?: SelectOption[]; 
-    
-    // Para 'custom' (inyección de componente)
-    component?: ReactNode;
+// ----------------------------------------------------------------------
+// ESTRUCTURAS DE CAMPO (Discriminated Union)
+// ----------------------------------------------------------------------
 
-    // Para pasar props nativas de HTML
-    inputProps?: InputHTMLAttributes<HTMLInputElement> | TextareaHTMLAttributes<HTMLTextAreaElement>;
+// 💡 Declaración adelantada: Necesitamos este tipo para definir CustomField
+export type CustomReactComponent = ComponentType<CustomComponentProps>;
 
+/** Propiedades Base comunes a todos los campos del formulario */
+interface BaseFormField {
+    name: string; // La clave en formData (REQUIRED en BaseFormField)
+    label: string; // La etiqueta que ve el usuario
+    required?: boolean; // Es requerido para validación (opcional)
+    placeholder?: string; // Placeholder opcional
+    disabled?: boolean; // Estado deshabilitado para cualquier campo.
     // [Opcional Avanzado] Para renderizado condicional basado en otros datos del formulario
     isVisible?: (data: Record<string, any>) => boolean;
 }
+
+// Creamos un tipo auxiliar que omite las propiedades en conflicto y duplicadas.
+type OmittedInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'name' | 'disabled' | 'placeholder' | 'type'>;
+type OmittedTextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'name' | 'disabled' | 'placeholder'>;
+
+
+// 1. Campos de Entrada Simples (text, number, password, email, date)
+export interface SimpleInputField extends BaseFormField, OmittedInputProps {
+    type: "text" | "email" | "password" | "number" | "date";
+}
+
+// 2. Campos con Opciones (select, radio)
+export interface OptionField extends BaseFormField {
+    type: "select" | "radio";
+    options: OptionItem[]; 
+}
+
+// 3. Campo Textarea
+export interface TextareaField extends BaseFormField, OmittedTextareaProps {
+    type: "textarea";
+}
+
+// 4. Campo Checkbox
+export interface CheckboxField extends BaseFormField {
+    type: "checkbox";
+}
+
+// 5. Campo Custom (Requiere el componente CustomReactComponent)
+export interface CustomField extends BaseFormField {
+    type: "custom";
+    component: CustomReactComponent; // Usa el tipo definido arriba
+    customProps?: Record<string, any>;
+}
+
+// 6. Campo NestedForm (Un formulario hijo sin botones propios)
+export interface NestedFormField extends BaseFormField {
+    type: "nestedForm"; 
+    // La configuración interna del sub-formulario
+    sections: FormSection[]; 
+}
+
+// 7. FormField es la unión de todos los tipos posibles.
+export type FormField = 
+| SimpleInputField 
+| OptionField 
+| TextareaField
+| CheckboxField
+| CustomField
+| NestedFormField; 
+
+
+// ----------------------------------------------------------------------
+// TIPOS DE COMPONENTE CUSTOM (CIERRA EL CICLO DE DEPENDENCIA)
+// ----------------------------------------------------------------------
+
+// 💡 NECESARIO: Definición de las props que recibirá cualquier componente custom
+export interface CustomComponentProps {
+    value: any;
+    // El handler central: acepta el nombre del campo y el nuevo valor
+    onChange: (name: string, value: any) => void; 
+    formData: Record<string, any>; // Todos los datos del formulario
+    field: FormField; // La configuración completa del campo
+}
+
 
 /** Configuración para un Contenedor/Sección (maneja el layout en columnas) */
 export interface FormSection {
@@ -61,9 +132,12 @@ export interface FormSection {
     fields: FormField[]; // Los campos que van en esta sección
 }
 
+// 🛑 ELIMINADA: interface FormStep {...} (Ya no es multipasos)
+
 /** Estructura de Props para el Provider (Configuración principal) */
 export interface DynamicFormProviderProps {
-    sections: FormSection[]; // La configuración jerárquica del formulario
+    // ✅ MODIFICADO: Ahora solo acepta secciones
+    sections: FormSection[]; // La configuración del formulario en una vista única
     initialData?: Record<string, any>; // Datos iniciales
     onSubmit: (data: Record<string, any>) => void; // Función de envío
     buttonText?: string;
@@ -78,10 +152,14 @@ export interface DynamicFormContextData {
     formData: Record<string, any>; 
     // Handlers para actualizar los datos
     handleChange: (name: string, value: any) => void;
-    // Estructura de los campos (para renderizado)
-    sections: FormSection[];
-    // ✅ CORRECCIÓN: Agregar la propiedad de validez
+    
+    // ✅ MODIFICADO: Solo se expone la estructura de secciones (sections)
+    sections: FormSection[]; 
+    
+    // 🛑 ELIMINADO: currentStepIndex, isStepValid, goToNextStep, goToPreviousStep
+    
+    // Estado de validación del formulario (completo, para el submit final)
     isFormValid: boolean; 
-    // Lógica de envío
+    // Handler para el envío del formulario
     handleSubmit: (e: React.FormEvent) => void;
 }

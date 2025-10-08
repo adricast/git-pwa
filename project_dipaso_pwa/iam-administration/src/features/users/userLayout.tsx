@@ -26,7 +26,7 @@ import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout
 import AddEditUserContent from "./addedituser"; 
 import ReusableTable from "../../components/layout/reusabletableLayout"; 
 
-import "./../styles/groupuserLayout.scss"; 
+import "./../styles/generalLayout.scss"; 
 
 
 // =========================================================================

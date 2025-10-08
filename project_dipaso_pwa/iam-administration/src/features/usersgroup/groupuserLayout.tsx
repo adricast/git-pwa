@@ -14,7 +14,7 @@ import AddEditGroupContent from "./addeditgroup";
 import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 import { v4 as uuidv4 } from "uuid";
 
-import "./../styles/groupuserLayout.scss"; 
+import "./../styles/generalLayout.scss"; 
 import { FaSyncAlt } from "react-icons/fa"; 
 // 🟢 Desestructuramos las funciones del objeto de configuración
 const { 

@@ -1,103 +1,91 @@
+// src/components/forms/DynamicFormProvider.tsx
+
 import React from 'react';
-import { 
-    type DynamicFormProviderProps 
-} from './interface'; // Ajusta la ruta
-import { useDynamicForm } from './usedynamicform'; // Ajusta la ruta
-import { DynamicFormContext } from './dynamicformContext'; // Ajusta la ruta
-// Importamos los subcomponentes necesarios para renderizar la estructura completa
-import DynamicSection from './dynamicsection'; // Asegúrate que esta ruta sea correcta
+import type { 
+    DynamicFormProviderProps 
+} from './interface'; 
+import { useDynamicForm } from './usedynamicform.tsx'; 
+import { DynamicFormContext } from './dynamicformContext.tsx'; 
+import DynamicSection from './dynamicsection.tsx'; 
 
 
 /**
  * Componente principal que envuelve el formulario.
- * Inicializa el estado, la lógica y proporciona el contexto a todos los campos hijos.
+ * Inicializa el estado, la lógica y proporciona el contexto a todos los campos hijos,
+ * ahora en una vista única (no multipasos).
  */
 const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
-    sections,
+    // ✅ MODIFICADO: Recibe 'sections' en lugar de 'steps'
+    sections, 
     initialData,
     onSubmit,
-    buttonText = 'Enviar', // Destructuramos buttonText con un valor por defecto
+    buttonText = 'Enviar', 
     children, 
     actions = [], 
-    className, // Destructuramos className
+    className, 
 }) => {
     
-    // 1. Usar el hook de lógica para obtener el contexto
+    // 1. Usar el hook de lógica
+    // 💡 NOTA: Esto generará un error de tipado temporal hasta que modifiquemos usedynamicform.tsx
     const formContextValue = useDynamicForm({ 
-        sections, 
+        sections, // ✅ MODIFICADO: Pasamos sections al hook
         initialData, 
         onSubmit 
     });
 
-    // 2. Renderizar el Contexto
+    // 2. Destructurar las propiedades de estado
+    const { 
+        handleSubmit, 
+        isFormValid,
+        // 🛑 ELIMINADAS: currentStepIndex, isStepValid, goToNextStep, goToPreviousStep, etc.
+    } = formContextValue;
+
+    // 3. Lógica de pasos eliminada
+    // 🛑 ELIMINADO: currentStep, isFirstStep, isLastStep
+
     return (
         <DynamicFormContext.Provider value={formContextValue}>
             
-            {/* 3. Renderizar el elemento <form> real y manejar el envío */}
             <form 
-                onSubmit={formContextValue.handleSubmit} 
-                // Aplicamos la clase que viene por prop, además de la clase base
+                onSubmit={handleSubmit} 
                 className={`dynamic-form-container ${className || ''}`}
             >
+                {/* 🛑 ELIMINADO: El indicador de Stepper */}
                 
-                {/* 🛑 Renderizar las secciones dinámicamente */ }
-                {sections.map((section, index) => (
-                    <DynamicSection key={index} section={section} />
-                ))}
+                {/* 🛑 RENDERIZADO SIMPLIFICADO: Renderiza TODAS las secciones de una vez */}
+                <div className="dynamic-form-all-sections-content">
+                    {sections.map((section, index) => ( // ✅ Iteramos sobre las secciones de entrada
+                        <DynamicSection key={index} section={section} />
+                    ))}
+                </div>
 
-                {/* Contenido adicional que el usuario quiera agregar aquí */}
+                {/* Contenido adicional opcional */}
                 {children}
 
-                {/* 🟢 Sección de botones parametrizables + Botón de Envío (Guardar) */}
-                <div style={{ 
-                    display: 'flex', 
-                    gap: '12px', 
-                    marginTop: '20px', 
-                    justifyContent: 'flex-end', // Botones a la derecha
-                    paddingTop: '10px',
-                    borderTop: '1px solid #eee'
-                }}>
+                {/* 🛑 BOTONES DE ACCIÓN Y ENVÍO: */}
+                <div className="dynamic-form-actions-wrapper">
                     
-                    {/* 1. Botones personalizados (Ej: Cancelar) */}
-                    {actions.map((btn, idx) => (
+                    {/* 5a. Botones de acción secundarios (Se mantienen) */}
+                    {actions.map((btn, index) => (
                         <button
-                            key={`action-${idx}`}
+                            key={index}
                             type={btn.type || 'button'}
                             onClick={btn.onClick}
                             disabled={btn.disabled}
-                            // Estilos sencillos para que sean funcionales
-                            style={{
-                                backgroundColor: btn.outlined ? 'transparent' : btn.color || '#6c757d', 
-                                color: btn.outlined ? btn.color || '#6c757d' : btn.textColor || '#fff',
-                                border: btn.outlined ? `2px solid ${btn.color || '#6c757d'}` : 'none',
-                                padding: '10px 18px',
-                                borderRadius: '6px',
-                                fontWeight: 600,
-                                cursor: btn.disabled ? 'not-allowed' : 'pointer',
-                                opacity: btn.disabled ? 0.6 : 1,
-                                transition: 'all 0.3s ease',
-                            }}
+                            className="dynamic-form-btn dynamic-form-btn--secondary"
                         >
                             {btn.label}
                         </button>
                     ))}
 
-                    {/* 2. Botón de Envío principal (Guardar/Crear/Actualizar) */}
+                    {/* 🛑 ELIMINADOS: Botones "Anterior" y "Siguiente" */}
+
+                    {/* 5b. Botón de ENVÍO (Único botón principal) */}
                     <button 
                         type="submit" 
-                        disabled={!formContextValue.isFormValid} // Deshabilita si la forma no es válida
-                        // Estilos para el botón principal (destacado)
-                        style={{
-                            backgroundColor: '#007bff', // Azul primario
-                            color: '#fff',
-                            border: 'none',
-                            padding: '10px 18px',
-                            borderRadius: '6px',
-                            fontWeight: 600,
-                            cursor: !formContextValue.isFormValid ? 'not-allowed' : 'pointer',
-                            opacity: !formContextValue.isFormValid ? 0.6 : 1,
-                            transition: 'all 0.3s ease',
-                        }}
+                        // Deshabilitado si el formulario COMPLETO (padre e hijos) no es válido
+                        disabled={!isFormValid} 
+                        className="dynamic-form-btn dynamic-form-btn--success"
                     >
                         {buttonText}
                     </button>

@@ -150,10 +150,22 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
     };
 
     // 4. Estructura de Campo
-    if (field.type === 'checkbox') {
-        return <div className="dynamic-form-group checkbox-wrapper">{renderInput()}</div>;
+   if (field.type === 'checkbox') {
+        return (
+            <div className="dynamic-form-group checkbox-wrapper">
+              
+                {/* 2. Contenedor del Input (Va a la derecha) */}
+                <div className="dynamic-form-checkbox-group">
+                    {renderInput()} 
+                </div>
+                  {/* 1. Etiqueta de texto (Va a la izquierda, clase 'label' por defecto) */}
+                <label htmlFor={field.name}>
+                    {field.label}{field.required && <span className="required-star">*</span>}
+                </label>
+                
+            </div>
+        );
     }
-
     // Renderizado estándar
     return (
         <div className="dynamic-form-group">

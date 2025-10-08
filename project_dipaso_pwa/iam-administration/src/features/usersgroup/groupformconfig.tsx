@@ -1,5 +1,8 @@
-// src/components/forms/GroupFormConfig.ts (Nuevo Archivo)
-import type { FormSection } from './../../components/dinamicform/interface'; // Ajusta la ruta
+// src/components/forms/GroupFormConfig.ts 
+
+// 🛑 CORRECCIÓN CRÍTICA: Cambiamos la ruta de importación de la interfaz 
+// para que sea compatible con el nuevo DynamicForm multi-sección.
+import type { FormSection } from './../../components/dinamicform/interface'; 
 
 export const groupFormSections: FormSection[] = [
     {

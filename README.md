@@ -84,13 +84,13 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 
 
 
-- `.gitignore` → Configuración de archivos ignorados por Git (Node, Python, IDE, OS).  
+- `.gitignore` → Configuración de archivos ignorados por Git (Node, IDE, OS).  
 
 - `README.md` → Documentación del proyecto.  
 
 - `package.json` → Dependencias del frontend.  
 
-- `requirements.txt` → Dependencias del backend Python.  
+- 
   
   
 
@@ -106,15 +106,22 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 
    ```bash
 
-   git clone https://github.com/adricast/dipaso-pos-web.git
+   git clone https://github.com/adricast/git-pwa.git
 
    ```
 
 
 
 2. Instala dependencias frontend (React):
+   
 
-       cd apps/shell
+       cd shell
+
+       npm install
+
+       npm start
+       
+       cd iam-administration
 
        npm install
 
@@ -122,17 +129,43 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 
 
 
-3. Instala dependencias backend (Python):
+      cd pos-auditory
 
-       cd apps/pos-billing  # o cualquier módulo backend
+       npm install
 
-       python -m venv venv
+       npm start
 
-       venv\Scripts\activate    # Windows
 
-       pip install -r requirements.txt
 
-       python app.py           # o el script principal
+     cd pos-billing
+
+     npm install
+
+     npm start
+
+
+
+     cd pos-cash
+
+     npm install
+
+     npm start
+
+
+
+     cd pos-clients
+
+     npm install
+
+     npm start
+
+
+
+     cd pos-inventory
+
+     npm install
+
+     npm start
 
 
 

@@ -53,7 +53,7 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 1. Clona el repositorio:  
    
    ```bash
-   git clone https://github.com/adricast/dipaso-pos-web.git
+   git clone https://github.com/adricast/git-pwa.git
    ```
 
 2. Instala dependencias frontend (React):

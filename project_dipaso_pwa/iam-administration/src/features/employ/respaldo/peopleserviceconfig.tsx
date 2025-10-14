@@ -6,9 +6,9 @@ import {
     createPerson, 
     updatePerson,
     getActivePeople
-} from "./../../services/personService"; // ✅ Usamos el servicio de personas
+} from "../../../services/personService"; // ✅ Usamos el servicio de personas
 
-import type { Person } from "./../../models/api/personModel"; // ✅ Usamos el modelo de persona
+import type { Person } from "../../../models/api/personModel"; // ✅ Usamos el modelo de persona
 
 // ----------------------------------------------------------------------
 // TIPOS AUXILIARES: Definen la data que el frontend puede enviar

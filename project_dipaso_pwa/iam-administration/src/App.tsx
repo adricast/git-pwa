@@ -10,7 +10,7 @@ import './input.css';
 import './output.css';
 import GroupManagement from './features/usersgroup/groupuserLayout';
 import UserManagement from './features/users/userLayout';
-import PeopleManagement from './features/person/peopleLayout';
+import PeopleManagement from './features/employ/employLayout';
 
 
 export interface AppProps {

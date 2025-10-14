@@ -1,16 +1,16 @@
 // 📁 PeopleManagement.tsx
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { useScreenContainer } from "./../../../components/screencontainer/usescreencontainer"; 
+import { useScreenContainer } from "../../../components/screencontainer/usescreencontainer"; 
 
-import type { Person } from "./../../../models/api/personModel"; // ✅ Tipo cambiado a Person
+import type { Person } from "../../../models/api/personModel"; // ✅ Tipo cambiado a Person
 // ✅ NUEVO: Importamos la configuración parametrizada para personas
 import { personServiceConfig } from "./peopleserviceconfig"; 
 
-import DeleteConfirmationDialog from "./../../../components/layout/deletedialogLayout";
+import DeleteConfirmationDialog from "../../../components/layout/deletedialogLayout";
 // 🚨 DEBES CREAR este componente: AddEditPersonContent
 import AddEditPersonContent from "./addeditperson"; 
-import ReusableTable from "./../../../components/layout/reusabletablefilterLayout"; 
+import ReusableTable from "../../../components/layout/reusabletablefilterLayout"; 
 import { FaSyncAlt } from "react-icons/fa"; 
 
 import "./../styles/generalLayout.scss"; 

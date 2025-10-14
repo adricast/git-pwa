@@ -33,7 +33,7 @@ const AdminPage: React.FC = () => {
                        
                         <Link to="person"> 
                             <OptionCard
-                                label="Gestión de Personas"
+                                label="Gestión de Empleados"
                                 icon={<FaUserCircle size={30} />} // Usamos FaUserCircle o FaUserPlus
                                 color="#28a745" // Verde para destacar
                                 size={cardSize}

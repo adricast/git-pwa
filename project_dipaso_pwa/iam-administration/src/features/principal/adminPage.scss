@@ -2,7 +2,35 @@
 
     // Asegúrate de que esta ruta a tus variables globales es correcta
     @import "./../../components/styles/variables.scss"; 
+    /* Aplicado a WebKit (Chrome, Safari, Edge) */
+.page-container::-webkit-scrollbar {
+    width: 10px; /* Ancho de la barra de desplazamiento vertical */
+    height: 10px; /* Altura de la barra de desplazamiento horizontal */
+}
 
+/* El 'track' es el fondo por donde se mueve el 'thumb' */
+    .page-container::-webkit-scrollbar-track {
+        background: #f0f0f0; /* Color claro para el fondo */
+        border-radius: 10px;
+    }
+
+    /* El 'thumb' es el elemento que se desliza (la "goma") */
+    .page-container::-webkit-scrollbar-thumb {
+        background: $primary-color; /* Color base del thumb (gris oscuro) */
+        border-radius: 10px; /* Bordes redondeados */
+    }
+
+    /* Cambiar el color del 'thumb' al pasar el ratón por encima */
+    .page-container::-webkit-scrollbar-thumb:hover {
+        background: $primary-color; /* Color más oscuro al hacer hover */
+    }
+
+    /* Opcional: Para Firefox */
+    /* Ten en cuenta que Firefox solo admite un control limitado */
+    .page-container {
+        scrollbar-width: thin; /* 'auto' o 'thin' */
+        scrollbar-color: $primary-color #f0f0f0; /* color-del-thumb color-del-track */
+    }
     .page-container {
         // 1. Contenedor principal de la página
         background-color: $background-color; // Fondo gris claro del dashboard

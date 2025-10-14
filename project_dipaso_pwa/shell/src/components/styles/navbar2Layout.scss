@@ -86,6 +86,106 @@ $text-color: white;
             .branch-icon {
                 font-size: 1.2rem;
             }
+            .branch-content-expanded {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+                padding: 0.25rem; /* p-1 */
+                border:2px solid white;
+                border-radius: 10px;
+                 /* 2. Fila superior: Logo y Código (reemplaza 'flex items-center space-x-1 mb-0.5') */
+                .branch-header-row {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 0.125rem; /* mb-0.5 */
+                    width: 100%; /* Para que el centrado funcione si está expandida */
+
+                    > .branch-icon-lg { 
+                        margin-right: 0.25rem; /* space-x-1 */
+                    }
+
+                    /* Aplicar la lógica de centrado que solicitaste previamente */
+                    .nav.vertical:not(.compact) & {
+                        justify-content: center; /* CLAVE: Centra logo y código */
+                    }
+                }
+
+                /* 3. Icono FaWarehouse (reemplaza 'text-lg text-yellow-300') */
+                .branch-icon-lg {
+                    font-size: 1.125rem; /* text-lg */
+                    color: #fcd34d; /* text-yellow-300 (ajusta el código hexadecimal si es necesario) */
+                }
+
+                /* 4. Código (span) (reemplaza 'font-bold text-sm text-white leading-none') */
+                .branch-code {
+                    font-weight: 700; /* font-bold */
+                    font-size: 0.875rem; /* text-sm */
+                    color: white; /* text-white */
+                    line-height: 1; /* leading-none */
+                }
+
+                /* 5. Flecha FaAngleDown (reemplaza 'text-xs ml-auto') */
+                .branch-arrow {
+                    font-size: 0.75rem; /* text-xs */
+                    margin-left: auto; /* ml-auto */
+                    
+                    /* Si no está compacta, posicionar absolutamente para centrar el contenido */
+                    .nav.vertical:not(.compact) & {
+                        position: absolute; 
+                        right: 0.25rem; /* Ajustar posición, asumiendo 0.25rem padding en .branch-content-expanded */
+                        margin-left: 0 !important; 
+                    }
+                }
+
+                /* 6. Nombre de la Sucursal (Fila inferior) (reemplaza 'text-xs leading-tight text-gray-300 truncate w-full text-left') */
+                .branch-name-row {
+                    font-size: 0.55rem; /* text-xs */
+                    line-height: 1.25; /* leading-tight */
+                    color: #d1d5db; /* text-gray-300 (ajusta el código hexadecimal si es necesario) */
+                    overflow: hidden; 
+                    text-overflow: ellipsis;
+                    white-space: nowrap; /* truncate */
+                    width: 100%; /* w-full */
+                    text-align: left; /* text-left */
+                }
+            }
+
+           
+            div:first-child { 
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    margin-bottom: 0.25rem;
+                    position: relative; // 🔑 Esencial para el posicionamiento absoluto de la flecha
+
+                    // Estilos que SOLO aplican cuando la barra NO está compacta (es decir, EXPANDIDA)
+                    .nav.vertical:not(.compact) & {
+                        justify-content: center; // 🔑 CLAVE: Centra el icono y el código
+                        
+                        // Icono de flecha (FaAngleDown), que tiene la clase 'ml-auto'
+                        svg:last-child {
+                            position: absolute; // 🔑 Sacar del flujo normal
+                            right: 0;           // 🔑 Posicionarla al extremo derecho
+                            margin-left: 0 !important; // Anular cualquier margen automático
+                            margin-right: 0.5rem; // Espacio para que no toque el borde del botón
+                        }
+                    }
+
+                    // Ícono (FaWarehouse)
+                    svg:first-child {
+                        margin-right: 0.25rem; 
+                    }
+                    
+                    // Estilo del Código 
+                    span {
+                        font-weight: 700; 
+                        font-size: 0.875rem; 
+                        color: #fff; 
+                        line-height: 1; 
+                    }
+                }
+
         }
     }
 
@@ -231,4 +331,18 @@ $text-color: white;
 // ------------------------------------
 .grid-stack-item > .grid-stack-item-content {
     padding: 0;
+}
+
+.user-info-container.user-info-bottom {
+    flex-shrink: 0; // Evita que se encoja si el espacio es limitado
+    padding: 0.5rem 0; // Añadir padding vertical para separarlo del final
+
+    // CLAVE: Empuja el elemento al final del contenedor flexbox,
+    // colocándolo justo después del último elemento no flexible (.menu-items)
+    //margin-top: auto; 
+    
+    .user-info {
+        // Asegurar que el contenido del usuario también esté centrado horizontalmente
+        justify-content: center;
+    }
 }

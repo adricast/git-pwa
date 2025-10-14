@@ -29,22 +29,41 @@
 
 
   .user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+        display: flex;
+        align-items: center; // Alineación por defecto (fila)
+        justify-content: center;
+        margin-left: 0.5rem; // Si necesitas un pequeño margen
+        
+        // Estilos del Avatar (Foto)
+        .user-avatar, .user-avatar-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #444; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 0.5rem; // Margen para el layout horizontal original
+        }
 
-    img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 0.5rem;
-      object-fit: cover;
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            
+            .user-name {
+                font-weight: 500;
+                color: white; // 🔑 COLOR BLANCO solicitado
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%; // Asegura que el texto respete el contenedor
+            }
+        }
     }
-
-    span {
-      font-weight: 500;
-    }
-  }
+    
 
   .menu-items {
     flex-grow: 1;

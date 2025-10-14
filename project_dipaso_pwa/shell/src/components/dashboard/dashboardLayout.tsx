@@ -1,5 +1,3 @@
-// src/components/dashboard/DashboardLayout.tsx (VERSIÓN DEFINITIVA Y SIN SCREEN CONTAINER)
-
 import React, { useState, useEffect, useCallback } from "react"; 
 import { useNavigate, Outlet, useLocation } from "react-router-dom"; 
 import {
@@ -32,9 +30,9 @@ import { type BreadcrumbItem } from './../breadcrumb/interface';
 // ❌ Eliminadas importaciones de ScreenContainer
 
 const branches = [
-    { id: "03", name: "Mall del Sur" },
-    { id: "04", name: "San Marino" },
-    { id: "05", name: "Recreo" },
+    { id: "03", name: "Mall del Sur", code: "03" }, // ⬅️ Corregido
+    { id: "04", name: "San Marino", code: "04" }, // ⬅️ Corregido
+    { id: "05", name: "Recreo", code: "05" },   // ⬅️ Corregido
 ];
 
 const defaultMenuItems: NavItem[] = [
@@ -78,10 +76,10 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     const { addNotification } = useNotification(); 
     const { requestAuthorization } = useMasterPassword(); 
 
-  
+    
+    // ✅ CORRECCIÓN APLICADA: Usar ruta absoluta desde la raíz ('/') para assets públicos.
     const [userPhotoUrl] = useState(
-        // ✅ CORRECCIÓN FINAL: Ruta absoluta desde la raíz de la carpeta 'public'
-        "/assets/users/default.png" 
+          "/assets/users/default.png" 
     );
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -288,11 +286,7 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                                 onClick={toggleUserMenu}
                                 style={{ cursor: "pointer", marginRight: "0.5rem" }}
                             >
-                                {/* 🎯 CAMBIO CLAVE: Usamos "Usuario" como fallback. 
-                                Si el componente se está renderizando, la carga ya terminó (gracias a `if (isLoading)`). 
-                                Si authenticatedUser es null aquí, es porque falló la sesión y ya debió redirigir, 
-                                pero "Usuario" es un mejor fallback que el mensaje de "Cargando..." que confunde.
-                                */}
+                                {/* 🎯 CAMBIO CLAVE: Usamos "Usuario" como fallback. */}
                                 {authenticatedUser?.username || "Usuario"}
                             </span>
 
@@ -309,14 +303,14 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                                     <button
                                         className="dropdown-item"
                                         style={{ width: "100%", padding: "0.5rem 1rem", textAlign: "left" }}
-                                        onClick={() => alert("Ver perfil")}
+                                        onClick={() => console.log("Ver perfil")}
                                     >
                                         Perfil
                                     </button>
                                     <button
                                         className="dropdown-item"
                                         style={{ width: "100%", padding: "0.5rem 1rem", textAlign: "left" }}
-                                        onClick={() => alert("Configuración")}
+                                        onClick={() => console.log("Configuración")}
                                     >
                                         Configuración
                                     </button>

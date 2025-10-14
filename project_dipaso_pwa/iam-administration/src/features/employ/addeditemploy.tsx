@@ -1,14 +1,14 @@
 // 📁 src/management/people/addeditPerson.tsx (CORREGIDO)
 
 import React, { useCallback, useMemo } from "react";
-import type { Person } from "./../../../models/api/personModel"; 
+import type { Person } from "../../models/api/personModel"; 
 
 // 🛑 Importamos los componentes y la configuración de Persona
-import DynamicForm from "../../../components/dinamicform/dynamicformProvider";
+import DynamicForm from "../../components/dinamicform/dynamicformProvider";
 // ❌ ELIMINAMOS: DynamicSection ya no se necesita aquí porque DynamicForm lo usa internamente.
 // import DynamicSection from "../../components/dinamicform/dynamicsection"; 
-import type { DynamicButtonProps } from '../../../components/dinamicform/interface'; 
-import { personFormSections } from "./peopleformconfig"; 
+import type { DynamicButtonProps } from '../../components/dinamicform/interface'; 
+import { personFormSections } from "./employformconfig"; 
 
 // Asumiendo que existe un archivo de estilos para el formulario
 import "./../../components/styles/dynamicform.scss"; 

@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# DIPASO PWA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositorio contiene la aplicación **DIPASO POS Web**, una plataforma modular de punto de venta (POS) con gestión de usuarios (IAM), facturación, inventario, caja, clientes, auditoría y reportes.  
+El proyecto combina **React** para el frontend y **Python** para servicios backend.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Estructura principal del proyecto
 
-## React Compiler
+/apps  
+├─ shell/ # Contenedor host que integra los módulos  
+├─ iam-management/ # Módulo remoto de gestión de usuarios y permisos (IAM)  
+├─ pos-billing/ # Módulo remoto de facturación POS  
+├─ pos-cash/ # Módulo remoto de caja POS  
+├─ pos-inventory/ # Módulo remoto de inventario POS  
+├─ pos-customers/ # Módulo remoto de gestión de clientes POS  
+├─ pos-audit/ # Módulo remoto de auditoría POS  
+└─ pos-reports/ # Módulo remoto de reportes POS
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Detalles por módulo
 
-## Expanding the ESLint configuration
+- **shell/**: Contenedor principal que orquesta todos los módulos remotos y carga la aplicación frontend.  
+- **iam-management/**: Maneja autenticación, autorización y gestión de roles de usuarios.  
+- **pos-billing/**: Control de facturación y emisión de comprobantes.  
+- **pos-cash/**: Registro de movimientos de caja, apertura y cierre.  
+- **pos-inventory/**: Gestión de inventario, entradas y salidas de productos.  
+- **pos-customers/**: Administración de información de clientes y fidelización.  
+- **pos-audit/**: Auditoría de transacciones y operaciones.  
+- **pos-reports/**: Generación de reportes financieros, ventas y estadísticas.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tecnologías
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Frontend:** React, TypeScript, CSS/SCSS  
+- **Backend:** Python (Flask/FastAPI o Django según implementación)  
+- **Control de versiones:** Git  
+- **Base de datos:** PostgreSQL / SQLite (según módulo)  
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Archivos importantes
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `.gitignore` → Configuración de archivos ignorados por Git (Node, Python, IDE, OS).  
+- `README.md` → Documentación del proyecto.  
+- `package.json` → Dependencias del frontend.  
+- `requirements.txt` → Dependencias del backend Python.  
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## Cómo ejecutar
+
+1. Clona el repositorio:  
+   
+   ```bash
+   git clone https://github.com/adricast/dipaso-pos-web.git
+   ```
+
+2. Instala dependencias frontend (React):
+   
+       cd apps/shell
+       npm install
+       npm start
+
+3. Instala dependencias backend (Python):
+   
+   
+   
+   
+       cd apps/pos-billing  # o cualquier módulo backend
+       python -m venv venv
+       venv\Scripts\activate    # Windows
+       pip install -r requirements.txt
+       python app.py           # o el script principal
+
+Contribuir
+----------
+
+* Sigue la rama `main` para producción y crea ramas de desarrollo para nuevas funcionalidades.
+
+* Realiza commits claros y descriptivos.
+
+* Asegúrate de que los tests pasen antes de abrir un pull request.

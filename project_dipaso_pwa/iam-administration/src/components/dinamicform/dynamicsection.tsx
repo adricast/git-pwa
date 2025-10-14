@@ -18,20 +18,24 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ section }) => {
     // Ejemplo: columns: 2 generará "dynamic-section-columns-2"
     const layoutClass = `dynamic-section-columns-${section.columns}`;
 
-    return (
+   
+      return (
+        // La sección ahora es solo un contenedor para el fieldset
         <section className={`dynamic-form-section ${layoutClass}`}>
             
-            {/* Título de la Sección, si existe */}
-            {section.title && <h3>{section.title}</h3>}
+            {/* 🛑 CAMBIO CLAVE: Usamos FIELDSET y LEGEND nativos */}
+            <fieldset className="dynamic-fieldset">
+                
+                {/* LEGEND es el título que flota sobre la línea del fieldset */}
+                {section.title && <legend className="dynamic-legend">{section.title}</legend>}
 
-            {/* Contenedor de los campos con el layout de columnas */}
-            <div className="dynamic-section-fields-grid">
-                {section.fields.map(field => (
-                    // El campo 'custom' o 'checkbox' se maneja de forma especial 
-                    // dentro de DynamicField, incluyendo la visibilidad condicional.
-                    <DynamicField key={field.name} field={field} />
-                ))}
-            </div>
+                {/* Contenedor de los campos (AHORA DENTRO DEL FIELDSET) */}
+                <div className="dynamic-section-fields-grid">
+                    {section.fields.map(field => (
+                        <DynamicField key={field.name} field={field} />
+                    ))}
+                </div>
+            </fieldset>
         </section>
     );
 };

@@ -4,7 +4,7 @@
 
 Este repositorio contiene la aplicación **DIPASO POS Web**, una plataforma modular de punto de venta (POS) con gestión de usuarios (IAM), facturación, inventario, caja, clientes, auditoría y reportes.  
 
-El proyecto combina **React** para el frontend y **Python** para servicios backend.
+El proyecto combina **React** para el frontend.
 
 
 
@@ -68,8 +68,6 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 
 - **Frontend:** React, TypeScript, CSS/SCSS  
 
-- **Backend:** Python (Flask/FastAPI o Django según implementación)  
-
 - **Control de versiones:** Git  
 
 - **Base de datos:** PostgreSQL / SQLite (según módulo)  
@@ -89,8 +87,6 @@ El proyecto combina **React** para el frontend y **Python** para servicios backe
 - `README.md` → Documentación del proyecto.  
 
 - `package.json` → Dependencias del frontend.  
-
-- 
   
   
 

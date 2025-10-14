@@ -29,7 +29,111 @@ $mobile-padding: 16px; // Nuevo: padding para móvil
         gap: $gap-size * 1.2; // Separación entre secciones en desktop
     }
 }
+//-----------------------------------------------------
+// steps indicators
+//-----------------------------------------------------
+.form-steps-indicator {
+    counter-reset: step-counter; 
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; // Alineamos al inicio para que el diseño sea más limpio
+    margin-bottom: $gap-size * 2; 
+    padding: $gap-size 0;
+    
+    @media (max-width: 767px) {
+        display: none; 
+    }
+}
 
+.step-item {
+    // 🛑 CAMBIO CLAVE: Dirección de columna para apilar el círculo y el texto
+    display: flex;
+    align-items: center; // Centrar el contenido dentro de cada paso
+    flex-direction: column; 
+    
+    position: relative;
+    flex-grow: 1; 
+    color: lighten($text-color, 30%);
+    font-size: 0.7rem; // Reducido ligeramente el tamaño del texto del título
+    font-weight: 500;
+    text-align: center; // Centramos el texto del título
+    
+    // Estilo del SEPARADOR (Línea entre círculos)
+    &:not(:last-child) {
+        &::after {
+            content: '';
+            position: absolute;
+            // 🛑 POSICIONAMIENTO ACTUALIZADO: Centrado en la vertical y horizontal del círculo
+            top: 15px; // Centrado en el centro vertical del círculo (asumiendo 28px de altura)
+            left: 50%; 
+            transform: translateX(0); // Quitar el transform: translateY(-50%) si ya se usa flex-direction: column
+            height: 2px;
+            width: calc(100% - 30px); // Ajusta el ancho para conectar los círculos
+            background-color: $border-color;
+            z-index: 1; 
+        }
+    }
+    
+    // Estilo del NÚMERO (Círculo)
+    &::before {
+        content: counter(step-counter);
+        counter-increment: step-counter;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: $border-color; 
+        color: $white;
+        font-weight: 700;
+        margin-bottom: 5px; // Espacio entre el círculo y el título
+        flex-shrink: 0; 
+        z-index: 2; 
+        border: 2px solid $border-color;
+        transition: all 0.3s;
+    }
+    
+    // Contenedor del título
+    & > span {
+        position: relative;
+        z-index: 3;
+        white-space: normal; // Permitir que el título salte de línea si es necesario
+    }
+}
+
+/* Paso ACTIVO */
+.step-item-active {
+    color: $text-color; 
+    
+    &::before {
+        background-color: $primary-color; 
+        border-color: $primary-color;
+        color: $white;
+    }
+}
+
+/* 🛑 Paso COMPLETO/PASADO */
+.step-item-completed {
+    color: $text-color;
+    cursor: pointer;
+    
+    &::before {
+        // En lugar del número, un ícono de check
+        // content: '✔'; 
+        background-color: $success-color; 
+        border-color: $success-color;
+        font-size: 1.2rem;
+    }
+
+    &:not(:last-child) {
+        &::after {
+            // Línea de color de éxito para mostrar progreso completado
+            background-color: $success-color; 
+        }
+    }
+}
 // ----------------------------------------------------
 // 1. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
 // ----------------------------------------------------

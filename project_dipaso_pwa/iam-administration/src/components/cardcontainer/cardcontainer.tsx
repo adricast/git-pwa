@@ -4,7 +4,7 @@ import React from 'react';
 import { FaTimes } from 'react-icons/fa'; 
 import { type CardContainerProps } from './interface';
 import { CardProvider } from './cardprovider'; 
-import './../styles/cardcontainerLayout.scss';
+import './../styles/cardcontainerLayout.sass';
 
 const CardContainer: React.FC<CardContainerProps> = ({ 
   id,
@@ -21,7 +21,6 @@ const CardContainer: React.FC<CardContainerProps> = ({
   };
 
   return (
-    // 🎯 Envuelve el contenido con el Provider para dar acceso a closeCard()
     <CardProvider id={id} onClose={onClose}>
       
       <div className={`card-container ${className}`}>

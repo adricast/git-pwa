@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 // 🎯 Importamos el tipo desde su archivo dedicado
 import { type BreadcrumbItem } from './../breadcrumb/interface'; 
 // 🎯 Importamos los estilos SCSS puros
-import './../styles/breadcrumbsLayout.scss'; 
+import './../styles/breadcrumbsLayout.sass'; 
 
 // Ya no hay 'export interface BreadcrumbItem' aquí, solo la usamos.
 

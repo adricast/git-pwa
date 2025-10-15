@@ -13,7 +13,7 @@ import {
 import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; // Asegúrate de ajustar esta ruta
 
 // Importamos los estilos SCSS
-import "./adminPage.scss";
+import "./adminPage.sass";
 import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
 
 const AdminPage: React.FC = () => {

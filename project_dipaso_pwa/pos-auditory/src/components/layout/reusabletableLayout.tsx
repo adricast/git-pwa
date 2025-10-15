@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight, FaSearch } from "react-icons/fa";
 import {type ReusableTableProps } from "../reusabletable/interface";
 import { useTableLogic } from "./../reusabletable/tablelogic";
 
-import "./../styles/reusabletableLayout.scss"; 
+import "./../styles/reusabletableLayout.sass"; 
 
 const ReusableTable: React.FC<ReusableTableProps> = ({
   moduleName,

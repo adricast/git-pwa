@@ -1,5 +1,5 @@
 import React from "react";
-import "./../styles/optioncardLayout.scss";
+import "./../styles/optioncardLayout.sass";
 
 interface OptionCardProps {
   label: string;

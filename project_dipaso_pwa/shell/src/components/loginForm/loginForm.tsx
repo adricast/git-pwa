@@ -1,7 +1,7 @@
 // src/components/LoginForm.tsx (o donde lo tengas)
 import React, { useState, useCallback } from "react";
 import { FaFingerprint, FaKey, FaUserLock, FaArrowLeft, FaSpinner } from "react-icons/fa";
-import "./../styles/loginForm.scss"; 
+import "./../styles/loginForm.sass"; 
 
 // --- Tipado ---
 interface LoginResult {

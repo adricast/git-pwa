@@ -4,7 +4,7 @@ import React, { useState, useCallback } from "react";
 import { MasterPasswordContext } from "../masterpassword/masterpasswordcontext";
 import { FaLock } from "react-icons/fa";
 // 🟢 Importar los estilos SCSS
-import "../styles/maesterpasswordLayout.scss"; 
+import "../styles/maesterpasswordLayout.sass"; 
 
 const MasterPasswordLayout: React.FC = () => {
  

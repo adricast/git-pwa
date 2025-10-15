@@ -1,5 +1,5 @@
-// Declara un módulo para archivos .scss que terminen en .module.scss
-declare module '*.module.scss' {
+// Declara un módulo para archivos .sass que terminen en .module.sass
+declare module '*.module.sass' {
   // Define que el objeto importado (e.g., 'styles' en el componente) 
   // es un objeto de tipo Record<string, string>.
   // Esto significa que cualquier clave de string (el nombre de tu clase SCSS) 

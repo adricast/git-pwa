@@ -1,0 +1,84 @@
+@import ./variables.sass
+
+// 👈 Importamos las variables corporativas
+
+.notification-dropdown
+  position: relative
+  display: inline-block
+
+  .notification-btn
+    cursor: pointer
+    position: relative
+    padding: 5px 12px
+    border: none
+    background: $primary-color
+    color: #fff
+    border-radius: 4px
+    font-weight: 500
+    transition: background $transition-speed
+
+    &:hover
+      background: $secondary-color
+
+    .badge
+      background: $error-color
+      color: #fff
+      border-radius: 50%
+      padding: 2px 6px
+      margin-left: 5px
+      font-size: 0.75rem
+      vertical-align: top
+
+  .dropdown-menu
+    position: absolute
+    top: 100%
+    right: 0
+    background: $card-bg
+    border: 1px solid $border-color
+    border-radius: 6px
+    min-width: 250px
+    max-height: 400px
+    overflow-y: auto
+    z-index: 1000
+    box-shadow: 0 2px 8px $card-shadow
+    margin-top: 5px
+    transition: all $transition-speed
+
+    .no-notifications
+      padding: 10px
+      text-align: center
+      color: $text-color
+      font-size: 0.875rem
+
+    .notification-item
+      padding: 10px
+      border-bottom: 1px solid $border-color
+      cursor: pointer
+      transition: background $transition-speed
+
+      &.unread
+        background-color: $info-color
+        color: #fff
+
+      &.read
+        background-color: $background-color
+        color: $text-color
+
+      .timestamp
+        color: $secondary-color
+        font-size: 0.75rem
+
+      &:hover
+        background-color: lighten($primary-color, 35%)
+
+    .load-more-btn
+      width: 100%
+      padding: 10px
+      border: none
+      background: $background-color
+      cursor: pointer
+      border-top: 1px solid $border-color
+      transition: background $transition-speed
+
+      &:hover
+        background: lighten($background-color, 5%)

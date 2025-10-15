@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 // 🟢 Importamos el tipo User
 import type { User } from "../../models/api/userModel"; 
-import "./../styles/addeditgroup.scss"; 
+import "./../styles/addeditgroup.sass"; 
 // ⚠️ Nota: Si no tienes una interfaz 'Group' en el proyecto, esto puede ser un error de importación.
 // Asumimos que la lógica solo debe usar 'User' en este archivo.
 

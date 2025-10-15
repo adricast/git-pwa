@@ -1,0 +1,109 @@
+// src/components/CardContainer/styles/CardContainer.sass
+@use "sass:color"
+
+@import ./variables.sass
+
+.card-manager-container
+  display: flex
+  flex-direction: column
+  height: 100%
+
+  // Ocupa toda la altura disponible en el layout principal
+  width: 100%
+
+  // Ocultar el layout de "grid/ventanas" anterior
+  // Si tu versión anterior tenía un .card-grid, desactívalo.
+  .card-grid
+    display: none
+
+  /* --- BARRA DE PESTAÑAS (Títulos) ---
+  .tab-list-bar
+    display: flex
+    flex-wrap: nowrap
+    overflow-x: auto
+
+    // Permite scroll horizontal si hay muchas fichas
+    padding: 0 1rem
+    border-bottom: 2px solid $border-color
+
+    // Línea base donde se apoyan las fichas
+    gap: 2px
+    min-height: 45px
+
+  /* --- FICHA INDIVIDUAL (La Pestaña) ---
+  .ficha-tab
+    display: flex
+    align-items: center
+    padding: 8px 15px 8px 15px
+    cursor: pointer
+    background-color: $light-gray
+
+    // Fondo de pestaña inactiva
+    color: $text-color
+    border-radius: 8px 8px 0 0
+
+    // Esquinas superiores redondeadas
+    transition: all 0.2s ease
+    white-space: nowrap
+    border: 1px solid $border-color
+
+    // Borde fino
+    border-bottom: none
+
+    // Se anulará en el estado activo
+
+    // Estilo de Pestaña Activa
+    &.active
+      background-color: $card-bg
+
+      // La pestaña activa "flota" sobre el contenido
+      color: $primary-color
+      border: 1px solid $border-color
+      border-bottom: 2px solid $card-bg
+
+      // Anula la línea de la barra base para que parezca conectada
+      font-weight: 700
+
+    &:hover:not(.active)
+      background-color: lighten($light-gray, 5%)
+
+    .ficha-title
+      margin-right: 10px
+      font-size: 0.95rem
+
+    // Botón de cierre
+    .ficha-close-btn
+      background: none
+      border: none
+      color: inherit
+      cursor: pointer
+      font-size: 0.8rem
+      margin-left: 10px
+      display: flex
+
+      // Para centrar el icono
+
+      &:hover
+        color: $error-color
+
+  /* --- CONTENEDOR DEL CONTENIDO ACTIVO ---
+  .tab-content-panel
+    flex-grow: 1
+    overflow-y: auto
+
+    // Permite scroll solo en el contenido si es necesario
+    padding: 1rem
+    background-color: $card-bg
+
+    // Fondo del contenido
+    border-left: 1px solid $border-color
+    border-right: 1px solid $border-color
+    border-bottom: 1px solid $border-color
+
+    // El CardContainer activo debe ocupar todo el espacio restante.
+    & > .card-container
+      height: 100%
+      width: 100%
+      margin: 0
+
+      // El resto de la anulación de estilo de ventana se hace en cardcontainerLayout.sass

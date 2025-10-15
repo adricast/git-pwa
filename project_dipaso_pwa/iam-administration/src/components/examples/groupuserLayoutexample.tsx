@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 // import { FaUsers } from 'react-icons/fa'; 
 // import { useCardManager } from './../../components/cardcontainer2/usercardmanager'; 
 
-import "./../styles/groupuserLayout.scss"; 
+import "./../styles/groupuserLayout.sass"; 
 
 
 export type GroupManagementRef = {

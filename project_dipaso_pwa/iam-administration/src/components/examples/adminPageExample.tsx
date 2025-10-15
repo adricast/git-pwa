@@ -5,7 +5,7 @@ import OptionCard from "../layout/optioncardLayout";
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaCog } from "react-icons/fa";
 
 // Importamos los estilos SCSS
-import "./adminPage.scss";
+import "./adminPage.sass";
 
 const AdminPage: React.FC = () => {
   const location = useLocation();

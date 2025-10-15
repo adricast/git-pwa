@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNotification } from "./../notifications/usenotification";
-import "./../styles/notificationdrowdownLayout.scss"; // 👈 Importar SCSS
+import "./../styles/notificationdrowdownLayout.sass"; // 👈 Importar SCSS
 
 interface NotificationDropdownProps {
   pageSize?: number;

@@ -26,7 +26,7 @@ class HostWS {
     this.ws.onclose = () => {
       console.log("❌ WS desconectado, intentando reconectar...");
       if (this.url) {
-        setTimeout(() => this.connect(this.url!), 3000); // reconexión automática
+        // setTimeout(() => this.connect(this.url!), 3000); // reconexión automática
       }
     };
   }

@@ -9,7 +9,7 @@ import {
 import { authService } from "../../services/authServices";
 import type { Auth } from "../../models/api/authModel"; 
 import Nav, { type NavItem } from "./navbar2Layout";
-import "./../styles/dashboardnav2Layout.scss";
+import "./../styles/dashboardnav2Layout.sass";
 
 // 🟢 CONTEXTOS GLOBALES (Shell)
 import { MasterPasswordProvider } from "./../../components/masterpassword/masterpasswordprovider"; 
@@ -142,10 +142,15 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     // 🔑 BLOQUE CLAVE: Conexión y suscripción al WebSocket
     useEffect(() => {
         try {
-            hostWS.connect("ws://127.0.0.1:8001");
+            // hostWS.connect("ws://127.0.0.1:8001");
 
-            const unsubscribe = hostWS.subscribe((msg: any) => {
-                console.log("📩 Notificación recibida del WS:", msg);
+            interface WebSocketMessage {
+                type: string;
+                payload: Record<string, unknown>;
+            }
+
+            const unsubscribe = hostWS.subscribe((msg: WebSocketMessage) => {
+                // console.log("📩 Notificación recibida del WS:", msg);
 
                 addNotification({
                     id: uuidv4(),

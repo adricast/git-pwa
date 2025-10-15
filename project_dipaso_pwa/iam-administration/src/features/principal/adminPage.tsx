@@ -6,7 +6,7 @@ import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos FaUserEdit o FaUserCircle para Personas
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaUserCircle } from "react-icons/fa"; 
 import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
-import "./adminPage.scss";
+import "./adminPage.sass";
 import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
 
 const AdminPage: React.FC = () => {

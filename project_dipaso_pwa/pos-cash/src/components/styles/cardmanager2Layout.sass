@@ -1,0 +1,172 @@
+// src/components/CardManager/styles/CardManager.sass
+@use "sass:color"
+
+// Asegúrate de que esta línea esté si usas lighten/darken
+@import ./variables.sass
+
+// Ajusta esta ruta si es necesario
+
+// 1. Contenedor Principal (Adaptado para Pestañas)
+.card-manager-container
+  width: 100%
+
+  // min-height: 100vh; // Mejor usar 100% si el padre ya define la altura del área de contenido
+  height: 100%
+
+  // Ocupa toda la altura disponible
+  padding: 0px
+  background-color: $background-color
+
+  // Color de fondo general
+  display: flex
+  flex-direction: column
+
+  // Fundamental para que las tabs y el contenido se apilen
+  gap: 0
+
+  // Eliminamos el gap para que las tabs se vean contiguas al contenido
+
+// 2. Sección de Acciones (Botones de prueba) - Mantenido
+.card-actions
+  display: flex
+  gap: 15px
+  padding: 20px 0 10px 0
+
+  // Añadir padding superior si el children (GroupInitializer) no lo tiene
+
+// 3. Estilos de Botones - Mantenidos
+.add-ficha-primary,
+.add-ficha-secondary
+  padding: 10px 15px
+  border: none
+  border-radius: 8px
+  font-weight: 600
+  cursor: pointer
+  transition: all $transition-speed ease
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+
+  &:hover
+    transform: translateY(-1px)
+
+.add-ficha-primary
+  background-color: $primary-color
+  color: $card-bg
+
+  &:hover
+    background-color: darken($primary-color, 5%)
+
+.add-ficha-secondary
+  background-color: $secondary-color
+  color: $card-bg
+
+  &:hover
+    background-color: darken($secondary-color, 5%)
+
+// 4. Rejilla de Fichas (Grid) - ❌ OCULTAR
+.card-grid
+  display: none
+
+  // CLAVE: Deshabilitar el layout anterior de ventanas
+
+/* ====================================
+/* 5. ESTRUCTURA DE PESTAÑAS (TABS)
+/* ====================================
+
+// 5.1. Barra de Pestañas
+.tab-list-bar
+  display: flex
+  flex-wrap: nowrap
+  overflow-x: auto
+
+  // Permite scroll horizontal si hay muchas fichas
+  padding: 0 1rem
+  border-bottom: 2px solid $border-color
+
+  // Línea base
+  gap: 2px
+
+  // Pequeño espacio entre pestañas
+  min-height: 45px
+  background-color: lighten($background-color, 3%)
+
+  // Un fondo ligeramente distinto para el área de pestañas
+
+// 5.2. Ficha Individual (La Pestaña)
+.ficha-tab
+  display: flex
+  align-items: center
+  padding: 8px 15px 8px 15px
+  cursor: pointer
+  background-color: $light-gray
+
+  // Color de ficha inactiva (asumido)
+  color: $text-color
+  border-radius: 8px 8px 0 0
+
+  // Esquinas superiores
+  transition: all 0.2s ease
+  white-space: nowrap
+  border: 1px solid $border-color
+  border-bottom: none
+
+  // Para que el borde desaparezca y se vea 'hundido'
+
+  // Estilo de Pestaña Activa
+  &.active
+    background-color: $card-bg
+
+    // Fondo del área de contenido
+    color: $primary-color
+    border: 1px solid $border-color
+    border-bottom: 2px solid $card-bg
+
+    // CLAVE: Hace que la línea de la base se 'rompa' y la pestaña flote
+    font-weight: 700
+    z-index: 10
+
+    // Asegura que se superponga ligeramente a la línea de abajo
+
+  &:hover:not(.active)
+    background-color: lighten($light-gray, 5%)
+
+  .ficha-title
+    margin-right: 10px
+    font-size: 0.95rem
+
+  // Botón de cierre
+  .ficha-close-btn
+    background: none
+    border: none
+    color: inherit
+    cursor: pointer
+    font-size: 0.8rem
+    margin-left: 10px
+
+    &:hover
+      color: $error-color
+
+// 5.3. Contenedor del Contenido
+.tab-content-panel
+  flex-grow: 1
+
+  // Ocupa el espacio vertical restante
+  overflow-y: auto
+  padding: 1rem
+  background-color: $card-bg
+
+  // El fondo del panel de contenido
+  border: 1px solid $border-color
+
+  // Borde para el panel de contenido
+  border-top: none
+
+  // Conecta con la barra de pestañas
+
+  // El CardContainer dentro debe ser de altura completa
+  & > .card-container
+    height: 100%
+    width: 100%
+    margin: 0
+    box-shadow: none
+
+    // Importante para quitar el look de 'ventana'

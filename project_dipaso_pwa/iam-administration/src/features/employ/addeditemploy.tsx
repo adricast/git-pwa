@@ -3,15 +3,11 @@
 import React, { useCallback, useMemo } from "react";
 import type { Person } from "../../models/api/personModel"; 
 
-// 🛑 Importamos los componentes y la configuración de Persona
 import DynamicForm from "../../components/dinamicform/dynamicformProvider";
-// ❌ ELIMINAMOS: DynamicSection ya no se necesita aquí porque DynamicForm lo usa internamente.
-// import DynamicSection from "../../components/dinamicform/dynamicsection"; 
 import type { DynamicButtonProps } from '../../components/dinamicform/interface'; 
 import { personFormSections } from "./employformconfig"; 
 
-// Asumiendo que existe un archivo de estilos para el formulario
-import "./../../components/styles/dynamicform.scss"; 
+import "./../../components/styles/dynamicform.sass"; 
 
 
 /**
@@ -20,7 +16,7 @@ import "./../../components/styles/dynamicform.scss";
 const AddEditPersonContent: React.FC<{
     person: Person | null;
     // La tipificación Record<string, any> es suficiente aquí.
-    onSave: (person: Person | null, data: Record<string, any>) => Promise<void>; 
+    onSave: (person: Person | null, data: Record<string, string | number | boolean>) => Promise<void>; 
     onClose: () => void;
 }> = ({ person, onSave, onClose }) => {
 
@@ -52,7 +48,7 @@ const AddEditPersonContent: React.FC<{
     }, [person]);
    
     // 2. Definimos el handler onSubmit que será ejecutado por DynamicForm
-    const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
+    const handleDynamicSubmit = useCallback(async (data: Record<string, string | number | boolean>) => {
         // Ejecutamos tu lógica de guardado
         await onSave(person, data);
     }, [person, onSave]);

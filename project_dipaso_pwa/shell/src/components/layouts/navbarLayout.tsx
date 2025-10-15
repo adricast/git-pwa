@@ -1,7 +1,7 @@
 // src/components/Nav.tsx
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-// No necesitamos el SCSS: import "./Nav.scss"; 
+// No necesitamos el SCSS: import "./Nav.sass"; 
 import { FaChevronDown, FaBars, FaTimes, FaWarehouse, FaUserCircle } from 'react-icons/fa';
 
 export interface NavItem {

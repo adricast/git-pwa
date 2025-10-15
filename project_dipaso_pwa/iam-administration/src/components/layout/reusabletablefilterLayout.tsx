@@ -9,7 +9,7 @@ import { useTableLogic } from "../reusabletablefilter/tablelogic";
 // ✅ NUEVO: Importar el componente de entrada de filtro de columna
 import ColumnFilterInput from "./../../components/reusabletablefilter/columfilter"; 
 
-import "./../styles/reusabletablefilterLayout.scss"; 
+import "./../styles/reusabletablefilterLayout.sass"; 
 
 const ReusableTable: React.FC<ReusableTableProps> = ({
   moduleName,

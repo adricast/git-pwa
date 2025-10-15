@@ -35,7 +35,7 @@ export interface PersonServiceConfig {
     /** * Realiza la eliminación lógica masiva (Soft Delete).
      * Requiere el ID del usuario que realiza la acción para el header 'X-Updater-User-Id'.
      */
-    softDeletePeopleMassive: (personIds: string[], updatedByUserId: string) => Promise<any>; 
+    softDeletePeopleMassive: (personIds: string[], updatedByUserId: string) => Promise<{ message: string; count: number; }>; 
     
     /** * Crea una nueva persona.
      * Requiere el ID del usuario que crea el registro para el header 'X-Creator-User-Id'.

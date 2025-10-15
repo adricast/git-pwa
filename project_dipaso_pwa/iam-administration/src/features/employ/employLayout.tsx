@@ -13,7 +13,7 @@ import AddEditPersonContent from "./addeditemploy";
 import ReusableTable from "../../components/layout/reusabletablefilterLayout"; 
 import { FaSyncAlt } from "react-icons/fa"; 
 
-import "./../styles/generalLayout.scss"; 
+import "./../styles/generalLayout.sass"; 
 
 
 // 🔑 ID DE USUARIO MOCKEADO: En una aplicación real, esto se obtendría
@@ -107,7 +107,7 @@ const PeopleManagement = forwardRef<PeopleManagementRef>((_, ref) => { // ✅ No
     }, []);
 
     // 🟢 Maneja tanto la creación como la actualización
-    const handleSavePerson = async (person: Person | null, personPatch: Record<string, any>) => {
+    const handleSavePerson = async (person: Person | null, personPatch: Partial<Person>) => {
         const isEditing = person && person.personId;
         
         try {
@@ -224,7 +224,7 @@ const PeopleManagement = forwardRef<PeopleManagementRef>((_, ref) => { // ✅ No
                     handleOpenEditScreen(selectedRows[0]);
                 }
             },
-            isVisible: (selectedRows: any[]) => selectedRows.length === 1,
+            isVisible: (selectedRows: Person[]) => selectedRows.length === 1,
         },
         {
             label: "Eliminar",

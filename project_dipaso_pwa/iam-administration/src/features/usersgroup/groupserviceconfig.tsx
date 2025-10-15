@@ -1,4 +1,3 @@
-// 📁 src/components/management/groupuser/groupServiceConfig.ts
 
 import { 
     getActiveGroups, 
@@ -17,7 +16,7 @@ export interface GroupServiceConfig {
     
     // 🔑 CORRECCIÓN 1: Se usa 'any' para simplificar la compatibilidad del retorno (ya que no se usa el valor) 
     // y se usa (string | number)[] para ser compatible con la función importada.
-    softDeleteGroupsMassive: (groupIds: (string | number)[]) => Promise<any>; 
+    softDeleteGroupsMassive: (groupIds: (string | number)[]) => Promise<void>; 
     
     // 🔑 CORRECCIÓN 2: El tipo de payload de creación se ajusta a Omit<Group, "groupId">
     // ya que el componente manualmente añade 'users', 'lastModifiedAt', e 'isActive'.
@@ -32,7 +31,9 @@ export interface GroupServiceConfig {
  */
 export const groupServiceConfig: GroupServiceConfig = {
     getActiveGroups: getActiveGroups,
-    softDeleteGroupsMassive: softDeleteGroupsMassive,
+    softDeleteGroupsMassive: async (groupIds) => {
+        await softDeleteGroupsMassive(groupIds);
+    },
     createGroup: createGroup,
     updateGroup: updateGroup,
 };

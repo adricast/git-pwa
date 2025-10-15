@@ -1,6 +1,6 @@
-// src/components/CardContainer/styles/CardContainer.scss
+// src/components/CardContainer/styles/CardContainer.sass
 @use "sass:color"; 
-@import "./variables.scss"; 
+@import "./variables.sass"; 
 
 .card-manager-container {
     display: flex;
@@ -88,7 +88,7 @@
              height: 100%;
              width: 100%;
              margin: 0;
-             // El resto de la anulación de estilo de ventana se hace en cardcontainerLayout.scss
+             // El resto de la anulación de estilo de ventana se hace en cardcontainerLayout.sass
         }
     }
 }

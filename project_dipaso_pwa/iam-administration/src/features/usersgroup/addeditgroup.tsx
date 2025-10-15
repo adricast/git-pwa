@@ -3,12 +3,9 @@
 import React, { useCallback, useMemo } from "react";
 // Asumiendo que Group está en "../../models/api/groupModel"
 import type { Group } from "../../models/api/groupModel"; 
-// 🛑 Importamos el DynamicFormProvider (el principal)
 import DynamicForm from "../../components/dinamicform/dynamicformProvider"; // Ajusta la ruta si es necesario
-// 🛑 Importamos el schema
 import { groupFormSections } from "./groupformconfig"; // Ajusta la ruta
-import "./../../components/styles/dynamicform.scss";  // Mantenemos tu SCSS para estilos adicionales
-// NOTA: Para que esto funcione, DynamicForm y sus interfaces deben aceptar la prop 'actions'
+import "./../../components/styles/dynamicform.sass";  // Mantenemos tu SCSS para estilos adicionales
 
 // --- Tipado de los datos del formulario que DynamicForm devolverá ---
 interface GroupFormData {
@@ -41,8 +38,8 @@ const AddEditGroupContent: React.FC<{
     }, [group]);
 
     // 2. Definimos el handler onSubmit que será ejecutado por DynamicForm
-    const handleDynamicSubmit = useCallback((data: Record<string, any>) => {
-        const groupData = data as GroupFormData;
+    const handleDynamicSubmit = useCallback((data: Record<string, unknown>) => {
+        const groupData = data as unknown as GroupFormData;
         
         // Llamamos a tu lógica de guardado, pasando los datos limpios que recibimos
         onSave(

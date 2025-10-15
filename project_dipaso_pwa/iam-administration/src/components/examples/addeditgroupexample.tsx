@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { Group } from "../../models/api/groupModel";
-import "./../styles/dynamicform.scss"; // 👈 Importamos el SCSS
+import "./../styles/dynamicform.sass"; // 👈 Importamos el SCSS
 
 /**
  * Formulario de creación / edición de grupos

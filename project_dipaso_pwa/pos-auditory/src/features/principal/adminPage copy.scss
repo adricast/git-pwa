@@ -1,7 +1,7 @@
-    // src/features/admin/adminPage.scss
+    // src/features/admin/adminPage.sass
 
     // Asegúrate de que esta ruta a tus variables globales es correcta
-    @import "./../../components/styles/variables.scss"; 
+    @import "./../../components/styles/variables.sass"; 
 
     .page-container {
         // 1. Contenedor principal de la página
@@ -11,7 +11,7 @@
         display: flex;
         flex-direction: column;
        
-        // src/features/usersgroup/styles/UserGroupLayout.scss (Fragmento mejorado)
+        // src/features/usersgroup/styles/UserGroupLayout.sass (Fragmento mejorado)
 
 // ... otros estilos ...
 

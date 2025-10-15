@@ -26,6 +26,8 @@ const decryptAndVerifyResponse = (data: EncryptedResponse): any => {
     // 1. Verifica HMAC
     const hash = CryptoJS.HmacSHA256(data.payload, HMAC_KEY).toString(CryptoJS.enc.Base64);
     
+    // eslint-disable-next-line no-debugger
+    debugger;
     if (hash !== data.signature) {
         throw new Error("HMAC inválido: datos corruptos o manipulados");
     }

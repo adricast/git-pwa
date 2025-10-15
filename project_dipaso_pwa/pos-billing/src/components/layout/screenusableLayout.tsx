@@ -1,7 +1,7 @@
 // src/components/ReusableTable.tsx
 
 import React, { useState, useCallback, useEffect } from "react";
-import "./../styles/screenusableLayout.scss"; // 👈 Nueva ruta del SCSS
+import "./../styles/screenusableLayout.sass"; // 👈 Nueva ruta del SCSS
 
 // --- Tipado ---
 

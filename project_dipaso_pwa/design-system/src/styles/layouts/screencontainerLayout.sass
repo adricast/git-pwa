@@ -1,0 +1,189 @@
+@use 'sass:color'
+@use '../_variables' as *
+
+
+// Importamos tus variables corporativas
+
+// ----------------------------------------------------------------------
+// 🟢 BASE: Pantalla COMPLETA por defecto (Implícitamente Maximizada)
+// ----------------------------------------------------------------------
+.screen-container
+  position: absolute
+  top: 0
+
+  /* ANCLAJE CORREGIDO: Arriba
+  left: 0
+
+  /* ANCLAJE CORREGIDO: Izquierda
+  transform: none
+
+  /* ANULACIÓN CRUCIAL: Desactiva el centrado en el estado base
+  width: 100%
+
+  // 🔑 AHORA: Usa el 100% del padre (dashboard)
+  height: 100%
+
+  // 🔑 AHORA: Usa el 100% del padre (dashboard)
+
+  // Estilos visuales del estado maximizado por defecto
+  border-radius: 0
+
+  /* Sin bordes
+  box-shadow: none
+
+  /* Sin sombra
+  background: $background-color
+  display: flex
+  flex-direction: column
+  z-index: 1000
+  transition: all $transition-speed ease-in-out
+
+  // Animación de aparición inicial
+  animation: fadeIn $transition-speed ease-in-out
+
+  @keyframes fadeIn
+    from
+      opacity: 0
+
+    to
+      opacity: 1
+
+// ----------------------------------------------------------------------
+// 🟢 ESTADO MAXIMIZADO (Asegura la especificidad)
+// ----------------------------------------------------------------------
+.screen-container.is-maximized
+  /* Mantiene las propiedades de la BASE
+  .screen-actions
+    .screen-maximize-btn
+      color: $secondary-color
+
+// ----------------------------------------------------------------------
+// 🟢 ESTADO RESTAURADO/NORMAL (El tamaño de Diálogo centrado 85%)
+// ----------------------------------------------------------------------
+// Se aplica cuando la ventana NO está minimizada Y NO tiene la clase .is-maximized
+.screen-container:not(.is-minimized):not(.is-maximized)
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+  /* Aplica el centrado aquí
+  width: 85vw
+  height: 85vh
+  border-radius: 8px
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3)
+
+// ----------------------------------------------------------------------
+// 🟢 ESTILOS PARA PANTALLA ACTIVA (Superior en la pila)
+// ----------------------------------------------------------------------
+.screen-container.is-active
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5)
+
+// ----------------------------------------------------------------------
+// 🟢 ESTILOS PARA ESTADO MINIMIZADO (El DOCK) - ¡Corregido!
+// ----------------------------------------------------------------------
+.screen-container.is-minimized
+  // 1. Anclaje y posición para el dock inferior izquierdo
+  top: auto
+  left: 0 !important
+
+  /* Ancla el punto de inicio a la izquierda
+  right: auto
+  bottom: 0
+
+  // 2. ✅ NO hay regla de 'transform' aquí. Permite que 'transform: translateX()' de React funcione.
+
+  // 3. Tamaño compacto y estilizado como una pestaña
+  width: 250px
+  height: $header-height-sm
+  border-radius: 5px 5px 0 0
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2)
+
+  // 4. Oculta el cuerpo
+  .screen-body
+    display: none
+
+  // 5. Estilos del header al estar minimizado
+  .screen-header
+    height: $header-height-sm
+    padding: 0 1rem
+    background: $light-gray
+    color: $text-color
+    cursor: pointer
+    font-size: 0.9rem
+    box-shadow: none
+    border-bottom: 2px solid $primary-color
+
+    .screen-title
+      font-weight: normal
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      flex-grow: 1
+
+    .screen-minimize-btn, .screen-close-btn
+      color: $text-color
+      font-size: 1rem
+
+      &:hover
+        color: $error-color
+
+    .screen-minimize-btn
+      font-size: 1.1rem
+
+      &:hover
+        color: $primary-color
+
+// ----------------------------------------------------------------------
+// 🟢 ESTILOS DEL HEADER (General)
+// ----------------------------------------------------------------------
+.screen-header
+  height: $header-height
+  background: $primary-color
+  color: #fff
+  padding: 0 1rem
+  display: flex
+  align-items: center
+  justify-content: space-between
+  font-size: 1rem
+  font-weight: bold
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15)
+
+  .screen-minimize-btn, .screen-close-btn, .screen-maximize-btn
+    background: transparent
+    border: none
+    color: #fff
+    font-size: 1rem
+    cursor: pointer
+    transition: transform $transition-speed ease, color $transition-speed ease
+
+    &:hover
+      transform: scale(1.2)
+      color: $secondary-color
+
+  .screen-close-btn
+    font-size: 1rem
+
+.screen-title
+  margin: 0
+
+.screen-actions
+  display: flex
+  gap: 10px
+
+// Botones generales: Aseguramos que el hover use el color secundario en la ventana activa
+.screen-minimize-btn, .screen-close-btn
+  background: transparent
+  border: none
+  cursor: pointer
+  transition: transform $transition-speed ease, color $transition-speed ease
+
+  &:hover
+    transform: scale(1.2)
+    color: $secondary-color
+
+.screen-body
+  flex: 1
+  padding: 1rem
+  overflow-y: auto
+  background: $card-bg
+  color: $text-color

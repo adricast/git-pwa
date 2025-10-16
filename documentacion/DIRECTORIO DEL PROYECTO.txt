@@ -1,4 +1,48 @@
 project_dipaso_pwa/
+│── design-system/                   # 🎨 PAQUETE COMPARTIDO
+│   │── src/
+│   │   │── styles/
+│   │   │   │── _variables.sass      # Variables globales
+│   │   │   │── _mixins.sass         # Mixins reutilizables
+│   │   │   │── _base.sass           # Reset y estilos base
+│   │   │   │── components/          # Estilos de componentes
+│   │   │   │   │── _cardcontainer.sass
+│   │   │   │   │── _dynamicform.sass
+│   │   │   │   │── _reusabletable.sass
+│   │   │   │   │── _screencontainer.sass
+│   │   │   │   │── ...
+│   │   │   │── layouts/             # Estilos de layouts
+│   │   │   │   │── _cardlayout.sass
+│   │   │   │   │── _tablelayout.sass
+│   │   │   │   │── ...
+│   │   │   │── index.sass           # Entry point principal
+│   │   │── components/              # 🔥 Componentes React reutilizables
+│   │   │   │── CardContainer/
+│   │   │   │   │── CardContainer.tsx
+│   │   │   │   │── index.ts
+│   │   │   │── DynamicForm/
+│   │   │   │   │── DynamicForm.tsx
+│   │   │   │   │── index.ts
+│   │   │   │── ReusableTable/
+│   │   │   │   │── ReusableTable.tsx
+│   │   │   │   │── index.ts
+│   │   │   │── ScreenContainer/
+│   │   │   │   │── ScreenContainer.tsx
+│   │   │   │   │── index.ts
+│   │   │   │── layouts/             # Layouts reutilizables
+│   │   │   │   │── DashboardLayout/
+│   │   │   │   │── CardLayout/
+│   │   │   │── index.ts             # Export de todos los componentes
+│   │   │── tokens/
+│   │   │   │── colors.ts
+│   │   │   │── spacing.ts
+│   │   │   │── typography.ts
+│   │   │── utils/
+│   │   │   │── helpers.ts
+│   │   │   │── formatters.ts
+│   │   │── package.json
+│   │   │── tsconfig.json
+│
 │── shell/                           # Main host (container)
 │   │── public/                      # Static files (favicon, manifest.json for PWA)
 │   │── src/

@@ -1,5 +1,5 @@
-// 🛑 IMPORTACIÓN DE VARIABLES: Necesaria para que el compilador reconozca tus colores.
-@import variables.sass
+@use 'sass:color'
+@import 'variables.sass'
 
 // --- CONFIGURACIÓN DE ESPACIOS Y VARIABLES LOCALES ---
 $gap-size: 10px
@@ -20,7 +20,7 @@ $success-color: #28a745
   margin: 0 auto
   border: 1px solid $border-color
   border-radius: 12px
-  background-color: $white
+  background-color: $card-bg
   gap: $gap-size * 1.2
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 
@@ -54,7 +54,7 @@ $transform-offset: 9px
     transform: translateY($transform-offset)
 
     // El fondo que oculta la línea divisoria
-    background-color: $white
+    background-color: $card-bg
     z-index: 1
 
     // Alineación y texto
@@ -148,7 +148,7 @@ $group-title-padding-x: 10px
   display: table
 
   // 🛑 EFECTO CLAVE: El fondo tapa la línea que está debajo
-  background-color: $white
+  background-color: $card-bg
 
   // 🛑 AJUSTE FINO: Desplazamiento que centra la leyenda en la línea de su fieldset
   transform: translateY(8px)

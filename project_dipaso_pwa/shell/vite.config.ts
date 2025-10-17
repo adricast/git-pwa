@@ -42,6 +42,7 @@ export default defineConfig({
         posInventory: 'http://localhost:3004/assets/remoteEntry.js',
         posClients: 'http://localhost:3005/assets/remoteEntry.js',
         posAudit: 'http://localhost:3006/assets/remoteEntry.js',
+        authorizer: 'http://localhost:3007/assets/remoteEntry.js',
       },
       shared: ['react', 'react-dom', 'react-router-dom'],
       exposes:{},
@@ -69,7 +70,9 @@ export default defineConfig({
           { urlPattern: /^\/pos-cash.*/, handler: "NetworkFirst", options: { cacheName: "pos-cash-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } },
           { urlPattern: /^\/pos-inventory.*/, handler: "NetworkFirst", options: { cacheName: "pos-inventory-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } },
           { urlPattern: /^\/pos-clients.*/, handler: "NetworkFirst", options: { cacheName: "pos-clients-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } },
-          { urlPattern: /^\/pos-audit.*/, handler: "NetworkFirst", options: { cacheName: "pos-audit-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } }
+          { urlPattern: /^\/pos-audit.*/, handler: "NetworkFirst", options: { cacheName: "pos-audit-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } },
+          { urlPattern: /^\/authorizer.*/, handler: "NetworkFirst", options: { cacheName: "authorizer-cache", expiration: { maxEntries: 50, maxAgeSeconds: 60*60*24*7 } } }
+ 
         ]
       }
     }),

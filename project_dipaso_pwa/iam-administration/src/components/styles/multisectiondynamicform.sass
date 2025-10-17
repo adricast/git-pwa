@@ -4,489 +4,357 @@
 // --- CONFIGURACIÓN DE ESPACIOS ---
 $gap-size: 10px
 $form-max-width: 900px
-
-// Aumentado para mejor uso de espacio en desktop
 $mobile-padding: 16px
-
-// Nuevo: padding para móvil
+// ✅ Radio de borde estandarizado para look "cuadrado"
+$border-radius-square: 6px
 
 .dynamic-form-container
-  display: flex
-  flex-direction: column
+    display: flex
+    flex-direction: column
+    width: 100%
+    max-width: $form-max-width
+    margin: 0 auto
+    padding: $mobile-padding
+    border: 1px solid $border-color
+    border-radius: $border-radius-square // ✅ Contenedor principal cuadrado
+    background-color: $white
+    gap: $gap-size * 1.5
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 
-  // --- RESPONSIVE GENERAL ---
-  width: 100%
-
-  // Ocupa todo el ancho por defecto (móvil)
-  max-width: $form-max-width
-  margin: 0 auto
-  padding: $mobile-padding
-
-  // Padding generoso en móvil
-
-  // Uso de variables importadas
-  border: 1px solid $border-color
-  border-radius: 12px
-  background-color: $white
-  gap: $gap-size * 1.5
-
-  // Mayor separación entre secciones en móvil
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
-
-  @media (min-width: 768px)
-    // Tablet y Desktop
-    width: 90%
-    padding: $gap-size * 2
-
-    // Más padding en desktop
-    gap: $gap-size * 1.2
-
-    // Separación entre secciones en desktop
+    @media (min-width: 768px)
+        width: 90%
+        padding: $gap-size * 2
+        gap: $gap-size * 1.2
 
 //-----------------------------------------------------
 // steps indicators
 //-----------------------------------------------------
 .form-steps-indicator
-  counter-reset: step-counter
-  display: flex
-  justify-content: space-between
-  align-items: flex-start
+    counter-reset: step-counter
+    display: flex
+    justify-content: space-between
+    align-items: flex-start
+    margin-bottom: $gap-size * 2
+    padding: $gap-size 0
 
-  // Alineamos al inicio para que el diseño sea más limpio
-  margin-bottom: $gap-size * 2
-  padding: $gap-size 0
-
-  @media (max-width: 767px)
-    display: none
+    @media (max-width: 767px)
+        display: none
 
 .step-item
-  // 🛑 CAMBIO CLAVE: Dirección de columna para apilar el círculo y el texto
-  display: flex
-  align-items: center
+    display: flex
+    align-items: center
+    flex-direction: column
+    position: relative
+    flex-grow: 1
+    color: lighten($text-color, 30%)
+    font-size: 0.7rem
+    font-weight: 500
+    text-align: center
 
-  // Centrar el contenido dentro de cada paso
-  flex-direction: column
-  position: relative
-  flex-grow: 1
-  color: lighten($text-color, 30%)
-  font-size: 0.7rem
+    // Estilo del SEPARADOR (Línea entre círculos)
+    &:not(:last-child)
+        &::after
+            content: ''
+            position: absolute
+            top: 15px
+            left: 50%
+            transform: translateX(0)
+            height: 2px
+            width: calc(100% - 30px)
+            background-color: $border-color
+            z-index: 1
 
-  // Reducido ligeramente el tamaño del texto del título
-  font-weight: 500
-  text-align: center
+    // Estilo del NÚMERO (Círculo)
+    &::before
+        content: counter(step-counter)
+        counter-increment: step-counter
+        display: flex
+        justify-content: center
+        align-items: center
+        width: 28px
+        height: 28px
+        border-radius: 50% // Redondo en el indicador superior
+        background-color: $border-color
+        color: $white
+        font-weight: 700
+        margin-bottom: 5px
+        flex-shrink: 0
+        z-index: 2
+        border: 2px solid $border-color
+        transition: all 0.3s
 
-  // Centramos el texto del título
+/* Paso ACTIVO y COMPLETO (Se mantiene) */
+.step-item-active
+    color: $text-color
+    &::before
+        background-color: $primary-color
+        border-color: $primary-color
+        color: $white
+.step-item-completed
+    color: $text-color
+    cursor: pointer
+    &::before
+        background-color: $success-color
+        border-color: $success-color
+        font-size: 1.2rem
+    &:not(:last-child)
+        &::after
+            background-color: $success-color
 
-  // Estilo del SEPARADOR (Línea entre círculos)
-  &:not(:last-child)
-    &::after
-      content: ''
-      position: absolute
+// ----------------------------------------------------
+// 1. ESTILOS DE SECCIONES (FIELDSET) Y LAYOUT
+// ----------------------------------------------------
 
-      // 🛑 POSICIONAMIENTO ACTUALIZADO: Centrado en la vertical y horizontal del círculo
-      top: 15px
+.dynamic-form-section
+    // ✅ Estilos de la caja principal FIELDSET
+    border: 1px solid $border-color 
+    border-radius: $border-radius-square // ✅ Borde cuadrado
+    padding: $gap-size 
+    margin-bottom: $gap-size * 1.5 
+    margin-top: $gap-size * 2 
+    margin-left: 0
+    margin-right: 0
 
-      // Centrado en el centro vertical del círculo (asumiendo 28px de altura)
-      left: 50%
-      transform: translateX(0)
+    // ✅ Resetear márgenes del h3 dentro del fieldset
+    h3
+        margin: 0 
+        font-size: 1.25rem
+        font-weight: 700
 
-      // Quitar el transform: translateY(-50%) si ya se usa flex-direction: column
-      height: 2px
-      width: calc(100% - 30px)
+// ----------------------------------------------------
+// NUEVO: ESTILOS PARA LA CABECERA (<legend>)
+// ----------------------------------------------------
 
-      // Ajusta el ancho para conectar los círculos
-      background-color: $border-color
-      z-index: 1
+.section-header
+    // ✅ ESTILOS CLAVE PARA EL <legend>
+    width: auto 
+    margin: 0 // Reseteo de margin nativo
+    padding: 0 // Padding horizontal para separarlo del borde
+    transform: translateY(-50%) // Subir para flotar sobre el borde
+    background-color: $white // Oculta la línea del borde del fieldset
+    
+    border-bottom: none // Quitamos el border-bottom del legend
+    
+    // Layout interno (número y título)
+    display: flex
+    align-items: center
+    gap: $gap-size / 2 // Espacio entre el círculo y el texto
+    
+    // Margen inferior que separa el legend de los campos internos
+    margin-bottom: $gap-size 
+    padding-bottom: 0px 
 
-  // Estilo del NÚMERO (Círculo)
-  &::before
-    content: counter(step-counter)
-    counter-increment: step-counter
+.section-step-number
+    // ✅ HACEMOS EL CÍRCULO CUADRADO EN EL ENCABEZADO ACTIVO
+    border-radius: $border-radius-square
     display: flex
     justify-content: center
     align-items: center
     width: 28px
     height: 28px
-    border-radius: 50%
-    background-color: $border-color
-    color: $white
-    font-weight: 700
-    margin-bottom: 5px
-
-    // Espacio entre el círculo y el título
-    flex-shrink: 0
-    z-index: 2
-    border: 2px solid $border-color
-    transition: all 0.3s
-
-  // Contenedor del título
-  & > span
-    position: relative
-    z-index: 3
-    white-space: normal
-
-    // Permitir que el título salte de línea si es necesario
-
-/* Paso ACTIVO
-.step-item-active
-  color: $text-color
-
-  &::before
     background-color: $primary-color
-    border-color: $primary-color
     color: $white
-
-/* 🛑 Paso COMPLETO/PASADO
-.step-item-completed
-  color: $text-color
-  cursor: pointer
-
-  &::before
-    // En lugar del número, un ícono de check
-    // content: '✔';
-    background-color: $success-color
-    border-color: $success-color
-    font-size: 1.2rem
-
-  &:not(:last-child)
-    &::after
-      // Línea de color de éxito para mostrar progreso completado
-      background-color: $success-color
-
-// ----------------------------------------------------
-// 1. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
-// ----------------------------------------------------
-
-.dynamic-form-section
-  padding-bottom: $gap-size / 2
-
-  // Estilos antiguos del h3 (Aplicarán solo en desktop o si no se usa .section-header)
-  h3
-    margin-top: 0
-    margin-bottom: $gap-size
-    padding-bottom: 8px
-    border-bottom: 2px solid $primary-color
-    color: $text-color
     font-weight: 700
-    font-size: 1.25rem
-
-// ----------------------------------------------------
-// NUEVO: ESTILOS PARA LA CABECERA (PASOS NUMERADOS Y TOOLTIP)
-// ----------------------------------------------------
-
-.section-header
-  display: flex
-  align-items: center
-  gap: $gap-size / 2
-  margin-bottom: $gap-size
-  padding-bottom: 8px
-  border-bottom: 2px solid $primary-color
-  position: relative
-
-  // Necesario para el tooltip
-
-  // Estilo del Título principal (si se muestra)
-  .section-title
-    color: $text-color
-    font-weight: 700
-    font-size: 1.25rem
-    margin: 0
-
-    // Ocultar título en móvil, mostrar el paso
+    font-size: 0.9rem
+    flex-shrink: 0 
+    
+    // Configuración del Tooltip (Se mantiene)
     @media (max-width: 767px)
-      display: none
+      cursor: help
 
-.section-step-number
-  // Estilo del círculo
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 28px
-  height: 28px
-  border-radius: 50%
-  background-color: $primary-color
-  color: $white
-  font-weight: 700
-  font-size: 0.9rem
-  flex-shrink: 0
-
-  // Evita que se encoja
-
-  // Configuración del Tooltip (Aparecerá el texto en pantallas pequeñas)
-  @media (max-width: 767px)
-    cursor: help
-
-    // Indicador de que es interactivo
-    position: relative
-
-    // Base para el tooltip
-
-    // Tooltip container (el texto que aparece)
-    &::after
-      content: attr(data-tooltip)
-
-      // Obtiene el texto del atributo data-tooltip
-      position: absolute
-      left: 50%
-      top: 120%
-
-      // Posiciona debajo del círculo
-      transform: translateX(-50%)
-      background-color: $text-color
-
-      // Fondo oscuro
-      color: $white
-      padding: 6px 10px
-      border-radius: 4px
-      font-size: 0.8rem
-      white-space: nowrap
-
-      // Evita saltos de línea
-      opacity: 0
-
-      // Oculto por defecto
-      visibility: hidden
-      transition: opacity 0.3s, visibility 0.3s
-      z-index: 10
-
-    // Triángulo (flecha) del tooltip
-    &::before
-      content: ''
-      position: absolute
-      bottom: 100%
-      left: 50%
-      margin-left: -5px
-      border-width: 5px
-      border-style: solid
-      border-color: transparent transparent $text-color transparent
-      opacity: 0
-
-      // Oculto por defecto
-      visibility: hidden
-      transition: opacity 0.3s, visibility 0.3s
-      z-index: 11
-
-    // Mostrar Tooltip al pasar el ratón o tocar
-    &:hover::after, &:hover::before
-      opacity: 1
-      visibility: visible
+// Estilo del Título principal (.section-title / <h3>)
+.section-header .section-title
+    color: $text-color
+    font-weight: 700
+    font-size: 1.25rem
+    margin: 0 // ✅ Elimina cualquier margen inicial del H3
+    
+    // ✅ APLICAMOS LA LÍNEA DIVISORIA SOLO DEBAJO DEL TEXTO
+    padding-bottom: 0px
+    border-bottom: 2px solid $primary-color 
+    
+    @media (max-width: 767px)
+        display: none // Ocultar el título en móvil
 
 .dynamic-section-fields-grid
-  display: grid
-  gap: $gap-size
+    display: grid
+    gap: $gap-size
 
-// Layout de 1 Columna (El default en móvil)
+// Layouts de columnas (Se mantienen)
 .dynamic-section-columns-1 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
 
-// Layout de 2 Columnas (1 columna en móvil, 2 en pantallas >= 640px)
 .dynamic-section-columns-2 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
+    @media (min-width: 640px)
+        grid-template-columns: repeat(2, 1fr)
 
-  // Móvil: 1 columna
-
-  @media (min-width: 640px)
-    // sm: 640px
-    grid-template-columns: repeat(2, 1fr)
-
-    // Dos columnas
-
-// Layout de 3 Columnas (1 columna en móvil, 3 en pantallas >= 1024px)
 .dynamic-section-columns-3 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
+    @media (min-width: 1024px)
+        grid-template-columns: repeat(3, 1fr)
 
-  // Móvil: 1 columna
-
-  @media (min-width: 1024px)
-    // lg: 1024px
-    grid-template-columns: repeat(3, 1fr)
-
-    // Tres columnas
-
-// Layout de 4 Columnas (1 columna en móvil, 2 en tablet, 4 en desktop) (NUEVO)
 .dynamic-section-columns-4 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
+    @media (min-width: 768px)
+        grid-template-columns: repeat(2, 1fr)
+    @media (min-width: 1200px)
+        grid-template-columns: repeat(4, 1fr)
 
-  // Móvil: 1 columna
-
-  @media (min-width: 768px)
-    // md: 768px (Tablet)
-    grid-template-columns: repeat(2, 1fr)
-
-    // Dos columnas
-
-  @media (min-width: 1200px)
-    // xl: 1200px (Desktop)
-    grid-template-columns: repeat(4, 1fr)
-
-    // Cuatro columnas
 
 // ----------------------------------------------------
-// 2. ESTILOS DE CAMPOS INDIVIDUALES 
+// 2. ESTILOS DE CAMPOS INDIVIDUALES 
 // ----------------------------------------------------
 
 .dynamic-form-group
-  display: flex
-  flex-direction: column
+    display: flex
+    flex-direction: column
 
-  label
-    font-weight: 600
-    margin-bottom: 4px
-    color: $text-color
-    font-size: 0.9rem
+    label
+        font-weight: 600
+        margin-bottom: 4px
+        color: $text-color
+        font-size: 0.9rem
 
 .required-star
-  color: $error-color
-  margin-left: 4px
+    color: $error-color
+    margin-left: 4px
 
 .dynamic-form-input
-  padding: 8px 12px
-  border: 1px solid lighten($border-color, 10%)
-  border-radius: 8px
-  font-size: 1rem
-  box-sizing: border-box
-  width: 100%
-  transition: all 0.2s ease
-  background-color: $card-bg
+    padding: 8px 12px
+    border: 1px solid lighten($border-color, 10%)
+    border-radius: $border-radius-square // ✅ Borde más cuadrado
+    font-size: 1rem
+    box-sizing: border-box
+    width: 100%
+    transition: all 0.2s ease
+    background-color: $card-bg
+    color: $text-color
 
-  &:hover
-    border-color: $border-color
+    &:focus
+        border-color: $primary-color
 
-  &:focus
-    border-color: $primary-color
-    outline: none
-    box-shadow: 0 1px 0 0 $primary-color
+    &:hover
+        border-color: $border-color
+
+    &:focus
+        border-color: $primary-color
+        outline: none
+        box-shadow: 0 1px 0 0 $primary-color
 
 textarea.dynamic-form-input
-  resize: vertical
-  min-height: 100px
+    resize: vertical
+    min-height: 100px
+    color: $text-color
+
 
 // ----------------------------------------------------
 // 3. ESTILOS DE CAMPOS ESPECIALES (CHECKBOX Y RADIO)
 // ----------------------------------------------------
 
 .dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label
-  display: flex
-  align-items: center
-  gap: 8px
+    display: flex
+    align-items: center
+    gap: 8px
 
 .dynamic-form-checkbox-group
-  input[type="checkbox"]
-    cursor: pointer
-    min-width: 16px
-    min-height: 16px
-    border-radius: 4px
+    input[type="checkbox"]
+        cursor: pointer
+        min-width: 16px
+        min-height: 16px
+        border-radius: 4px
 
-  .checkbox-label
-    color: $text-color
-    cursor: pointer
-    font-weight: 500
+    .checkbox-label
+        color: $text-color
+        cursor: pointer
+        font-weight: 500
 
 .dynamic-form-radio-group
-  .radio-label
-    color: $text-color
-    cursor: pointer
-    font-weight: 500
+    .radio-label
+        color: $text-color
+        cursor: pointer
+        font-weight: 500
 
-    input[type="radio"]
-      cursor: pointer
-      min-width: 16px
-      min-height: 16px
+        input[type="radio"]
+            cursor: pointer
+            min-width: 16px
+            min-height: 16px
 
 // ----------------------------------------------------
 // 4. BOTONES DE ACCIÓN (RESPONSIVE)
 // ----------------------------------------------------
 
 .dynamic-form-actions-wrapper
-  display: flex
-  justify-content: space-between
-  gap: 10px
-  margin-top: $gap-size * 1.5
-
-  // Más margen superior
-  padding-top: $gap-size
-  border-top: 1px solid lighten($border-color, 10%)
-
-  .dynamic-form-submit-group
     display: flex
-    justify-content: flex-end
+    justify-content: space-between
     gap: 10px
-    flex-grow: 1
+    margin-top: $gap-size * 1.5
+    padding-top: $gap-size
+    border-top: 1px solid lighten($border-color, 10%)
 
-    // Permite que ocupe el espacio restante (para que justify-content: space-between funcione)
+    .dynamic-form-submit-group
+        display: flex
+        justify-content: flex-end
+        gap: 10px
+        flex-grow: 1
+
+        @media (max-width: 767px)
+            flex-direction: column
+            width: 100%
+            .dynamic-form-submit-btn--primary
+                order: 2
+            .dynamic-form-submit-btn--secondary
+                order: 1
 
     @media (max-width: 767px)
-      flex-direction: column
-      width: 100%
+        flex-direction: column
+        .dynamic-form-submit-btn--primary
+            order: 2
+        .dynamic-form-submit-btn--secondary
+            order: 1
 
-      // Ocupa todo el ancho disponible en móvil
-      // Revertir el orden para que el botón primario esté abajo (más fácil de alcanzar)
-      .dynamic-form-submit-btn--primary
-        order: 2
-
-      .dynamic-form-submit-btn--secondary
-        order: 1
-
-  // ✅ RESPONSIVE: Apilamiento vertical en móvil
-  @media (max-width: 767px)
-    flex-direction: column
-
-    // Revertir el orden para que el botón primario esté abajo (más fácil de alcanzar)
-    .dynamic-form-submit-btn--primary
-      order: 2
-
-    .dynamic-form-submit-btn--secondary
-      order: 1
-
-/* 🛑 Estilo Base del Botón (Unificado: aplica a submit y acciones)
+/* 🛑 Estilo Base del Botón (Unificado) */
 .dynamic-form-submit-btn
-  padding: 12px 18px
+    padding: 12px 18px
+    border-radius: $border-radius-square // ✅ Borde más cuadrado
+    cursor: pointer
+    font-size: 1rem
+    font-weight: 600
+    transition: all 0.2s ease
+    white-space: nowrap
+    line-height: 1.2
+    border: none
 
-  // Más padding vertical para mejor target táctil
-  border-radius: 8px
-  cursor: pointer
-  font-size: 1rem
+    @media (max-width: 767px)
+        width: 100%
 
-  // Un poco más grande en móvil
-  font-weight: 600
-  transition: all 0.2s ease
-  white-space: nowrap
-  line-height: 1.2
-  border: none
-
-  // ✅ Ocupa todo el ancho en móvil
-  @media (max-width: 767px)
-    width: 100%
-
-/* 🛑 Estilo Primario (Guardar/Submit)
+/* 🛑 Estilo Primario (Guardar/Submit) */
 .dynamic-form-submit-btn--primary
-  background-color: $primary-color
-  color: #fff
+    background-color: $primary-color
+    color: #fff
+    &:hover:not(:disabled)
+        background-color: darken($primary-color, 8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($primary-color, 0.3)
 
-  &:hover:not(:disabled)
-    background-color: darken($primary-color, 8%)
-    transform: translateY(-1px)
-    box-shadow: 0 2px 4px rgba($primary-color, 0.3)
-
-/* 🛑 Estilo Secundario (Cancelar/Acciones)
+/* 🛑 Estilo Secundario (Cancelar/Acciones) */
 .dynamic-form-submit-btn--secondary
-  background-color: transparent
-  color: $text-color
-  border: 1px solid $border-color
-  font-weight: 500
-
-  &:hover:not(:disabled)
-    background-color: $light-gray
-    border-color: $light-gray
+    background-color: transparent
     color: $text-color
+    border: 1px solid $border-color
+    font-weight: 500
+    &:hover:not(:disabled)
+        background-color: $light-gray
+        border-color: $light-gray
+        color: $text-color
+        transform: none
+        box-shadow: none
+
+/* 🛑 Estilo Deshabilitado */
+.dynamic-form-submit-btn:disabled
+    background-color: $light-gray !important
+    color: #999 !important
+    cursor: not-allowed
+    opacity: 0.8
     transform: none
     box-shadow: none
-
-/* 🛑 Estilo Deshabilitado
-.dynamic-form-submit-btn:disabled
-  background-color: $light-gray !important
-  color: #999 !important
-  cursor: not-allowed
-  opacity: 0.8
-  transform: none
-  box-shadow: none

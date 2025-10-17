@@ -10,7 +10,8 @@
     "start-cash": "cd pos-cash && npm install && npm run dev",
     "start-inventory": "cd pos-inventory && npm install && npm run dev",
     "start-clients": "cd pos-clients && npm install && npm run dev",
-    "start-audit": "cd pos-audit && npm install && npm run dev"
+    "start-audit": "cd pos-audit && npm install && npm run dev",
+    "start-authorizer": "cd authorizer && npm install && npm run dev"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

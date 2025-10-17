@@ -1,7 +1,6 @@
-// src/routes/appRoutes.tsx
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../../pages/loginPage/loginPage";
+
 import DashboardLayout from "../../components/dashboard/dashboardLayout";
 import DashboardHome from "../../pages/dashboardPage/dashboardPage";
 import PosBillingPage from "../../pages/posbillingPage/posbillingPage";
@@ -10,7 +9,10 @@ import PosClientsPage from "../../pages/posclientePage/posclientsPage";
 import PosInventoryPage from "../../pages/posinventoryPage/posinventoryPage";
 import PosAuditPage from "../../pages/posauditPage/posauditPage";
 
+// Componentes remotos
 const IAMPage = lazy(() => import("../../pages/iamPage/iamPage"));
+// Nuevo: Importación dinámica del LoginPage desde el Microservicio Authorizer
+const RemoteLoginPage = lazy(() => import("authorizer/LoginPage"));
 
 interface AppRoutesProps {
   isAuthenticated: boolean;
@@ -22,10 +24,18 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
       {/* Ruta principal */}
       <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
 
-      {/* Login */}
+      {/* Login (Usa RemoteLoginPage dentro de Suspense) */}
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />}
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" />
+          ) : (
+            <Suspense fallback={<div>Cargando Login...</div>}>
+              <RemoteLoginPage />
+            </Suspense>
+          )
+        }
       />
 
       {/* Dashboard */}
@@ -46,50 +56,46 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isAuthenticated }) => {
             </Suspense>
           }
         />
-         {/* Ruta para Admin remoto */}
+        {/* Ruta para Billing remoto */}
         <Route
           path="billing/*"
           element={
-            <Suspense fallback={<div>Cargando Admin...</div>}>
+            <Suspense fallback={<div>Cargando Billing...</div>}>
               <PosBillingPage />
             </Suspense>
           }
         />
-           <Route
+        <Route
           path="cash/*"
           element={
-            <Suspense fallback={<div>Cargando Admin...</div>}>
+            <Suspense fallback={<div>Cargando Cash...</div>}>
               <PosCashPage />
             </Suspense>
           }
-          
         />
-           <Route
+        <Route
           path="client/*"
           element={
-            <Suspense fallback={<div>Cargando Admin...</div>}>
+            <Suspense fallback={<div>Cargando Clients...</div>}>
               <PosClientsPage />
             </Suspense>
           }
-          
         />
-           <Route
+        <Route
           path="inventory/*"
           element={
-            <Suspense fallback={<div>Cargando Admin...</div>}>
+            <Suspense fallback={<div>Cargando Inventory...</div>}>
               <PosInventoryPage />
             </Suspense>
           }
-          
         />
-              <Route
+        <Route
           path="audit/*"
           element={
-            <Suspense fallback={<div>Cargando Admin...</div>}>
+            <Suspense fallback={<div>Cargando Audit...</div>}>
               <PosAuditPage />
             </Suspense>
           }
-          
         />
       </Route>
 

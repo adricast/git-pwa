@@ -1,8 +1,7 @@
 // src/App.tsx
 import { useEffect, useState } from "react";
 import { AppRoutes } from "./configurations/routes/appRoutes"; // 👈 importamos las rutas
-import { authSensor } from "./hooks/sensors/authSensor";
-import { initAuthService } from "./services/authServices";
+import { authSensor, initAuthService } from "authorizer/authExports"; 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);

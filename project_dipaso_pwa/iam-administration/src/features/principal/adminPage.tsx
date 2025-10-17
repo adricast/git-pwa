@@ -31,7 +31,7 @@ const AdminPage: React.FC = () => {
                     <div className="menu-grid">
                         
                        
-                        <Link to="person"> 
+                        <Link to="employ"> 
                             <OptionCard
                                 label="Gestión de Empleados"
                                 icon={<FaUserCircle size={30} />} // Usamos FaUserCircle o FaUserPlus

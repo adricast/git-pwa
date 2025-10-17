@@ -1,9 +1,8 @@
-// src/components/forms/DynamicSection.tsx
+// 📁 src/components/forms/DynamicSection.tsx (¡CORRECCIÓN DE REGEX FINAL!)
 
 import React from 'react';
-import type { FormSection } from './interface'; // Ajusta la ruta
-import DynamicField from './dynamicfield'; // Importamos el componente de campo individual
-// 🛑 IMPORTAMOS EL HOOK DEL CONTEXTO PARA OBTENER EL PASO ACTUAL
+import type { FormSection } from './interface'; 
+import DynamicField from './dynamicfield'; 
 import { useDynamicFormContext } from './dynamicformContext'; 
 
 interface DynamicSectionProps {
@@ -11,55 +10,72 @@ interface DynamicSectionProps {
 }
 
 /**
- * Componente que renderiza un grupo de campos y aplica el layout de columnas
- * definido en la configuración de la sección.
+ * Función auxiliar para eliminar el prefijo numérico o de paso al inicio del título.
+ * Esta versión es altamente flexible para eliminar números, puntos, guiones y espacios.
  */
+const cleanTitlePrefix = (title: string): string => {
+    // ✅ Regex más robusta:
+    // 1. Busca uno o más dígitos al inicio (^\d+).
+    // 2. Seguido de cero o más caracteres que NO sean letras/números/guiones [^a-zA-Z0-9-]*
+    // 3. Y elimina cualquier espacio en blanco subsiguiente (\s*).
+    const regex = /^\d+[^a-zA-Z0-9-]*\s*/; 
+    
+    // Si la limpieza anterior no funcionó, probaremos una limpieza simple de cualquier dígito/punto inicial
+    const result = title.replace(regex, '').trim();
+
+    // Si el título empieza AÚN con un número (ej. si la Regex inicial falló), probamos un método más simple
+    if (result.match(/^\d+\.\s*/)) {
+        return result.replace(/^\d+\.\s*/, '').trim();
+    }
+    
+    return result;
+};
+
+
 const DynamicSection: React.FC<DynamicSectionProps> = ({ section }) => {
     
-    // 🛑 OBTENER INFORMACIÓN DEL PASO ACTUAL PARA EL ENCABEZADO
     const { currentStep, sections } = useDynamicFormContext();
-    const currentSectionIndex = sections.findIndex(s => s.title === section.title); // Buscar el índice
+    const currentSectionIndex = sections.findIndex(s => s.title === section.title); 
 
-    // Generamos una clase CSS dinámica para el layout
     const layoutClass = `dynamic-section-columns-${section.columns}`;
     
-    // Título a usar, si no existe usa un fallback
-    const sectionTitle = section.title || `Paso ${currentSectionIndex + 1}`;
-
+    // 1. Obtener el título original de la configuración (Ej: "1. Datos Personales...")
+    const sectionTitleOriginal = section.title || `Paso sin título`; 
+    
+    // 2. ✅ CORRECCIÓN: Limpiar el título.
+    const displayTitle = cleanTitlePrefix(sectionTitleOriginal);
+    
+    // 3. Usamos el índice de la sección para el círculo
+    const stepNumber = currentSectionIndex !== -1 ? currentSectionIndex + 1 : currentStep + 1;
+    console.log('sections'+stepNumber);
 
     return (
-        <section className={`dynamic-form-section ${layoutClass}`}>
+        // Contenedor principal
+        <fieldset className={`dynamic-form-section ${layoutClass}`}>
             
-            {/* Título de la Sección (Siempre renderiza el contenedor del encabezado) */}
-            {sectionTitle && (
-                // Usamos la clase 'section-header' definida en tu SCSS
-                <div className="section-header">
+            {displayTitle && (
+                // Cabecera como LEGEND
+                <legend className="section-header">
                     
-                    {/* 🛑 NÚMERO DEL PASO CON TOOLTIP para móvil */}
-                    <div 
-                        className="section-step-number" 
-                        // Usamos el título como atributo de datos para el tooltip en móvil
-                        data-tooltip={sectionTitle} 
-                    >
-                        {currentSectionIndex !== -1 ? currentSectionIndex + 1 : currentStep + 1}
-                    </div>
+                    {/* 🛑 CÍRCULO: Elemento que muestra el número */}
                     
-                    {/* 🛑 TÍTULO DE LA SECCIÓN (Visible solo en Desktop/Tablet) */}
-                    {/* Usamos un h3 dentro del div para mantener la semántica y el estilo SCSS */}
+                    
+                    {/* 🛑 TÍTULO DE LA SECCIÓN (Texto limpio) */}
                     <h3 className="section-title">
-                        {sectionTitle}
+                        {/* ✅ AQUI SOLO VA EL TEXTO DESCRIPTIVO */}
+                        {displayTitle} 
                     </h3>
 
-                </div>
+                </legend>
             )}
 
-            {/* Contenedor de los campos con el layout de columnas */}
+            {/* Contenedor de los campos */}
             <div className="dynamic-section-fields-grid">
                 {section.fields.map(field => (
                     <DynamicField key={field.name} field={field} />
                 ))}
             </div>
-        </section>
+        </fieldset>
     );
 };
 

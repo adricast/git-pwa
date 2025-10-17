@@ -2,7 +2,15 @@
 @use '_base'
 @use '_mixins'
 @use '_variables'
+@use '_fonts'
 
+
+    
+:root
+  --font-family-primary: #{variables.$font-family-primary}
+  --font-weight-bold: #{variables.$font-weight-bold}
+  --font-weight-regular: #{variables.$font-weight-regular}
+  
 // Componentes
 @use 'components/cardcontainer2Layout'
 @use 'components/cardcontainerLayout'

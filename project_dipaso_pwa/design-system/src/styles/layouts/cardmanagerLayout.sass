@@ -1,0 +1,69 @@
+@use 'sass:color'
+@use '../_variables' as *
+
+
+// Ajusta esta ruta si es necesario
+
+// 1. Contenedor Principal
+.card-manager-container
+  width: 100%
+  min-height: 100vh
+
+  // Ocupa al menos toda la altura de la vista disponible
+  padding: 0px
+  background-color: $background-color
+
+  // Color de fondo general
+  display: flex
+  flex-direction: column
+  gap: 20px
+
+// 2. Sección de Acciones (Botones de prueba)
+.card-actions
+  display: flex
+  gap: 15px
+  padding-bottom: 10px
+
+  // Espacio bajo los botones
+
+// 3. Estilos de Botones
+.add-ficha-primary,
+.add-ficha-secondary
+  padding: 10px 15px
+  border: none
+  border-radius: 8px
+  font-weight: 600
+  cursor: pointer
+  transition: all $transition-speed ease
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+
+  &:hover
+    transform: translateY(-1px)
+
+.add-ficha-primary
+  background-color: $primary-color
+  color: $card-bg
+
+  // Blanco o color claro
+
+  &:hover
+    background-color: color.adjust($light-gray, $lightness: 5%)
+
+.add-ficha-secondary
+  background-color: $secondary-color
+  color: $card-bg
+
+  &:hover
+    background-color: color.adjust($light-gray, $lightness: 5%)
+
+// 4. Rejilla de Fichas (Grid)
+.card-grid
+  display: grid
+
+  // Utiliza CSS Grid para organizar las fichas en columnas
+  // Se adaptará a 1, 2 o 3 columnas según el espacio disponible
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))
+  gap: 20px
+  flex-grow: 1
+
+  // Permite que la rejilla ocupe el espacio restante

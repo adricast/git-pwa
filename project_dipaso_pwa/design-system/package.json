@@ -1,0 +1,35 @@
+{
+  "name": "@dipaso/design-system",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run build:types && npm run build:styles",
+    "build:types": "tsc",
+    "build:styles": "sass src/styles:dist/styles --no-source-map",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "eslint": "^9.36.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.69.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.44.0"
+  },
+  "dependencies": {
+    "react-icons": "^5.5.0",
+    "uuid": "^13.0.0"
+  }
+}

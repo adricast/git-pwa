@@ -1,0 +1,146 @@
+@use 'sass:color'
+@use '../_variables' as *
+
+
+// --- Variables específicas de la Tabla ---
+$table-text-color: $text-color
+$table-header-bg: color.adjust($primary-color, $lightness: 30%)
+
+// Tono lila suave para encabezado
+$table-header-text: $text-color
+$table-divider-color: $border-color
+$table-hover-bg: color.adjust($background-color, $lightness: 2%)
+$table-selected-bg: color.adjust($primary-color, $lightness: 45%)
+
+// Lila muy claro para filas seleccionadas
+$table-selected-bg: color.adjust($primary-color, $lightness: 45%)
+.table-container
+  padding: 1.5rem
+  background: $card-bg
+  border-radius: 8px
+  box-shadow: 0 4px 12px $card-shadow
+
+  // Sombra sutil
+
+  .table-title
+    font-size: 1.5rem
+    font-weight: 700
+    color: $primary-color
+    margin-bottom: 1rem
+
+  .table-actions
+    display: flex
+    gap: 0.5rem
+    margin-bottom: 1rem
+
+    .table-btn
+      padding: 0.5rem 1rem
+      border-radius: 6px
+      font-weight: 600
+      border: none
+      cursor: pointer
+      transition: all $transition-speed ease
+      color: $card-bg
+
+      // Texto blanco por defecto
+
+      // --- Estilos de color ---
+      &.btn-default
+        background: $primary-color
+
+        &:hover:not(:disabled)
+          background: color.adjust($primary-color, $lightness: 5%)
+
+      &.btn-delete
+        background: $error-color
+
+        &:hover:not(:disabled)
+          background: color.adjust($error-color, $lightness: 5%)
+
+      &.btn-edit
+        background: $success-color
+
+        &:hover:not(:disabled)
+          background: color.adjust($success-color, $lightness: 5%)
+
+      &:disabled
+        opacity: 0.5
+        cursor: not-allowed
+
+  .table-wrapper
+    overflow-x: auto
+    border: 1px solid $table-divider-color
+    border-radius: 8px
+
+    .data-table
+      width: 100%
+      border-collapse: collapse
+
+      .table-head
+        background: $table-header-bg
+        text-align: left
+
+        .table-header-cell
+          padding: 0.75rem 1rem
+          font-size: 0.8rem
+          font-weight: 600
+          color: $table-header-text
+          text-transform: uppercase
+
+        .checkbox-col
+          width: 3rem
+          padding: 0.75rem 0.5rem
+
+      .table-body
+        background: $card-bg
+
+        .table-row
+          transition: background $transition-speed ease
+          border-bottom: 1px solid $table-divider-color
+
+          &.row-clickable
+            cursor: pointer
+
+          &.row-hover:hover
+            background: $table-hover-bg
+
+          // Clase para fila seleccionada
+          &.row-selected
+            background: $table-selected-bg
+
+            // Opcional: Borde izquierdo para destacar la selección
+            border-left: 4px solid $primary-color
+            padding-left: calc(1rem - 4px)
+
+          &:last-child
+            border-bottom: none
+
+        .table-cell
+          padding: 0.75rem 1rem
+          font-size: 0.9rem
+          color: $table-text-color
+
+        .custom-checkbox
+          // Estilos base para un checkbox moderno
+          appearance: none
+          width: 16px
+          height: 16px
+          border: 1px solid $secondary-color
+          border-radius: 3px
+          cursor: pointer
+          position: relative
+          transition: background $transition-speed
+
+          &:checked
+            background-color: $primary-color
+            border-color: $primary-color
+
+            // Icono de check (usando pseudo-elemento)
+            &::after
+              content: '✓'
+              color: white
+              font-size: 10px
+              position: absolute
+              top: 50%
+              left: 50%
+              transform: translate(-50%, -50%)

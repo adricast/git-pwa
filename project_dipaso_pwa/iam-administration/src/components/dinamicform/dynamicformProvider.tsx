@@ -15,7 +15,7 @@ import DynamicSection from './dynamicsection.tsx';
  * ahora en una vista única (no multipasos).
  */
 const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
-    // ✅ MODIFICADO: Recibe 'sections' en lugar de 'steps'
+    // ✅ Recibe 'sections'
     sections, 
     initialData,
     onSubmit,
@@ -25,10 +25,9 @@ const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
     className, 
 }) => {
     
-    // 1. Usar el hook de lógica
-    // 💡 NOTA: Esto generará un error de tipado temporal hasta que modifiquemos usedynamicform.tsx
+    // 1. Usar el hook de lógica (ahora adaptado para tablas y formularios anidados)
     const formContextValue = useDynamicForm({ 
-        sections, // ✅ MODIFICADO: Pasamos sections al hook
+        sections, // Pasamos sections al hook
         initialData, 
         onSubmit 
     });
@@ -37,11 +36,8 @@ const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
     const { 
         handleSubmit, 
         isFormValid,
-        // 🛑 ELIMINADAS: currentStepIndex, isStepValid, goToNextStep, goToPreviousStep, etc.
+        // Las propiedades de paginación han sido eliminadas del hook
     } = formContextValue;
-
-    // 3. Lógica de pasos eliminada
-    // 🛑 ELIMINADO: currentStep, isFirstStep, isLastStep
 
     return (
         <DynamicFormContext.Provider value={formContextValue}>
@@ -50,11 +46,9 @@ const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
                 onSubmit={handleSubmit} 
                 className={`dynamic-form-container ${className || ''}`}
             >
-                {/* 🛑 ELIMINADO: El indicador de Stepper */}
-                
                 {/* 🛑 RENDERIZADO SIMPLIFICADO: Renderiza TODAS las secciones de una vez */}
                 <div className="dynamic-form-all-sections-content">
-                    {sections.map((section, index) => ( // ✅ Iteramos sobre las secciones de entrada
+                    {sections.map((section, index) => ( // Iteramos sobre las secciones de entrada
                         <DynamicSection key={index} section={section} />
                     ))}
                 </div>
@@ -78,12 +72,10 @@ const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
                         </button>
                     ))}
 
-                    {/* 🛑 ELIMINADOS: Botones "Anterior" y "Siguiente" */}
-
                     {/* 5b. Botón de ENVÍO (Único botón principal) */}
                     <button 
                         type="submit" 
-                        // Deshabilitado si el formulario COMPLETO (padre e hijos) no es válido
+                        // Deshabilitado si el formulario COMPLETO no es válido
                         disabled={!isFormValid} 
                         className="dynamic-form-btn dynamic-form-btn--success"
                     >

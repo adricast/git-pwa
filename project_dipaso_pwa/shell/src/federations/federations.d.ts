@@ -51,7 +51,7 @@ declare module "authorizer/authExports" {
     // Nota: El tipo 'Auth' debe ser importable o definido en este archivo.
     // Para simplificar, asumimos que 'Auth' es el tipo que necesita.
     import type { Auth } from "../../models/api/authModel"; 
-
+    export type Auth = import("../../models/api/authModel").Auth; // o similar
     export const authSensor: AuthSensor;
     
     // Funciones de control de sesión

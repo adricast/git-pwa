@@ -1,6 +1,6 @@
-import GroupManagement from "./../features/usersgroup/groupuserLayout";
-import AdminPage from "./../features/principal/adminPage";
-import EmployManagement from "../features/employ/employLayout";
+import GroupManagement from "../../features/usersgroup/groupuserLayout";
+import AdminPage from "../../features/principal/adminPage";
+import EmployManagement from "../../features/employ/employLayout";
 
 export const appRoutes = [
   {

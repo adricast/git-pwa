@@ -5,318 +5,369 @@
 $gap-size: 10px
 $form-max-width: 90%
 $success-color: #28a745
-$fieldset-border-color: #d1d5db // Usaremos un color ligeramente más suave que $border-color
-
-// Color para acciones de éxito (como el botón Enviar)
+$fieldset-border-color: #d1d5db 
+$border-radius-square: 8px 
 
 // ----------------------------------------------------
 // 1. CONTENEDOR DE FORMULARIO
 // ----------------------------------------------------
 
 .dynamic-form-container
-  display: flex
-  flex-direction: column
-  padding: $gap-size * 1.2
-  width: $form-max-width
-  margin: 0 auto
-  border: 1px solid $border-color
-  border-radius: 12px
-  background-color: $white
-  gap: $gap-size * 1.2
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+    display: flex
+    flex-direction: column
+    padding: $gap-size * 1.2
+    width: $form-max-width
+    margin: 0 auto
+    border: 1px solid $border-color
+    border-radius: 12px
+    background-color: $white
+    gap: $gap-size * 1.2
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+
 
 // ----------------------------------------------------
 // 2. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
 // ----------------------------------------------------
 
 .dynamic-form-section
-  padding-bottom: $gap-size / 2
+    // 🛑 COMPACTAR: Reducimos el padding vertical del contenedor de sección
+    padding-bottom: $gap-size / 4
 
-// 🛑 ELIMINADA: La sección .section-group-header, ya que ahora usamos FIELDSET nativo
-// Los estilos que simulan legend han sido transferidos a .dynamic-legend
 
 .dynamic-section-fields-grid
-  display: grid
-  gap: $gap-size
+    display: grid
+    gap: $gap-size
 
-// Layout de 1 Columna
+// Layouts de Columnas
 .dynamic-section-columns-1 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
 
-// Layout de 2 Columnas
 .dynamic-section-columns-2 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
 
-  @media (min-width: 640px)
-    grid-template-columns: repeat(2, 1fr)
+    @media (min-width: 640px)
+        grid-template-columns: repeat(2, 1fr)
 
-// Layout de 3 Columnas
 .dynamic-section-columns-3 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
+    grid-template-columns: 1fr
 
-  @media (min-width: 1024px)
-    grid-template-columns: repeat(3, 1fr)
+    @media (min-width: 1024px)
+        grid-template-columns: repeat(3, 1fr)
 
 // ----------------------------------------------------
 // 3. ESTILOS DE AGRUPACIÓN NATIVA (FIELDSET/LEGEND)
 // ----------------------------------------------------
 
 $group-title-padding-x: 10px
-$fieldset-padding: 16px // Padding interno para que los campos no peguen al borde
+$fieldset-padding: 16px 
 
 .dynamic-fieldset
-  // 🛑 CAMBIO CLAVE 1: Aplicamos un borde sólido COMPLETO
-  border: 1px solid $fieldset-border-color
-  border-radius: 8px // Bordes redondeados para el fieldset
-  padding: 0 // Reset de padding nativo
-  margin: 0 // Reset de margin nativo
-  width: 100%
+    border: 1px solid $fieldset-border-color
+    border-radius: 8px 
+    padding: 0 
+    margin: 0 
+    width: 100%
 
-  // Margen externo para separar un fieldset del siguiente
-  margin-bottom: $gap-size * 2
+    // 🛑 COMPACTAR: Margen inferior ajustado
+    margin-bottom: $gap-size 
 
-  // 🛑 CAMBIO CLAVE 2: Aplicamos el padding interno de los campos
-  padding-top: $fieldset-padding * 1.5 // Más padding arriba para el legend
-  padding-bottom: $fieldset-padding // Padding inferior
-  padding-left: $fieldset-padding // Padding izquierdo
-  padding-right: $fieldset-padding // Padding derecho
+    // 🛑 COMPACTAR: Margen superior eliminado
+    margin-top: 0 
+
+    padding-top: $fieldset-padding * 1.2 
+    padding-bottom: $fieldset-padding 
+    padding-left: $fieldset-padding 
+    padding-right: $fieldset-padding 
 
 
 .dynamic-legend
-  // 🛑 RESET y ESTILO
-  padding: 0 $group-title-padding-x
-  margin: 0 // Reset de margin nativo
+    padding: 0 $group-title-padding-x
+    margin: 0 
 
-  // Mueve la leyenda a la izquierda y compensa el padding horizontal para que "muerda" el borde
-  margin-left: -$group-title-padding-x
+    margin-left: -$group-title-padding-x
 
-  // Asegura que esté en su propia línea
-  display: table
+    display: table
 
-  // 🛑 EFECTO CLAVE: El fondo BLANCO tapa la línea superior que está debajo
-  background-color: $white 
+    background-color: $white // Fondo blanco para tapar la línea
 
-  // 🛑 AJUSTE FINO: Desplazamiento que centra la leyenda en la línea de su fieldset.
-  // Esto sube el texto fuera del padding superior del fieldset.
-  transform: translateY(-16px) 
+    // 🛑 COMPACTAR: Desplazamiento reducido
+    transform: translateY(-12px) 
 
-  // Estilos de texto
-  color: $text-color
-  font-weight: 700
-  font-size: 1.1rem
+    color: $text-color
+    font-weight: 700
+    font-size: 1.1rem
 
-// Separación del título con los campos internos (usamos el margin-top para mover el grid de campos hacia abajo)
 .dynamic-fieldset > .dynamic-section-fields-grid
-  // Compensamos el padding superior y el legend (que ya está dentro del padding superior)
-  margin-top: -$gap-size 
+    // 🛑 COMPACTAR: Margen negativo reducido
+    margin-top: -$gap-size / 2  
+
 
 // ----------------------------------------------------
 // 4. ESTILOS DE CAMPOS INDIVIDUALES (INPUTS, LABELS)
 // ----------------------------------------------------
 
 .dynamic-form-group
-  display: flex
-  flex-direction: column
+    display: flex
+    flex-direction: column
 
-  label
-    font-weight: 600
-    margin-bottom: 4px
-    color: $text-color
-    font-size: 0.9rem
+    label
+        font-weight: 600
+        margin-bottom: 4px
+        color: $text-color
+        font-size: 0.9rem
 
 .required-star
-  color: $error-color
-  margin-left: 4px
+    color: $error-color
+    margin-left: 4px
 
 .dynamic-form-input
-  padding: 8px 12px
-  border: 1px solid lighten($border-color, 10%)
-  border-radius: 8px
-  font-size: 1rem
-  box-sizing: border-box
-  width: 100%
-  transition: all 0.2s ease
-  background-color: $card-bg
+    padding: 8px 12px
+    border: 1px solid lighten($border-color, 10%)
+    border-radius: 8px
+    font-size: 1rem
+    box-sizing: border-box
+    width: 100%
+    transition: all 0.2s ease
+    
+    // 🛑 CORRECCIÓN SINTAXIS: Forzar fondo blanco y texto oscuro
+    background-color: $white !important 
+    color: $text-color !important
 
-  &:hover
-    border-color: $border-color
+    &:hover
+        border-color: $border-color
 
-  &:focus
-    border-color: $primary-color
-    outline: none
-    box-shadow: 0 1px 0 0 $primary-color
+    &:focus
+        border-color: $primary-color
+        outline: none
+        box-shadow: 0 1px 0 0 $primary-color
 
 textarea.dynamic-form-input
-  resize: vertical
-  min-height: 100px
+    resize: vertical
+    min-height: 100px
 
 // ----------------------------------------------------
 // 5. ESTILOS DE CAMPOS ESPECIALES (CHECKBOX Y RADIO)
 // ----------------------------------------------------
 
 .dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label
-  display: flex
-  align-items: center
-  gap: 8px
+    display: flex
+    align-items: center
+    gap: 8px
 
 .dynamic-form-checkbox-group
-  input[type="checkbox"]
-    appearance: none
-    -webkit-appearance: none
-    width: 24px
-    height: 24px
-    min-width: 24px
-    min-height: 24px
-    border: 2px solid $border-color
-    border-radius: 50%
-    cursor: pointer
-    background-color: $card-bg
-    position: relative
-    transition: all 0.2s ease
+    input[type="checkbox"]
+        appearance: none
+        -webkit-appearance: none
+        width: 24px
+        height: 24px
+        min-width: 24px
+        min-height: 24px
+        border: 2px solid $border-color
+        border-radius: 50%
+        cursor: pointer
+        
+        // 🛑 CORRECCIÓN CHECKBOX: Forzar fondo blanco cuando no está marcado
+        background-color: $white 
+        
+        position: relative
+        transition: all 0.2s ease
 
-    &:focus
-      outline: none
-      box-shadow: 0 0 0 3px rgba($primary-color, 0.2)
+        &:focus
+            outline: none
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.2)
 
-    &:checked
-      background-color: $success-color
-      border-color: $success-color
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2)
+        &:checked
+            background-color: $success-color
+            border-color: $success-color
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2)
 
-      &::after
-        content: ''
-        position: absolute
-        top: 4px
-        left: 7px
-        width: 6px
-        height: 12px
-        border: solid $white
-        border-width: 0 3px 3px 0
-        transform: rotate(45deg)
+            &::after
+                content: ''
+                position: absolute
+                top: 4px
+                left: 7px
+                width: 6px
+                height: 12px
+                border: solid $white
+                border-width: 0 3px 3px 0
+                transform: rotate(45deg)
 
 .dynamic-form-radio-group
-  .radio-label
-    input[type="radio"]
-      // ... Estilos de radio ...
-      &:checked
-        border-color: $primary-color
+    .radio-label
+        input[type="radio"]
+            &:checked
+                border-color: $primary-color
 
-        &::after
-          background-color: $primary-color
+                &::after
+                    background-color: $primary-color
 
-// Estilo de wrapper para checkbox (para el layout de DynamicField.tsx)
 .dynamic-form-group.checkbox-wrapper
-  display: flex
-  flex-direction: row
-  align-items: center
-  gap: 16px
+    display: flex
+    flex-direction: row
+    align-items: center
+    gap: 16px
 
-  label
-    margin-bottom: 0
-    font-size: 1rem
-    font-weight: 500
-    cursor: pointer
-    color: $text-color
+    label
+        margin-bottom: 0
+        font-size: 1rem
+        font-weight: 500
+        cursor: pointer
+        color: $text-color
 
 // ----------------------------------------------------
-// 6. ESTILOS DE NAVEGACIÓN (Se mantienen si vuelves a usar steppers)
+// 6. ESTILOS DE TABLA PARAMETRIZADA (DYNAMIC-TABLE)
 // ----------------------------------------------------
 
-.dynamic-form-stepper-indicator
-  display: flex
-  justify-content: center
-  gap: 20px
-  margin-bottom: $gap-size * 2
-  padding-bottom: 10px
-  border-bottom: 1px solid lighten($border-color, 15%)
+.dynamic-form-table-group
+    // 🛑 COMPACTAR: Eliminar margen superior innecesario
+    margin-top: 0 
 
-.dynamic-form-step-title
-  font-size: 1rem
-  font-weight: 500
-  color: $text-color-light
+.dynamic-table-wrapper
+    display: flex
+    flex-direction: column
+    width: 100%
+    overflow-x: auto
+    padding-bottom: 5px
 
-  // Color de texto claro o gris
-  cursor: default
-  padding-bottom: 5px
+.dynamic-table
+    width: 100%
+    border-collapse: collapse
+    min-width: 600px
+    table-layout: fixed
 
-  &.active
-    font-weight: 700
-    color: $primary-color
-    border-bottom: 2px solid $primary-color
+    // HEADERS (th)
+    thead th
+        background-color: $light-gray
+        color: $text-color
+        font-weight: 700
+        text-align: left
+        padding: 8px 8px 
+        border-bottom: 2px solid $border-color
+        font-size: 0.85rem
+        
+        &.action-column
+            width: 60px
+            text-align: center
 
-.dynamic-form-current-step-content
-  h2
-    // Título del paso actual
-    color: $text-color
-    font-weight: 700
-    margin-top: 0
-    margin-bottom: $gap-size * 1.5
-    font-size: 1.5rem
+    // FILAS (tr)
+    tbody td
+        padding: 3px 8px 
+        border-bottom: 1px solid lighten($border-color, 5%)
+        vertical-align: middle
+        
+    // 🛑 INPUTS EN CELDA (INCLUYE SELECTS DE LA TABLA)
+    .dynamic-table-cell-input, select.dynamic-table-cell-input 
+        // 🛑 CORRECCIÓN SINTAXIS: Forzar fondo blanco y texto oscuro
+        background-color: $white !important
+        color: $text-color !important
+        padding: 4px 6px 
+        min-height: 28px 
+        
+        width: 100%
+        box-shadow: none
+        border: 1px solid transparent
+
+        &:focus
+            border: 1px solid $primary-color 
+
+    // BOTÓN ELIMINAR
+    .dynamic-table-remove-btn
+        background: transparent
+        color: $error-color
+        border: none
+        cursor: pointer
+        padding: 5px
+        border-radius: $border-radius-square
+        font-size: 1rem
+        transition: background-color 0.2s
+        
+        &:hover
+            background-color: lighten($error-color, 45%) 
+            
+    // BOTÓN AGREGAR
+    .dynamic-table-add-btn
+        // Usamos el estilo secundario base, pero con un color más suave
+        @extend .dynamic-form-btn--secondary
+        align-self: flex-start
+        margin-top: $gap-size
+        padding: 8px 15px
+        font-size: 0.9rem
+        color: $primary-color
+        border-color: $primary-color
+        
+        &:hover
+            background-color: lighten($primary-color, 45%)
+            color: $primary-color
+            border-color: $primary-color
+        
+        @media (max-width: 767px)
+            width: auto
 
 // ----------------------------------------------------
 // 7. BOTONES DE ACCIÓN (UNIFICADOS)
 // ----------------------------------------------------
 
-// Contenedor de botones (reemplaza el estilo inline en DynamicFormProvider)
 .dynamic-form-actions-wrapper
-  display: flex
-  justify-content: flex-end
-  gap: 10px
-  margin-top: $gap-size
-  padding-top: $gap-size
-  border-top: 1px solid lighten($border-color, 10%)
+    display: flex
+    justify-content: flex-end
+    gap: 10px
+    margin-top: $gap-size
+    padding-top: $gap-size
+    border-top: 1px solid lighten($border-color, 10%)
 
 /* Estilo Base del Botón */
 .dynamic-form-btn
-  padding: 10px 18px
-  border-radius: 8px
-  cursor: pointer
-  font-size: 0.95rem
-  font-weight: 600
-  transition: all 0.2s ease
-  white-space: nowrap
-  line-height: 1.2
-  border: none // Línea corregida
+    padding: 10px 18px
+    border-radius: 8px
+    cursor: pointer
+    font-size: 0.95rem
+    font-weight: 600
+    transition: all 0.2s ease
+    white-space: nowrap
+    line-height: 1.2
+    border: none
 
 /* Estilo Primario (Botón Siguiente) */
 .dynamic-form-btn--primary
-  background-color: $primary-color
-  color: #fff
+    background-color: $primary-color
+    color: #fff
 
-  &:hover:not(:disabled)
-    background-color: darken($primary-color, 8%)
-    transform: translateY(-1px)
-    box-shadow: 0 2px 4px rgba($primary-color, 0.3)
+    &:hover:not(:disabled)
+        background-color: darken($primary-color, 8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($primary-color, 0.3)
 
 /* Estilo Éxito (Botón Enviar Final) */
 .dynamic-form-btn--success
-  background-color: $success-color
-  color: #fff
+    background-color: $success-color
+    color: #fff
 
-  &:hover:not(:disabled)
-    background-color: darken($success-color, 8%)
-    transform: translateY(-1px)
-    box-shadow: 0 2px 4px rgba($success-color, 0.3)
+    &:hover:not(:disabled)
+        background-color: darken($success-color, 8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($success-color, 0.3)
 
 /* Estilo Secundario (Botón Anterior / Acciones Genéricas) */
 .dynamic-form-btn--secondary
-  background-color: transparent
-  color: $text-color
-  border: 1px solid $border-color
-  font-weight: 500
-
-  &:hover:not(:disabled)
-    background-color: $light-gray
-    border-color: $light-gray
+    background-color: transparent
     color: $text-color
-    transform: none
-    box-shadow: none
+    border: 1px solid $border-color
+    font-weight: 500
+
+    &:hover:not(:disabled)
+        background-color: $light-gray
+        border-color: $light-gray
+        color: $text-color
+        transform: none
+        box-shadow: none
 
 /* Estilo Deshabilitado */
 .dynamic-form-btn:disabled
-  background-color: $light-gray !important
-  color: #999 !important
-  cursor: not-allowed
-  opacity: 0.6
-  transform: none
-  box-shadow: none
+    background-color: $light-gray !important
+    color: #999 !important
+    cursor: not-allowed
+    opacity: 0.6
+    transform: none
+    box-shadow: none
+
+// ----------------------------------------------------

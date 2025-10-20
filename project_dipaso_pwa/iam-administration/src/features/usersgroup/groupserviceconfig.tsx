@@ -4,7 +4,7 @@ import {
     softDeleteGroupsMassive, 
     createGroup, 
     updateGroup 
-} from "./../../services/groupuserServices"; 
+} from "../../services/api/groupuserServices"; 
 
 import type { Group } from "./../../models/api/groupModel";
 

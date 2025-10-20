@@ -203,7 +203,7 @@ $border-radius-square: 6px
 
 
 // ----------------------------------------------------
-// 2. ESTILOS DE CAMPOS INDIVIDUALES 
+// 2. ESTILOS DE CAMPOS INDIVIDUALES 
 // ----------------------------------------------------
 
 .dynamic-form-group
@@ -228,7 +228,7 @@ $border-radius-square: 6px
     box-sizing: border-box
     width: 100%
     transition: all 0.2s ease
-    background-color: $card-bg
+    background-color: $card-bg // Si $card-bg es oscuro, los inputs serán oscuros
     color: $text-color
 
     &:focus
@@ -263,11 +263,16 @@ textarea.dynamic-form-input
         min-width: 16px
         min-height: 16px
         border-radius: 4px
-
+        background-color: white
     .checkbox-label
         color: $text-color
         cursor: pointer
         font-weight: 500
+    &:checked
+            background-color: $primary-color
+            border-color: $primary-color
+            color: $white
+
 
 .dynamic-form-radio-group
     .radio-label
@@ -358,3 +363,116 @@ textarea.dynamic-form-input
     opacity: 0.8
     transform: none
     box-shadow: none
+
+
+// ====================================================
+// 5. 🟢 ESTILOS PARA LA TABLA PARAMETRIZADA (.dynamic-table)
+// ====================================================
+
+.dynamic-form-table-group
+    // Sobrescribir el estilo de columna para la tabla, forzándola a usar 1fr para el ancho total
+    // Se usa un div dentro de fieldset/grid, por lo que no necesita resetear el grid.
+    margin-top: $gap-size // Pequeña separación del título de la sección
+
+.dynamic-table-wrapper
+    display: flex
+    flex-direction: column
+    width: 100%
+    overflow-x: auto // Permite scroll horizontal en móvil
+    padding-bottom: 5px // Espacio para la sombra/scroll
+
+.dynamic-table
+    width: 100%
+    border-collapse: collapse
+    // min-width para evitar que se comprima demasiado en móviles, forzando el scroll
+    min-width: 600px 
+    table-layout: fixed // Asegura que las columnas se adhieran al ancho definido por th/td
+
+    // -------------------
+    // HEADERS (th)
+    // -------------------
+    thead th
+        background-color: $light-gray // Fondo ligeramente gris
+        color: $text-color
+        font-weight: 700
+        text-align: left
+        padding: 10px 8px
+        border-bottom: 2px solid $border-color
+        font-size: 0.85rem
+        
+        // Columna de Acciones más pequeña
+        &.action-column
+            width: 60px
+            text-align: center
+
+    // -------------------
+    // FILAS (tr)
+    // -------------------
+    tbody td
+        padding: 4px 8px // Menos padding para el input interno
+        border-bottom: 1px solid lighten($border-color, 5%)
+        vertical-align: middle
+        
+        // Estilo especial para la última fila vacía
+        &:only-child
+            font-style: italic
+            color: lighten($text-color, 20%)
+            padding: 15px 8px
+            
+    // -------------------
+    // INPUTS EN CELDA
+    // -------------------
+    .dynamic-table-cell-input
+        // Resetear estilos de input para que quepa bien en la celda
+        width: 100%
+        padding: 6px 8px 
+        font-size: 0.9rem
+        min-height: 32px
+        margin: 0
+        box-shadow: none
+        // Ocultar bordes internos para que parezca parte de la tabla
+        border: 1px solid transparent 
+        
+        // 🛑 CORRECCIÓN: Forzar el fondo a blanco y el texto a negro para evitar el tema oscuro
+        background-color: $white !important 
+        color: $text-color !important
+        
+        &:focus
+            border: 1px solid $primary-color // Mostrar borde solo al enfocar
+
+    // -------------------
+    // BOTÓN ELIMINAR
+    // -------------------
+    .dynamic-table-remove-btn
+        background: transparent
+        color: $error-color
+        border: none
+        cursor: pointer
+        padding: 5px
+        border-radius: $border-radius-square
+        font-size: 1rem
+        transition: background-color 0.2s
+        
+        &:hover
+            background-color: lighten($error-color, 45%) // Fondo suave al pasar el mouse
+            
+    // -------------------
+    // BOTÓN AGREGAR
+    // -------------------
+.dynamic-table-add-btn
+    // Usamos el estilo secundario base, pero con un color más suave
+    @extend .dynamic-form-submit-btn--secondary
+    align-self: flex-start // Alineación a la izquierda
+    margin-top: $gap-size
+    padding: 8px 15px
+    font-size: 0.9rem
+    color: $primary-color
+    border-color: $primary-color
+    
+    &:hover
+        background-color: lighten($primary-color, 45%)
+        color: $primary-color
+        border-color: $primary-color
+        
+    @media (max-width: 767px)
+        width: auto // Permitir que el botón sea más pequeño en móvil

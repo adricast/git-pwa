@@ -1,5 +1,5 @@
 // src/db/authRepository.ts
-import { getDB } from "./indexed";
+import { getDB } from "shell/dbService";
 import type { Auth } from "./../models/api/authModel";
 import type { Token } from "./../models/api/tokenModel";
 

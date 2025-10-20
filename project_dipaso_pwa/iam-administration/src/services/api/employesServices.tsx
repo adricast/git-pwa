@@ -1,8 +1,8 @@
 // 📁 src/services/employeeService.tsx
 
-import type { PersonModel } from "./../models/api/personModel";
-import { api } from "./../services/api"; // Asume que 'api' es tu instancia configurada de Axios
-import { employeesRouteApi  } from "./../configurations/apiroutes"; // Asume { employee: '/employee' }
+import type { PersonModel } from "../../models/api/personModel";
+import { api } from "./../api/api"; // Asume que 'api' es tu instancia configurada de Axios
+import { employeesRouteApi  } from "../../configurations/routes/apiroutes"; // Asume { employee: '/employee' }
 
 // NOTA: Estos tipos deben coincidir con los definidos en tu archivo EmployManagement.tsx
 export type PersonCreationPayload = Omit<PersonModel, "personId" | "createdAt" | "updatedAt" | "updatedByUserId">;

@@ -45,7 +45,10 @@ export default defineConfig({
         authorizer: 'http://localhost:3007/assets/remoteEntry.js',
       },
       shared: ['react', 'react-dom', 'react-router-dom'],
-      exposes:{},
+      exposes:{
+       './dbService': './src/db/indexed.ts',
+
+      },
     }),
 
     VitePWA({

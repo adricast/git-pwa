@@ -11,9 +11,11 @@ import type { DocumentModel } from "../../models/api/documentModel";
 // Importamos la configuración de servicios
 import { personServiceConfig } from "./employserviceconfig"; 
 
-import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout";
-import AddEditPersonContent from "./addeditemploy"; 
-import ReusableTable from "../../components/layout/reusabletablefilterLayout"; 
+import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
+// 🚨 CORRECCIÓN DE IMPORTACIÓN: Reemplazamos AddEditPersonContent por el Wrapper
+// import AddEditPersonContent from "./addeditemploy"; 
+import EmployFormWrapper from "./employformwrapper"; // 🚨 Importamos el Wrapper
+import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 import { FaSyncAlt } from "react-icons/fa"; 
 
 import "./../styles/generalLayout.sass"; 
@@ -27,11 +29,21 @@ type PersonCreatePayload = Omit<
     'personId' | 'createdAt' | 'updatedAt' | 'createdByUserId' | 'updatedByUserId'
 >;
 
-// 💡 TIPO DE DATOS DEL FORMULARIO: Usamos el mismo tipo plano del componente AddEdit
-interface PersonFormData {
-    givenName: string; surName: string; phoneNumber?: string; genderId?: string; dateOfBirth?: string;
-    docTypeId: string; docNumber: string;
-    street: string; cityId: string; postalCode?: string;
+// 💡 TIPO DE DATOS DEL FORMULARIO (ACTUALIZADO para reflejar la tabla 'documents')
+interface EmployFormData { // Usamos el nombre EmployFormData para coincidir con addeditemploy.tsx
+    givenName: string; 
+    surName: string; 
+    phoneNumber?: string; 
+    genderId?: string; 
+    dateOfBirth?: string;
+    
+    // 🛑 CAMBIO CLAVE: Usa el array documents[] de la tabla dinámica
+    documents: DocumentModel[]; 
+    
+    // Campos de dirección
+    street: string; 
+    cityId: string; 
+    postalCode?: string;
 }
 
 
@@ -90,7 +102,8 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
             : "Crear Nuevo Empleado";
         
         const content = (
-            <AddEditPersonContent 
+            // 🚨 CAMBIO CLAVE: Renderizamos el Wrapper que maneja la carga y la mutación
+            <EmployFormWrapper 
                 employ={personToEdit} 
                 onSave={handleSavePerson} 
                 onClose={closeTopScreen} 
@@ -107,13 +120,15 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
 
     // 🟢 Maneja tanto la creación como la actualización
     const handleSavePerson = async (
-        person: PersonModel | null, 
-        personPatch: Partial<PersonModel> & PersonFormData
+        person: PersonModel | null, // 🚨 ESTA ES LA VARIABLE CORRECTA
+        // 🛑 USAMOS EL NUEVO TIPO EmployFormData
+        personPatch: Partial<PersonModel> & EmployFormData
     ) => {
         const isEditing = person && person.personId;
         
-        // 💡 EXTRAEMOS CAMPOS PLANOS PARA CREAR ESTRUCTURAS ANIDADAS
-        const { docTypeId, docNumber, street, cityId, postalCode, ...personFields } = personPatch;
+        // 💡 EXTRAEMOS CAMPOS DEL ARRAY DOCUMENTS[]
+        // 🛑 Desestructuramos el array documents directamente (el cual contiene docTypeId y docNumber internamente)
+        const { documents, street, cityId, postalCode, ...personFields } = personPatch;
 
         try {
             if (isEditing) {
@@ -140,18 +155,21 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
                     isActive: true, 
                     createdByUserId: MOCK_USER_ID, // Añadir el ID de creación
                     
-                    // CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS
-                    documents: [{
-                        docTypeId: docTypeId,
-                        docNumber: docNumber,
-                        issuingCountry: 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
-                        isActive: true,
-                    }] as DocumentModel[],
+                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: Usamos el array documents[] completo
+                    documents: documents.map(doc => ({
+                        ...doc,
+                        // El issuingCountry ahora viene del select del formulario.
+                        // Si no lo seleccionó (y el campo no era requerido), lo dejamos como está o vacío.
+                        issuingCountry: (doc as DocumentModel).issuingCountry || '', 
+                    })) as DocumentModel[], 
                     
                     addresses: [{
+                        // ✅ CORRECCIÓN: Usamos 'person' en lugar de 'employ'
+                        addressId: person?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000', 
                         street: street,
                         cityId: cityId,
                         postalCode: postalCode,
+                        personId: person?.personId || '00000000-0000-0000-0000-000000000000',
                         stateId: '105fb4c5-0ae8-40e4-b315-2f6671b368ac', 
                         countryId: 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
                         typeAddressId: '8f2b1d3c-5e4a-7b0f-9d6c-1e8a9f0b2c3d', 

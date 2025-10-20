@@ -1,5 +1,5 @@
 import type { DBSchema } from "idb";
-import type { Auth } from "./../api/authModel";
+import type { Auth } from "../../../../authorizer/src/models/api/authModel";
 
 export interface AuthDB extends DBSchema {
   auths: {

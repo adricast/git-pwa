@@ -8,6 +8,10 @@ export default defineConfig({
     federation({
       name: 'authorizer',
       filename: 'remoteEntry.js',
+      remotes: {
+        shell: 'http://localhost:3000/assets/remoteEntry.js',
+       
+      },
       exposes: {
           // Exponemos la función de login y el sensor para la lógica
          './authExports': './src/auth-exports.ts', // Contiene authSensor, initAuthService, login
@@ -18,7 +22,7 @@ export default defineConfig({
         
       },
       shared: ['react', 'react-dom','react-router-dom'],
-      remotes: {},
+     
     }),
   ],
   build: {

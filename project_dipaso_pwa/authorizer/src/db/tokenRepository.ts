@@ -1,5 +1,5 @@
 // src/db/tokenRepository.ts
-import { getDB } from "./indexed";
+import { getDB } from "shell/dbService";
 import type { Token } from "./../models/api/tokenModel";
 
 const STORE_NAME = "tokens";

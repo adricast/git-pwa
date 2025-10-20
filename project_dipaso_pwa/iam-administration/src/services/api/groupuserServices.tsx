@@ -1,6 +1,6 @@
-import type { Group } from "./../models/api/groupModel";
-import { api } from "./../services/api";
-import { groupRouteApi } from "../configurations/apiroutes";
+import type { Group } from "../../models/api/groupModel";
+import { api } from "./api";
+import { groupRouteApi } from "../../configurations/routes/apiroutes";
 import { v4 as uuidv4 } from "uuid";
 import CryptoJS from "crypto-js"; 
 

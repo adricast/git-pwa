@@ -30,7 +30,20 @@ export type FieldType =
     | "radio"
     | "date"       // Nuevo: para campos de fecha
     | "file"       // Nuevo: para subir archivos
-    | "custom";    // Para inyectar componentes React
+    | "custom"
+    | "table"
+
+    ;    // Para inyectar componentes React
+
+export interface TableColumn {
+    name: string; // El 'name' del campo dentro de la fila (ej: 'product', 'quantity')
+    label: string; // Título de la columna
+    type: Exclude<FieldType, 'table' | 'custom'>; // Tipos de campo permitidos en celdas
+    placeholder?: string;
+    required?: boolean;
+    options?: SelectOption[]; // Para campos 'select' o 'radio' dentro de la tabla
+    // Se podrían agregar más props como 'colSpan', 'inputProps', etc.
+}
 
 /** Opciones para campos 'select' y 'radio' */
 export interface SelectOption {
@@ -61,6 +74,9 @@ export interface FormField {
 
     // [Opcional Avanzado] Para renderizado condicional basado en otros datos del formulario
     isVisible?: (data: Record<string, any>) => boolean;
+
+    // 🛑 NUEVO: Propiedad específica para el tipo 'table'
+    columnsDefinition?: TableColumn[]; // Define las columnas y el tipo de input en cada celda
     
     // NUEVO: Mensaje de ayuda o error específico
     helperText?: string; 

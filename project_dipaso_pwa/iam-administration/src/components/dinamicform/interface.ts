@@ -23,7 +23,7 @@ export interface DynamicButtonProps {
     outlined?: boolean; // Opción de estilo "outlined"
 }
 
-/** Tipos de datos de entrada que maneja el formulario */
+/** Tipos de datos de entrada que maneja el formulario (ACTUALIZADO: Agregamos 'table') */
 export type FieldType = 
 | "text" 
 | "email" 
@@ -35,12 +35,28 @@ export type FieldType =
 | "radio"
 | "custom" // Para inyectar componentes React
 | "date"
-| "nestedForm"; // PARA FORMULARIOS ANIDADOS
+| "nestedForm" // PARA FORMULARIOS ANIDADOS
+| "table"; // 🛑 NUEVO: Para tablas de ítems dinámicas
 
 /** Estructura para una opción dentro de un campo 'select' o 'radio'. */
 export interface OptionItem {
     label: string;
     value: string | number; 
+}
+
+// ----------------------------------------------------------------------
+// ESTRUCTURAS DE TABLA
+// ----------------------------------------------------------------------
+
+/** Estructura para definir una columna dentro de un campo de tipo 'table' */
+export interface TableColumn {
+    name: string; // El 'name' del campo dentro de la fila (ej: 'product', 'quantity')
+    label: string; // Título de la columna
+    // Una tabla no puede contener tablas anidadas ni formularios custom/anidados
+    type: Exclude<FieldType, 'table' | 'custom' | 'nestedForm'>; 
+    required?: boolean;
+    options?: OptionItem[]; // Para campos 'select' o 'radio' dentro de la tabla
+    placeholder?: string;
 }
 
 // ----------------------------------------------------------------------
@@ -101,14 +117,22 @@ export interface NestedFormField extends BaseFormField {
     sections: FormSection[]; 
 }
 
-// 7. FormField es la unión de todos los tipos posibles.
+// 🛑 7. Campo de Tabla (TableField)
+export interface TableField extends BaseFormField {
+    type: "table";
+    columnsDefinition: TableColumn[]; // Requerida para definir la estructura de las filas
+}
+
+
+// 8. FormField es la unión de todos los tipos posibles.
 export type FormField = 
 | SimpleInputField 
 | OptionField 
 | TextareaField
 | CheckboxField
 | CustomField
-| NestedFormField; 
+| NestedFormField
+| TableField; // 🛑 INCLUIDO EL NUEVO TIPO
 
 
 // ----------------------------------------------------------------------
@@ -132,8 +156,6 @@ export interface FormSection {
     fields: FormField[]; // Los campos que van en esta sección
 }
 
-// 🛑 ELIMINADA: interface FormStep {...} (Ya no es multipasos)
-
 /** Estructura de Props para el Provider (Configuración principal) */
 export interface DynamicFormProviderProps {
     // ✅ MODIFICADO: Ahora solo acepta secciones
@@ -155,8 +177,6 @@ export interface DynamicFormContextData {
     
     // ✅ MODIFICADO: Solo se expone la estructura de secciones (sections)
     sections: FormSection[]; 
-    
-    // 🛑 ELIMINADO: currentStepIndex, isStepValid, goToNextStep, goToPreviousStep
     
     // Estado de validación del formulario (completo, para el submit final)
     isFormValid: boolean; 

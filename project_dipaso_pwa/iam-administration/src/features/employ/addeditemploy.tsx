@@ -10,10 +10,16 @@ import type { EmployeeDetailsModel } from "./../../models/api/employdetailsModel
 
 
 import { employFormSections } from "./employformconfig";
-import DynamicForm from "./../../components/multisectiondinamicform/dynamicformProvider"; 
-import type { DynamicButtonProps } from './../../components/multisectiondinamicform/interface'; 
+//import DynamicForm from "./../../components/multisectiondinamicform/dynamicformProvider"; 
+//import type { DynamicButtonProps } from './../../components/multisectiondinamicform/interface'; 
 
 import "./../../components/styles/multisectiondynamicform.sass"; 
+
+import { 
+
+  DynamicFormProviderSections as DynamicForm, 
+  type DynamicButtonProps
+} from '@dipaso/design-system';
 
 // 💡 Tipo de datos PLANA del formulario
 interface EmployFormData {

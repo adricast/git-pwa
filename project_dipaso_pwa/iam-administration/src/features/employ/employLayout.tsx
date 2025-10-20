@@ -1,8 +1,16 @@
 // 📁 EmployManagement.tsx (Anteriormente PeopleManagement.tsx)
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
+//import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
+// import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
+import { 
 
+ useScreenContainer,
+ ReusableTableFilterLayout
+
+} from '@dipaso/design-system';
+
+//import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 // 🎯 IMPORTACIONES DE MODELOS: Usamos el modelo principal para la gestión
 import type { PersonModel } from "../../models/api/personModel"; 
 import type { AddressModel } from "../../models/api/addressModel";
@@ -15,7 +23,7 @@ import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayo
 // 🚨 CORRECCIÓN DE IMPORTACIÓN: Reemplazamos AddEditPersonContent por el Wrapper
 // import AddEditPersonContent from "./addeditemploy"; 
 import EmployFormWrapper from "./employformwrapper"; // 🚨 Importamos el Wrapper
-import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
+
 import { FaSyncAlt } from "react-icons/fa"; 
 
 import "./../styles/generalLayout.sass"; 
@@ -283,7 +291,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
     return (
         <div className="layout-container"> 
             <div className="table-wrapper-container"> 
-                <ReusableTable
+                <ReusableTableFilterLayout
                     moduleName="Gestión de Empleados" // ✅ Módulo renombrado
                     data={people} 
                     rowKey="personId" 

@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight, FaSearch } from "react-icons/fa";
 // ✅ CORRECCIÓN: Usando 'interfaz' para resolver el error TS2305
-import {type ReusableTableProps } from "./../../components/reusabletablefilter/interface";
+import {type ReusableTableFilterProps as ReusableTableProps } from "./../../components/reusabletablefilter/interface";
 import { useTableLogic } from "../reusabletablefilter/tablelogic";
 
 // ✅ NUEVO: Importar el componente de entrada de filtro de columna
@@ -11,7 +11,7 @@ import ColumnFilterInput from "./../../components/reusabletablefilter/columfilte
 
 import "./../styles/reusabletablefilterLayout.sass"; 
 
-const ReusableTable: React.FC<ReusableTableProps> = ({
+const ReusableTableFilterLayout: React.FC<ReusableTableProps> = ({
   moduleName,
   data,
   rowKey,
@@ -260,4 +260,4 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
   );
 };
 
-export default ReusableTable;
+export default ReusableTableFilterLayout;

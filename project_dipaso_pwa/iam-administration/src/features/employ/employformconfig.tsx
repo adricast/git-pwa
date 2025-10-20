@@ -1,7 +1,11 @@
 // 📁 src/components/forms/employformconfig.tsx (Configuración Final para Empleado)
 
-import type { FormSection } from '../../components/multisectiondinamicform/interface'; 
+//import type { FormSection } from '../../components/multisectiondinamicform/interface'; 
+import { 
 
+  type FormSection, 
+
+} from '@dipaso/design-system';
 /**
  * Interface para las opciones de formulario { value: string, label: string }
  */

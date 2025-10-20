@@ -6,7 +6,7 @@ export { default as CardContainer2 } from './components/cardcontainer2/cardconta
 export { default as DynamicForm } from './components/dinamicform/dynamicfield';
 export { default as MultiSectionDynamicForm } from './components/multisectiondinamicform/dynamicsection';
 // export { default as ReusableTable } from './components/reusabletable/interface';
-export { default as ReusableTableFilter } from './components/reusabletablefilter/columfilter';
+//export { default as ReusableTableFilter } from './components/reusabletablefilter/columfilter';
 // export { default as ScreenContainer } from './components/screencontainer/usescreencontainer';
 
 // ===== LAYOUTS =====
@@ -24,6 +24,7 @@ export { default as ScreenUsableLayout } from './components/layout/screenusableL
 export { default as CardProvider } from './components/cardcontainer/cardprovider';
 export { default as CardManagerProvider } from './components/cardcontainer/cardmanagerprovider';
 export { default as DynamicFormProvider } from './components/dinamicform/dynamicformProvider';
+export { default as DynamicFormProviderSections } from './components/multisectiondinamicform/dynamicformProvider';
 export { default as ScreenContainerProvider } from './components/screencontainer/screencontainerprovider';
 
 // ===== HOOKS =====
@@ -34,9 +35,9 @@ export { useScreenContainer } from './components/screencontainer/usescreencontai
 
 // ===== TYPES =====
 export type { CardContainerProps } from './components/cardcontainer/interface';
-export type { DynamicFormProviderProps } from './components/dinamicform/interface';
+export type { DynamicFormProviderProps,DynamicButtonProps, FormField, FormSection,  CustomComponentProps, CustomReactComponent} from './components/dinamicform/interface';
 export type { ReusableTableProps } from './components/reusabletable/interface';
-// export type { ReusableTableProps } from './components/reusabletablefilter/interface'
+export type { ReusableTableFilterProps } from './components/reusabletablefilter/interface'
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'
 
 // ===== UTILITIES =====

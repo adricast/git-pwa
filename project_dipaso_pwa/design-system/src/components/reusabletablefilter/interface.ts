@@ -28,7 +28,7 @@ export interface ColumnFilters {
     [field: string]: ColumnFilterValue;
 }
 
-export interface ReusableTableProps {
+export interface ReusableTableFilterProps {
  moduleName: string;
  data: any[];
  rowKey: string;

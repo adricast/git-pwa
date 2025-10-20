@@ -6,6 +6,7 @@ import type {
     FormField,
     FormSection,
     NestedFormField,
+    TableField, // ✅ Mantenido para usar en la lógica (ver findAllFields y validateFields)
 } from './interface'; 
 
 // 🛑 MODIFICADO: La interfaz de las Props ahora acepta un array de secciones (sections)
@@ -22,25 +23,32 @@ interface UseDynamicFormHookProps {
 const findAllFields = (sections: FormSection[]): FormField[] => {
     return sections.flatMap(section => 
         section.fields.flatMap(field => {
-            // Caso base: Si no es un formulario anidado, devolvemos el campo
-            if (field.type !== 'nestedForm') {
-                return [field];
+            // Caso recursivo: Si es un formulario anidado, buscamos dentro de sus secciones
+            if (field.type === 'nestedForm') {
+                const nestedField = field as NestedFormField;
+                return [
+                    field, 
+                    // Devolvemos el campo padre MÁS los campos encontrados recursivamente
+                    ...findAllFields(nestedField.sections)
+                ];
             }
             
-            // Caso recursivo: Si es un formulario anidado, buscamos dentro de sus secciones
-            const nestedField = field as NestedFormField;
-            // Devolvemos el campo padre (nestedForm) MÁS los campos encontrados recursivamente
-            return [
-                field, 
-                ...findAllFields(nestedField.sections)
-            ];
+            // ✅ CORRECCIÓN: Si es una tabla, hacemos un casting explícito para usar el tipo TableField,
+            // aunque el resultado sea el mismo array que antes, ahora el tipo se considera 'usado'.
+            if (field.type === 'table') {
+                 // Utilizamos el tipo TableField explícitamente.
+                 const tableField = field as TableField;
+                 return [tableField];
+            }
+
+            // Caso base: Si no es un formulario anidado, devolvemos el campo
+            return [field];
         })
     );
 };
 
 /**
  * Hook personalizado que gestiona el estado y la lógica central del formulario dinámico.
- * 🛑 ELIMINADA la gestión de pasos (steppers).
  */
 export const useDynamicForm = ({ 
     sections, // ✅ MODIFICADO: Recibimos 'sections' en lugar de 'steps'
@@ -63,7 +71,12 @@ export const useDynamicForm = ({
                 initialState[field.name] = initialData[field.name];
             } else if (field.type === 'checkbox') {
                 initialState[field.name] = false;
-            } else {
+            } 
+            // 🛑 Inicializar campos 'table' como un array vacío
+            else if (field.type === 'table') {
+                 initialState[field.name] = [];
+            }
+            else {
                 // Solo inicializar si NO es un nestedForm
                 if (field.type !== 'nestedForm') {
                     initialState[field.name] = '';
@@ -74,8 +87,6 @@ export const useDynamicForm = ({
     });
 
     // 3. Sincronización de estado (Mantiene la data existente si el esquema cambia)
-    // Se mantiene esta lógica de sincronización para asegurar que el estado se mantenga si la 
-    // estructura del formulario (sections) cambia o se re-renderiza.
     useEffect(() => {
         const updatedState: Record<string, any> = {};
 
@@ -91,7 +102,12 @@ export const useDynamicForm = ({
             // Prioridad 3: Usar valor por defecto
             else if (field.type === 'checkbox') {
                 updatedState[field.name] = false;
-            } else if (field.type !== 'nestedForm') {
+            } 
+            // 🛑 Sincronizar 'table' como array
+            else if (field.type === 'table') {
+                 updatedState[field.name] = []; 
+            }
+            else if (field.type !== 'nestedForm') {
                 updatedState[field.name] = '';
             }
         });
@@ -100,10 +116,10 @@ export const useDynamicForm = ({
         if (JSON.stringify(updatedState) !== JSON.stringify(formData)) {
             setFormData(updatedState);
         }
-    }, [initialData, sections, allFormFields]); // Se elimina formData de las dependencias para evitar bucles, ya que allFormFields incluye el esquema
+    }, [initialData, sections, allFormFields]); 
 
     
-    // 4. Manejador centralizado de cambios (CORREGIDO)
+    // 4. Manejador centralizado de cambios
     const handleChange = useCallback((name: string, value: any) => {
         setFormData(prevData => {
             const field = allFormFields.find(f => f.name === name);
@@ -113,7 +129,6 @@ export const useDynamicForm = ({
             if (field) {
                 if (field.type === 'number') {
                     // ✅ CORRECCIÓN CLAVE: Almacenar '' si el input está vacío. 
-                    // Esto evita que React fuerce el valor a null (o 0/NaN) y pierda el foco del input.
                     if (value === '') {
                         finalValue = ''; 
                     } else {
@@ -122,6 +137,8 @@ export const useDynamicForm = ({
                 } else if (field.type === 'checkbox') {
                     finalValue = !!value;
                 }
+                // 🛑 Si el tipo es 'table', el valor es el array completo de filas, 
+                // lo asignamos directamente sin transformación.
             }
 
             return {
@@ -151,12 +168,25 @@ export const useDynamicForm = ({
                     const nestedField = field as NestedFormField;
                     return validateFields(nestedField.sections);
                 }
+                
+                // 🛑 Validar campo de TIPO TABLA
+                if (field.type === 'table') {
+                    // ✅ Usamos TableField explícitamente para el casting
+                    const tableField = field as TableField; 
+                    if (tableField.required) {
+                        // Una tabla requerida debe ser un array con al menos un elemento
+                        const tableValue = value as any[];
+                        return Array.isArray(tableValue) && tableValue.length > 0;
+                    }
+                    // Si no es requerida, es válida.
+                    return true;
+                }
+
 
                 if (field.required) {
                     if (value === null || value === undefined) return false;
                     
                     // 🆕 CORRECCIÓN: Si el valor es numérico (después de parseFloat) y es NaN, falla.
-                    // Esto maneja el caso de que el usuario introduzca texto en un campo numérico requerido.
                     if (typeof value === 'number' && isNaN(value)) return false; 
                     
                     // Si el valor es la cadena vacía (como pasa al borrar un number), falla si es requerido.
@@ -197,3 +227,5 @@ export const useDynamicForm = ({
         // 🛑 ELIMINADO: currentStepIndex, isStepValid, goToNextStep, goToPreviousStep
     };
 };
+    
+export default useDynamicForm;

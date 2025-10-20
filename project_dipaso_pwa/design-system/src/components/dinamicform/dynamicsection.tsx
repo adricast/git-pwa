@@ -11,6 +11,7 @@ interface DynamicSectionProps {
 /**
  * Componente que renderiza un grupo de campos y aplica el layout de columnas
  * definido en la configuración de la sección.
+ * Esta versión está optimizada para formularios de vista única.
  */
 const DynamicSection: React.FC<DynamicSectionProps> = ({ section }) => {
     
@@ -31,6 +32,7 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ section }) => {
 
                 {/* Contenedor de los campos (AHORA DENTRO DEL FIELDSET) */}
                 <div className="dynamic-section-fields-grid">
+                    {/* Iteramos y renderizamos los campos, incluyendo 'table' y 'nestedForm' */}
                     {section.fields.map(field => (
                         <DynamicField key={field.name} field={field} />
                     ))}

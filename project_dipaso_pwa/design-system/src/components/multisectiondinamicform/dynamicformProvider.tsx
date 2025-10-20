@@ -19,7 +19,7 @@ import DynamicSection from './dynamicsection'; // Asegúrate que esta ruta sea c
  * Componente principal que envuelve el formulario.
  * Inicializa el estado, la lógica y proporciona el contexto a todos los campos hijos.
  */
-const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
+const DynamicFormProviderSections: React.FC<DynamicFormProviderProps> = ({
     sections,
     initialData,
     onSubmit,
@@ -200,4 +200,4 @@ const DynamicFormProvider: React.FC<DynamicFormProviderProps> = ({
     );
 };
 
-export default DynamicFormProvider;
+export default DynamicFormProviderSections;

@@ -1,7 +1,8 @@
 // src/components/forms/userformconfig.tsx
 
+import type { FormSection } from "@dipaso/design-system/dist/components/multisectiondinamicform/interface";
+
 //import type { FormSection } from './../../components/dinamicform/interface';  // Asegúrate que la ruta sea correcta
-import type { FormSection } from '../../components/multisectiondinamicform/interface';
 // Opciones para el campo 'Tipo de Documentación'
 const identificationOptions = [
     { value: 'cedula', label: 'Cédula' },

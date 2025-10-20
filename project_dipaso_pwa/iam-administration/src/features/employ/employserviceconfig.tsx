@@ -1,4 +1,3 @@
-// 📁 src/components/management/people/personServiceConfig.ts (Ajustar la ruta)
 
 import { 
     getAllPeople, 

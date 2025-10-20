@@ -1,6 +1,7 @@
 // 📁 src/management/people/PersonFormConfig.ts (AJUSTE FINAL)
 
-import type { FormSection } from '../../components/dinamicform/interface'; 
+import type { FormSection } from "@dipaso/design-system/dist/components/dinamicform/interface";
+
 
 export const personFormSections: FormSection[] = [
     {
@@ -10,7 +11,7 @@ export const personFormSections: FormSection[] = [
             {
                 name: "givenName",
                 label: "Nombre(s)",
-                type: "text",
+                type: "text", 
                 required: true,
                 placeholder: "Ej: Juan Andrés",
             },

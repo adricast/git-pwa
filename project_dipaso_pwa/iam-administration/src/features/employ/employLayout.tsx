@@ -1,16 +1,14 @@
-// 📁 PeopleManagement.tsx
+
+import { useScreenContainer } from "@dipaso/design-system";
+import DeleteConfirmationDialog from "@dipaso/design-system/dist/components/layout/deletedialogLayout";
+import ReusableTable from "@dipaso/design-system/dist/components/layout/reusabletableLayout";
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
 
-import type { Person } from "../../models/api/personModel"; // ✅ Tipo cambiado a Person
-// ✅ NUEVO: Importamos la configuración parametrizada para personas
+import type { Person } from "../../models/api/personModel";
 import { personServiceConfig } from "./employserviceconfig"; 
 
-import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout";
-// 🚨 DEBES CREAR este componente: AddEditPersonContent
 import AddEditPersonContent from "./addeditemploy"; 
-import ReusableTable from "../../components/layout/reusabletablefilterLayout"; 
 import { FaSyncAlt } from "react-icons/fa"; 
 
 import "./../styles/generalLayout.sass"; 

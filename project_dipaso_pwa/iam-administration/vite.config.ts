@@ -12,7 +12,7 @@ export default defineConfig({
         './AdminPage': './src/app.tsx',
         
       },
-      shared: ['react', 'react-dom','react-router-dom'],
+      shared: ['react', 'react-dom','react-router-dom','@dipaso/design-system'],
       remotes: {},
     }),
   ],

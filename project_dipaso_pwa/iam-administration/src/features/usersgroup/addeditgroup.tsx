@@ -3,9 +3,8 @@
 import React, { useCallback, useMemo } from "react";
 // Asumiendo que Group está en "../../models/api/groupModel"
 import type { Group } from "../../models/api/groupModel"; 
-import DynamicForm from "../../components/dinamicform/dynamicformProvider"; // Ajusta la ruta si es necesario
 import { groupFormSections } from "./groupformconfig"; // Ajusta la ruta
-import "./../../components/styles/dynamicform.sass";  // Mantenemos tu SCSS para estilos adicionales
+import { DynamicFormProvider } from "@dipaso/design-system";
 
 // --- Tipado de los datos del formulario que DynamicForm devolverá ---
 interface GroupFormData {
@@ -79,7 +78,7 @@ const AddEditGroupContent: React.FC<{
                  - El botón de envío (type="submit") se define por 'buttonText'.
                  - El botón de cancelar se inyecta en 'actions'.
             */}
-            <DynamicForm
+            <DynamicFormProvider
                 sections={groupFormSections}
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
@@ -89,7 +88,6 @@ const AddEditGroupContent: React.FC<{
                 actions={formActions} // Inyectamos el botón de Cancelar aquí
             />
             
-            {/* 🛑 Eliminamos el bloque de botones de acción manual */}
         </div>
     );
 };

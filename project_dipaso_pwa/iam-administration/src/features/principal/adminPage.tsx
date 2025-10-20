@@ -2,12 +2,11 @@
 
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos FaUserEdit o FaUserCircle para Personas
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaUserCircle } from "react-icons/fa"; 
-import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
 import "./adminPage.sass";
-import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
+import { ScreenContainerProvider, ScreenContainerLayout } from "@dipaso/design-system";
+import OptionCard from "@dipaso/design-system/dist/components/layout/optioncardLayout";
 
 const AdminPage: React.FC = () => {
     const location = useLocation();

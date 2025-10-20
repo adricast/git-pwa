@@ -3,11 +3,14 @@
 import React, { useCallback, useMemo } from "react";
 import type { Person } from "../../models/api/personModel"; 
 
-import DynamicForm from "../../components/dinamicform/dynamicformProvider";
-import type { DynamicButtonProps } from '../../components/dinamicform/interface'; 
-import { personFormSections } from "./employformconfig"; 
+import type { DynamicButtonProps } from "@dipaso/design-system/dist/components/multisectiondinamicform/interface";
+import { DynamicFormProvider } from "@dipaso/design-system";
 
-import "./../../components/styles/dynamicform.sass"; 
+
+
+// import DynamicForm from "../../components/dinamicform/dynamicformProvider";
+// import type { DynamicButtonProps } from '../../components/dinamicform/interface'; 
+import { personFormSections } from "./employformconfig"; 
 
 
 /**
@@ -68,7 +71,7 @@ const AddEditPersonContent: React.FC<{
     return (
         <div className="person-form-wrapper">
             
-            <DynamicForm
+            <DynamicFormProvider
                 sections={personFormSections} 
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
@@ -76,9 +79,7 @@ const AddEditPersonContent: React.FC<{
                 className="person-form" 
                 actions={formActions} 
             >
-                {/* ✅ ELIMINADA LA DUPLICACIÓN: Este bloque de children debe quedar vacío, 
-                   ya que el renderizado ocurre con la prop 'sections'. */}
-            </DynamicForm>
+            </DynamicFormProvider>
         </div>
     );
 };

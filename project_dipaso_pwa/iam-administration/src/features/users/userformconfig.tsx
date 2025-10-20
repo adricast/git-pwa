@@ -1,6 +1,7 @@
 // src/components/forms/userformconfig.tsx
 
-import type { FormSection } from './../../components/multisectiondinamicform/interface'; // Ruta de importación actualizada
+import type { FormSection } from "@dipaso/design-system/dist/components/multisectiondinamicform/interface";
+
 
 // Opciones para el campo 'Tipo de Documentación'
 const identificationOptions = [

@@ -35,6 +35,7 @@ export { useScreenContainer } from './components/screencontainer/usescreencontai
 // ===== TYPES =====
 export type { CardContainerProps } from './components/cardcontainer/interface';
 export type { DynamicFormProviderProps } from './components/dinamicform/interface';
+export type { DynamicButtonProps } from './components/dinamicform/interface';
 export type { ReusableTableProps } from './components/reusabletable/interface';
 // export type { ReusableTableProps } from './components/reusabletablefilter/interface'
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'

@@ -1,10 +1,10 @@
 
 import React, { useCallback, useMemo } from "react";
-import type { User } from "../../models/api/userModel";
-import DynamicForm from "../../components/multisectiondinamicform/dynamicformProvider"; // Ajusta la ruta a tu nuevo componente
-import { userFormSections } from "./userformconfig"; 
+import type { User } from "../../models/api/userModel";// Ajusta la ruta a tu nuevo componente
+import { userFormSections } from "./userformconfig";
+import { DynamicFormProvider } from "@dipaso/design-system";
 
-import "./../../components/styles/multisectiondynamicform.sass"; 
+
 
 interface UserFormData {
     username: string;
@@ -56,7 +56,7 @@ const AddEditUserContent: React.FC<{
             
             {/* El DynamicForm renderiza automáticamente las secciones con paginación */}
         
-            <DynamicForm
+            <DynamicFormProvider
                 sections={userFormSections}
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
@@ -64,7 +64,8 @@ const AddEditUserContent: React.FC<{
                 buttonText={user ? "Actualizar Grupo" : "Crear Usuario"}
                 className="group-form" 
                 actions={formActions} // Inyectamos el botón de Cancelar aquí
-            />
+            >
+            </DynamicFormProvider>
           
         </div>
     );

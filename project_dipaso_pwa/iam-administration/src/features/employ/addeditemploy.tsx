@@ -8,18 +8,16 @@ import type { DocumentModel } from "./../../models/api/documentModel";
 // ✅ NUEVO: Importamos el modelo de detalles de empleado
 import type { EmployeeDetailsModel } from "./../../models/api/employdetailsModel"; 
 
-
+// ✅ Ahora:
+import { DynamicFormProviderSections } from '@dipaso/design-system'; 
+// Y asegúrate de usar la importación separada para los types:
+import type { DynamicButtonProps } from '@dipaso/design-system';
 import { employFormSections } from "./employformconfig";
 //import DynamicForm from "./../../components/multisectiondinamicform/dynamicformProvider"; 
 //import type { DynamicButtonProps } from './../../components/multisectiondinamicform/interface'; 
 
-import "./../../components/styles/multisectiondynamicform.sass"; 
+//import "./../../components/styles/multisectiondynamicform.sass"; 
 
-import { 
-
-  DynamicFormProviderSections as DynamicForm, 
-  type DynamicButtonProps
-} from '@dipaso/design-system';
 
 // 💡 Tipo de datos PLANA del formulario
 interface EmployFormData {
@@ -50,7 +48,7 @@ const AddEditEmployContent: React.FC<{
     onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
     onClose: () => void;
 }> = ({ employ, onSave, onClose }) => {
-    
+    console.log("DEBUG: DynamicFormProviderSections is", DynamicFormProviderSections);
     // 1. Preparamos los datos iniciales para el formulario dinámico
     const initialData: Partial<EmployFormData> = useMemo(() => {
         if (!employ) {
@@ -159,7 +157,7 @@ const AddEditEmployContent: React.FC<{
     return (
         <div className="person-form-wrapper">
             
-            <DynamicForm
+            <DynamicFormProviderSections
                 sections={employFormSections} 
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}

@@ -1,6 +1,6 @@
 import React, { type CSSProperties } from "react"; 
 import { useScreenContainer } from "./../screencontainer/usescreencontainer";
-import "./../styles/screencontainerLayout.sass";
+//import "./../../styles/screencontainerLayout.sass";
 
 // 🟢 Constante para el ancho de la barra minimizada + margen
 const DOCK_WIDTH = 260; 

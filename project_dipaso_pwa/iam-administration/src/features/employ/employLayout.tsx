@@ -2,14 +2,12 @@
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 //import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
-// import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
-import { 
+ 
+//import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 
- useScreenContainer,
- ReusableTableFilterLayout
 
-} from '@dipaso/design-system';
-
+import { useScreenContainer, ReusableTableFilterLayout } from '@dipaso/design-system';
+//import * as DesignSystem from '@dipaso/design-system';
 //import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 // 🎯 IMPORTACIONES DE MODELOS: Usamos el modelo principal para la gestión
 import type { PersonModel } from "../../models/api/personModel"; 
@@ -72,6 +70,7 @@ export type EmployManagementRef = {
 
 // ✅ Componente renombrado a EmployManagement
 const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => { 
+    console.log("DEBUG: ReusableTableFilterLayout is", ReusableTableFilterLayout);
     const { openScreen, closeTopScreen } = useScreenContainer();
 
     // ✅ Estados usando PersonModel

@@ -9,3 +9,8 @@ export const employeesRouteApi = {
   employ: "/employees/",
  
 };
+
+export const catalogsRouteApi = {
+  employ: "/catalogs/",
+ 
+};

@@ -11,7 +11,7 @@ import {
     type AddCardFunction, 
     // type UpdateCardFunction 
 } from '../cardcontainer2/interface'; 
-import './../styles/cardmanager2Layout.sass';
+//import './../../styles/cardmanager2Layout.sass';
 
 // ... (Componentes de ejemplo/usoMemo - omitido por brevedad en este snippet)
 

@@ -3,7 +3,7 @@
 import React, { useCallback, useMemo } from "react";
 // ✅ CORRECCIÓN: Cambiado 'interface' por 'interfaz' para coincidir con el nombre de tu archivo.
 import type { TableColumn, ColumnFilterValue } from "./interface"; 
-import "./../styles/reusabletablefilterLayout.sass"; // Asume que los estilos están aquí
+//import "./../styles/reusabletablefilterLayout.sass"; // Asume que los estilos están aquí
 
 // Función auxiliar para detectar el tipo de dato
 const getDataType = (data: any[], field: string): 'number' | 'date' | 'string' => {

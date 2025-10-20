@@ -4,7 +4,7 @@ import React from 'react';
 import { FaTimes } from 'react-icons/fa'; 
 import { type CardContainerProps } from './interface';
 import { CardProvider } from './cardprovider'; 
-import './../styles/cardcontainer2Layout.sass';
+//import './../../styles/cardcontainer2Layout.sass';
 
 const CardContainer: React.FC<CardContainerProps> = ({ 
   id,

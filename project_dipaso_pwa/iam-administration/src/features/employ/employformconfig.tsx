@@ -3,7 +3,7 @@
 //import type { FormSection } from '../../components/multisectiondinamicform/interface'; 
 import { 
 
-  type FormSection, 
+  type MultiSectionFormSection, 
 
 } from '@dipaso/design-system';
 /**
@@ -39,7 +39,7 @@ const employeeStatusOptions: FormOption[] = [
 /**
  * EXPORTACIÓN ORIGINAL MANTENIDA: La constante employFormSections[]
  */
-export const employFormSections: FormSection[] = [
+export const employFormSections: MultiSectionFormSection[] = [
 
     // ----------------------------------------------------
     // SECCIÓN 1: DATOS PERSONALES

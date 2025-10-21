@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 
-import "./../styles/navbarLayout.scss"; 
+import "./../styles/navbarLayout.sass"; 
 import { FaChevronDown,  FaTimes, FaWarehouse, FaUserCircle } from 'react-icons/fa';
 
 export interface NavItem {

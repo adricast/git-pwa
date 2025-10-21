@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import { FaTimes, FaWarehouse, FaUserCircle, FaAngleDown } from 'react-icons/fa'; // Se añade FaAngleDown
-import "./../styles/navbar2Layout.scss"; 
+import "./../styles/navbar2Layout.sass"; 
 
 export interface NavItem {
     label: string;

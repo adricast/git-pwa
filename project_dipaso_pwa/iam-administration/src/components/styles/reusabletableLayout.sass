@@ -1,0 +1,239 @@
+@use 'sass:color'
+@import 'variables.sass'
+
+// --- Variables específicas de la Tabla ---
+$table-text-color: $text-color
+$table-header-bg: lighten($primary-color, 0%)
+$table-header-text: $text-color
+$table-divider-color: $border-color
+$table-hover-bg: lighten($background-color, 2%)
+$table-selected-bg: lighten($primary-color, 45%)
+$pagination-text: darken($text-color, 5%)
+
+.table-container
+  padding: 1.5rem
+  background: $card-bg
+  border-radius: 8px
+  box-shadow: 0 4px 12px $card-shadow
+
+  .table-title
+    font-size: 1.5rem
+    font-weight: 700
+    color: $primary-color
+    margin-bottom: 1rem
+
+  // --- Controles de Cabecera (Acciones y Búsqueda) ---
+  .table-header-controls
+    display: flex
+    justify-content: space-between
+    align-items: center
+    margin-bottom: 1rem
+
+    @media (max-width: 768px)
+      flex-direction: column
+      align-items: flex-start
+
+    .table-actions
+      display: flex
+      gap: 0.5rem
+
+      @media (max-width: 768px)
+        margin-bottom: 1rem
+
+    .search-box
+      display: flex
+      align-items: center
+      border: 1px solid $border-color
+      border-radius: 6px
+      padding: 0.5rem
+      background-color: $card-bg
+      transition: border-color $transition-speed ease
+      max-width: 300px
+      width: 100%
+      background-color: transparent
+
+      .search-icon
+        color: $secondary-color
+        margin-right: 0.5rem
+
+      .search-input
+        // 🚩 CORRECCIÓN CRÍTICA: Aseguramos el color de texto
+        color: $text-color
+        border: none
+        outline: none
+        flex-grow: 1
+        font-size: 0.9rem
+        background-color: transparent
+
+        // Importante para que use el fondo de la caja
+
+        // Estilo para el placeholder
+        &::placeholder
+          color: lighten($text-color, 40%)
+
+          // Gris claro para el placeholder
+
+      &:focus-within
+        border-color: $primary-color
+        box-shadow: 0 0 0 1px $primary-color
+
+  // --- Estilos de Botones ---
+  .table-actions
+    .table-btn
+      padding: 0.5rem 1rem
+      border-radius: 6px
+      font-weight: 600
+      border: none
+      cursor: pointer
+      transition: all $transition-speed ease
+      color: $card-bg
+
+      &.btn-primary
+        background: $primary-color
+
+        // Usa el color principal del dashboard
+        color: $card-bg
+
+        // Texto blanco
+        &:hover:not(:disabled)
+          background: darken($primary-color, 8%)
+
+      &.btn-default
+        background: $primary-color
+
+      &.btn-delete
+        background: $error-color
+
+      &.btn-edit
+        background: $success-color
+
+      &:hover:not(:disabled)
+        opacity: 0.9
+
+      &:disabled
+        opacity: 0.5
+        cursor: not-allowed
+
+  // --- Estilos de la Tabla ---
+  .table-wrapper
+    overflow-x: auto
+    border: 1px solid $table-divider-color
+    border-radius: 8px
+
+    .data-table
+      width: 100%
+      border-collapse: collapse
+
+      .table-head
+        background: $table-header-bg
+
+      .table-header-cell
+        padding: 0.75rem 1rem
+        font-size: 0.8rem
+        font-weight: 600
+        color: $table-header-text
+        text-transform: uppercase
+
+      .table-row
+        border-bottom: 1px solid $table-divider-color
+
+        &.row-clickable
+          cursor: pointer
+
+        &.row-hover:hover
+          background: $table-hover-bg
+
+        &.row-selected
+          background: $table-selected-bg
+          border-left: 4px solid $primary-color
+          padding-left: calc(1rem - 4px)
+
+      .table-cell
+        padding: 0.75rem 1rem
+        font-size: 0.9rem
+        color: $table-text-color
+
+      .no-data-cell
+        text-align: center
+        padding: 2rem
+        font-style: italic
+        color: $secondary-color
+        font-size: 1rem
+
+      .custom-checkbox
+        appearance: none
+        width: 16px
+        height: 16px
+        border: 1px solid $secondary-color
+        border-radius: 3px
+        cursor: pointer
+        position: relative
+        transition: background $transition-speed
+
+        &:checked
+          background-color: $primary-color
+          border-color: $primary-color
+
+          &::after
+            content: '✓'
+            color: white
+            font-size: 10px
+            position: absolute
+            top: 50%
+            left: 50%
+            transform: translate(-50%, -50%)
+
+  // --- Estilos de Paginación ---
+  .table-footer
+    display: flex
+    justify-content: space-between
+    align-items: center
+    padding-top: 1rem
+    font-size: 0.9rem
+    color: $pagination-text
+
+    @media (max-width: 768px)
+      flex-direction: column
+      gap: 1rem
+      align-items: center
+
+    .pagination-controls
+      display: flex
+      align-items: center
+      gap: 0.5rem
+
+      .page-btn
+        background: $card-bg
+        border: 1px solid $border-color
+        border-radius: 4px
+        padding: 0.5rem 0.75rem
+        cursor: pointer
+        transition: background $transition-speed
+        color: $secondary-color
+
+        &:hover:not(:disabled)
+          background: lighten($primary-color, 35%)
+          border-color: $primary-color
+
+        &:disabled
+          opacity: 0.4
+          cursor: not-allowed
+
+      .page-number
+        padding: 0 0.5rem
+        font-weight: 600
+
+    .rows-per-page
+      display: flex
+      align-items: center
+
+      label
+        margin-right: 0.5rem
+
+      .rows-select
+        padding: 0.5rem
+        border: 1px solid $border-color
+        border-radius: 4px
+        background-color: $card-bg
+        color: $text-color
+        cursor: pointer

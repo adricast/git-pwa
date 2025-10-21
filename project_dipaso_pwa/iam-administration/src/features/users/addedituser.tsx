@@ -1,14 +1,10 @@
-// src/components/AddEditUserContent.tsx (El código permanece inalterado)
-
-// src/components/AddEditUserContent.tsx
 
 import React, { useCallback, useMemo } from "react";
 import type { User } from "../../models/api/userModel";
-// 🛑 CORRECCIÓN: Usar el nuevo DynamicFormProvider con soporte multi-sección
 import DynamicForm from "../../components/multisectiondinamicform/dynamicformProvider"; // Ajusta la ruta a tu nuevo componente
 import { userFormSections } from "./userformconfig"; 
 
-import "./../../components/styles/multisectiondynamicform.scss"; 
+import "./../../components/styles/multisectiondynamicform.sass"; 
 
 interface UserFormData {
     username: string;
@@ -43,8 +39,8 @@ const AddEditUserContent: React.FC<{
         return { username: "", identification: "", email: "" };
     }, [user]);
 
-    const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
-        const userData = data as UserFormData;
+    const handleDynamicSubmit = useCallback(async (data: Record<string, string>) => {
+        const userData = data as unknown as UserFormData;
         
         // La lógica del onSubmit sigue siendo la misma: limpiar y llamar a onSave.
         await onSave(

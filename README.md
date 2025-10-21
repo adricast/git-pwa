@@ -97,6 +97,10 @@ El proyecto combina **React** para el frontend.
 ## Cómo ejecutar
 
 
+!Importante:
+
+Generar un archivo .env en la raíz del mf de IAM
+
 
 1. Clona el repositorio:  
 

@@ -1,10 +1,12 @@
-// 📁 src/models/Person.ts (VERSION FINAL)
+import type { AddressModel } from "./addressModel";
+import type { DocumentModel } from "./documentModel";
+import type { EmployeeDetailsModel } from "./employdetailsModel";
 
 /**
- * Define la estructura de una persona (Cliente, Proveedor, Empleado, o Contacto general)
- * en el sistema, basada en la tabla 'iam_people'.
+ * Define la estructura completa de una Persona, incluyendo sus relaciones
+ * anidadas (direcciones, documentos y detalles de empleado).
  */
-export interface Person {
+export interface PersonModel {
     /** Clave principal. Corresponde a 'person_id' (UUID). */
     personId: string;
 
@@ -23,6 +25,9 @@ export interface Person {
     /** ID del género. Corresponde a 'gender_id' (UUID). */
     genderId?: string;
 
+    /** ID del usuario que creó el registro. Corresponde a 'created_by_user_id'. */
+    createdByUserId: string; // Movido de Auditoría y hecho obligatorio basado en el JSON
+
     // --- Roles (Flags Booleanos) ---
 
     /** Indica si esta persona es un cliente ('is_customer'). */
@@ -40,17 +45,18 @@ export interface Person {
     /** Código de integración con sistemas externos ('integration_code'). */
     integrationCode?: string;
     
-    // --- Metadatos de Auditoría (Aseguramos que coincidan con to_dict()) ---
+    // --- Estructuras Anidadas ---
     
-    /** Fecha de creación ('created_at'). Generada por la tabla. */
+    /** Array de direcciones asociadas a la persona. Corresponde a 'addresses'. */
+    addresses: AddressModel[];
+    
+    /** Array de documentos de la persona. Corresponde a 'documents'. */
+    documents: DocumentModel[];
+    
+    /** Detalles específicos del empleado (opcional si `isEmployee` es false). Corresponde a 'employee'. */
+    employee?: EmployeeDetailsModel; 
     createdAt: string; 
-
-    /** Fecha de última actualización ('updated_at'). Generada por la tabla. */
     updatedAt: string; 
-
-    /** ID del usuario que creó el registro ('created_by_user_id'). */
-    createdByUserId?: string;
-
-    /** ID del usuario que actualizó el registro ('updated_by_user_id'). */
     updatedByUserId?: string;
+    
 }

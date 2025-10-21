@@ -1,12 +1,8 @@
-// 📁 GroupManagement.tsx (FINAL CON PARAMETRIZACIÓN)
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-// 🟢 Solo necesitamos el hook para interactuar con el contexto
 import { useScreenContainer } from "./../../components/screencontainer/usescreencontainer"; 
 
 import type { Group } from "./../../models/api/groupModel";
-// ❌ Eliminada la importación directa de services
-// 🟢 NUEVO: Importamos la configuración parametrizada
 import { groupServiceConfig } from "./groupserviceconfig"; 
 
 import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
@@ -14,9 +10,8 @@ import AddEditGroupContent from "./addeditgroup";
 import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 import { v4 as uuidv4 } from "uuid";
 
-import "./../styles/generalLayout.scss"; 
+import "./../styles/generalLayout.sass"; 
 import { FaSyncAlt } from "react-icons/fa"; 
-// 🟢 Desestructuramos las funciones del objeto de configuración
 const { 
     getActiveGroups, 
     softDeleteGroupsMassive, 
@@ -196,7 +191,7 @@ const GroupManagement = forwardRef<GroupManagementRef>((_, ref) => {
                     handleOpenEditScreen(selectedRows[0]);
                 }
             },
-            isVisible: (selectedRows: any[]) => selectedRows.length === 1,
+            isVisible: (selectedRows: Group[]) => selectedRows.length === 1,
         },
         {
             label: "Eliminar",

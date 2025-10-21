@@ -1,0 +1,315 @@
+@use "sass:color"
+
+@import "./variables.sass";
+
+
+.dashboard-container
+  display: flex
+  height: 100vh
+  width: 100vw
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif
+  color: $text-color
+  background: $background-color
+
+
+/* Sidebar / Nav
+.dashboard-sidebar
+  position: fixed
+  top: 0
+  left: 0
+  height: 100%
+  max-width: $sidebar-width-sm
+  width: $sidebar-width-sm
+  background: $primary-color
+  color: #fff
+  display: flex
+  flex-direction: column
+  padding: 0.5rem
+  max-width: 80px
+  transition: width $transition-speed ease, transform $transition-speed ease
+  z-index: 50
+
+  .user-info
+    display: flex
+    align-items: center
+
+    // Alineación por defecto (fila)
+    justify-content: center
+    margin-left: 0.5rem
+
+    // Si necesitas un pequeño margen
+
+    // Estilos del Avatar (Foto)
+    .user-avatar, .user-avatar-placeholder
+      width: 48px
+      height: 48px
+      border-radius: 50%
+      object-fit: cover
+      background: #444
+      display: flex
+      align-items: center
+      justify-content: center
+      font-size: 1.5rem
+      color: white
+      margin-right: 0.5rem
+      zIndex: 1
+      // Margen para el layout horizontal original
+
+    .user-details
+      display: flex
+      flex-direction: column
+
+      .user-name
+        font-weight: 500
+        color: white
+
+        // 🔑 COLOR BLANCO solicitado
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        max-width: 100%
+
+        // Asegura que el texto respete el contenedor
+
+  .menu-items
+    flex-grow: 1
+    margin-top: 0.5rem
+
+    a
+      display: flex
+      align-items: center
+      padding: 0.6rem 0.8rem
+      border-radius: 6px
+      color: #fff
+      text-decoration: none
+      margin-bottom: 0.3rem
+      transition: background $transition-speed ease
+
+      &:hover
+        background: adjust-color($secondary-color, $lightness: 10%)
+
+      &.active
+        background: adjust-color($primary-color, $lightness: -10%)
+
+      .item-icon
+        margin-right: 0.5rem
+
+      .item-label
+        white-space: nowrap
+
+/* Dashboard Content
+.dashboard-content
+  flex: 1
+  display: flex
+  flex-direction: column
+  transition: margin-left $transition-speed ease
+
+  &.no-sidebar
+    // nuevo: cuando sidebarVisible = false
+    margin-left: 0
+
+/* --- Header: usuario y dropdown ---
+.user-menu-wrapper
+  position: relative
+  display: flex
+  align-items: center
+
+  .avatar
+    width: 36px
+    height: 36px
+    border-radius: 50%
+    margin-right: 0.5rem
+    object-fit: cover
+    cursor: pointer
+    transition: transform 0.2s ease
+
+    &:hover
+      transform: scale(1.05)
+
+  span
+    cursor: pointer
+    font-weight: 500
+    margin-right: 0.5rem
+
+  .user-dropdown
+    position: absolute
+    top: 100%
+
+    /* justo debajo del avatar
+    right: 0
+    background: #fff
+    color: #111827
+    border: 1px solid #ddd
+    border-radius: 6px
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15)
+    min-width: 160px
+    z-index: 100
+    overflow: hidden
+
+    .dropdown-item
+      width: 100%
+      padding: 0.5rem 1rem
+      text-align: left
+      background: none
+      border: none
+      cursor: pointer
+      transition: background 0.2s ease
+
+      &:hover
+        background: #f3f4f6
+
+        // gris claro al pasar el mouse
+
+/* --- Botón de notificaciones ---
+.notifications-btn
+  position: relative
+  margin-left: 0.5rem
+  background: $secondary-color
+  color: #fff
+  border: none
+  padding: 0.4rem 0.6rem
+  border-radius: 6px
+  cursor: pointer
+  font-size: 1rem
+  transition: background 0.2s ease
+
+  &:hover
+    background: adjust-color($secondary-color, $lightness: 10%)
+
+  .notification-count
+    position: absolute
+    top: -5px
+    right: -5px
+    background: #ef4444
+
+    // rojo
+    color: #fff
+    font-size: 0.7rem
+    font-weight: bold
+    width: 18px
+    height: 18px
+    display: flex
+    align-items: center
+    justify-content: center
+    border-radius: 50%
+    border: 1px solid #fff
+
+/* Header
+
+.dashboard-header
+  height: $header-height
+  background: white
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0 1rem
+  box-shadow: 0 2px 6px $card-shadow
+  z-index: 10
+
+  .header-left,
+  .header-right
+    display: flex
+    align-items: center
+    flex-shrink: 0
+
+    // Asegura que no se colapsen los botones y el avatar.
+
+  .header-center
+    flex-grow: 1
+
+    // Permite que este elemento ocupe todo el espacio restante.
+    display: flex
+
+    // Usar flexbox dentro para alinear el breadcrumb.
+    align-items: center
+
+    // Centra el breadcrumb verticalmente.
+    padding: 0 1rem
+    overflow: hidden
+
+    // Evita desbordamiento si la ruta es muy larga.
+    min-width: 0
+
+    // Importante para Flexbox en el manejo de desbordamiento de texto.
+
+  .header-btn
+    background: $primary-color
+    border: none
+    color: #fff
+    padding: 0.4rem 0.6rem
+    margin-right: 0.5rem
+    border-radius: 4px
+    cursor: pointer
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 1rem
+    transition: background 0.2s ease
+
+    &:hover
+      background: adjust-color($secondary-color, $lightness: 10%)
+
+    .notifications-btn
+      position: relative
+      font-size: 1.2rem
+
+      .notification-count
+        position: absolute
+        top: -5px
+        right: -5px
+        background: red
+        color: white
+        font-size: 0.7rem
+        font-weight: bold
+        width: 16px
+        height: 16px
+        border-radius: 50%
+        display: flex
+        align-items: center
+        justify-content: center
+
+  .avatar
+    width: 36px
+    height: 36px
+    border-radius: 50%
+    margin-right: 0.5rem
+    object-fit: cover
+
+  span
+    margin-right: 1rem
+    font-weight: 500
+
+/* Main Content
+.dashboard-main
+  flex: 1
+  padding: 0px
+  overflow-y: auto
+  min-height: calc(100vh - #{$header-height})
+  width: 100%
+
+  .card
+    background: $card-bg
+    border-radius: 10px
+    padding: 1rem
+    margin-bottom: 1rem
+    box-shadow: 0 2px 6px $card-shadow
+    transition: transform 0.2s ease, box-shadow 0.2s ease
+
+    &:hover
+      transform: translateY(-2px)
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
+
+/* Responsive
+@media (max-width: 768px)
+  .dashboard-content
+    margin-left: 0 !important
+
+  .dashboard-header
+    padding: 0 0.5rem
+
+  .dashboard-sidebar
+    transform: translateX(-100%)
+    position: fixed
+
+    &.mobile-open
+      transform: translateX(0)

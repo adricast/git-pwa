@@ -1,3 +1,6 @@
+// -------------------------------------------------------------------------
+// 🚨 ÚNICO CAMBIO REQUERIDO: Importación del tipo Auth
+// -------------------------------------------------------------------------
 import React, { useState, useEffect, useCallback } from "react"; 
 import { useNavigate, Outlet, useLocation } from "react-router-dom"; 
 import {
@@ -6,33 +9,34 @@ import {
     FaBoxOpen, FaClipboardCheck, 
     FaCog, FaBell,FaUsers
 } from "react-icons/fa";
-import { authService } from "../../services/authServices";
-import type { Auth } from "../../models/api/authModel"; 
+
+// 🚨 CAMBIO CLAVE: Importamos las funciones (logout, getAuthenticatedUser) Y el TIPO (Auth) 
+// usando la sintaxis `type` desde el módulo federado Authorizer.
+import { logout, getAuthenticatedUser, type Auth } from "authorizer/authExports"; // ✅ CORREGIDO
+// ❌ Se ELIMINA la línea de abajo, que usaba el modelo local:
+// import type { Auth } from "../../models/api/authModel"; 
+
 import Nav, { type NavItem } from "./navbar2Layout";
-import "./../styles/dashboardnav2Layout.scss";
+import "./../styles/dashboardnav2Layout.sass";
 
-// 🟢 CONTEXTOS GLOBALES (Shell)
+// ... (El resto de las importaciones se mantiene igual)
 import { MasterPasswordProvider } from "./../../components/masterpassword/masterpasswordprovider"; 
-import MasterPasswordLayout from "./../../components/layouts/masterpasswordLayout"; // Layout del modal
-import { useMasterPassword } from "./../../components/masterpassword/usemasterpasswordcontext"; // Hook para usarlo
-
-// Notificaciones (Contexto y Dropdown)
+import MasterPasswordLayout from "./../../components/layouts/masterpasswordLayout"; 
+import { useMasterPassword } from "./../../components/masterpassword/usemasterpasswordcontext"; 
 import NotificationDropdown from "./../layouts/notificationdrowdownLayout";
 import { NotificationProvider } from "./../notifications/notificationprovider";
 import { useNotification } from "./../notifications/notificationhooks"; 
 import { hostWS } from "./../../ws/hostSocket"; 
 import { v4 as uuidv4 } from 'uuid'; 
-
-// 🎯 Breadcrumbs
 import Breadcrumbs from './../layouts/breadcrumbsLayout'; 
 import { type BreadcrumbItem } from './../breadcrumb/interface';
+import { onNetworkChange, networkState } from './../../hooks/sensors/networkSensor'; 
 
-// ❌ Eliminadas importaciones de ScreenContainer
-
+// ... (El resto del código es funcional y se mantiene)
 const branches = [
-    { id: "03", name: "Mall del Sur", code: "03" }, // ⬅️ Corregido
-    { id: "04", name: "San Marino", code: "04" }, // ⬅️ Corregido
-    { id: "05", name: "Recreo", code: "05" },   // ⬅️ Corregido
+    { id: "03", name: "Mall del Sur", code: "03" }, 
+    { id: "04", name: "San Marino", code: "04" }, 
+    { id: "05", name: "Recreo", code: "05" }, 
 ];
 
 const defaultMenuItems: NavItem[] = [
@@ -48,15 +52,14 @@ const defaultMenuItems: NavItem[] = [
 interface DashboardLayoutProps {
     menuItems?: NavItem[];
 }
-// Nueva Interfaz de Tipos para el Contexto del Outlet
+
 export interface DashboardContext {
-    user: Auth | null; // El objeto de usuario completo
+    user: Auth | null; 
     userName: string;
     selectedBranch: string;
     branches: { id: string; name: string }[];
 }
 
-// 🔑 1. WRAPPER: Proveedores que deben ser globales para toda la Shell
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     return (
         <MasterPasswordProvider>
@@ -67,19 +70,46 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     );
 };
 
-// 2. CONTENIDO: Componente principal que usa los contextos y renderiza el contenido
+interface ConnectionIndicatorProps {
+    isConnected: boolean;
+}
+
+export const ConnectionIndicator: React.FC<ConnectionIndicatorProps> = ({ isConnected }) => {
+    const color = isConnected ? '#059669' : '#dc3545';
+    const titleText = isConnected ? 'Conectado' : 'Desconectado';
+
+    return (
+        <div 
+            className="connection-indicator-led"
+            title={titleText} 
+            style={{
+                '--indicator-color': color,
+                position: 'absolute',
+                bottom: '0px', 
+                right: '0px', 
+            } as React.CSSProperties} 
+        >
+        </div>
+    );
+};
+
+
 const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     const navigate = useNavigate();
     const location = useLocation(); 
     
-    // 🔑 Hooks para consumir los contextos
     const { addNotification } = useNotification(); 
     const { requestAuthorization } = useMasterPassword(); 
 
+    const [exitAuthorized, setExitAuthorized] = useState(false); 
     
-    // ✅ CORRECCIÓN APLICADA: Usar ruta absoluta desde la raíz ('/') para assets públicos.
+    const [isNetworkOnline, setIsNetworkOnline] = useState(networkState.isOnline);
+    const [isServerAvailable, setIsServerAvailable] = useState(networkState.serverOnline);
+    
+    const isConnected = isNetworkOnline && isServerAvailable;
+
     const [userPhotoUrl] = useState(
-          "/assets/users/default.png" 
+    "/assets/users/default.png" 
     );
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -92,36 +122,113 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
     const toggleCollapse = () => setIsCollapsed(prev => !prev);
     const toggleUserMenu = () => setShowUserMenu(prev => !prev);
 
+    // Lógica de Red/Servidor
+    useEffect(() => {
+        const unsubscribe = onNetworkChange(
+            () => setIsNetworkOnline(true),
+            () => setIsNetworkOnline(false),
+            () => setIsServerAvailable(true),
+            () => setIsServerAvailable(false)
+        );
+        return () => unsubscribe();
+    }, []); 
 
-    // 🔑 LÓGICA DE CIERRE SEGURO CON CLAVE MAESTRA
+    
+    // Lógica de Logout
     const onLogout = useCallback(() => {
-        // Define la clave maestra que debe ingresar el usuario
         const MASTER_KEY_LOGOUT = authenticatedUser?.username === 'admin' ? "ADM_123" : "USER_LOGOUT"; 
-
         const logoutAction = async () => {
             console.log("Autorización concedida. Cerrando sesión...");
-            await authService.logout();
+            await logout(); 
             navigate("/login");
         };
-
         const failureAction = () => {
-             console.log("Fallo de autenticación en el cierre de sesión.");
+            console.log("Fallo de autenticación en el cierre de sesión.");
         };
-
-        // Abre el modal de clave maestra
         requestAuthorization(
             "Autorización para Cierre de Sesión Maestro",
             MASTER_KEY_LOGOUT,
-            logoutAction, // Acción de éxito
-            failureAction // Acción de fallo
+            logoutAction, 
+            failureAction 
         );
     }, [requestAuthorization, navigate, authenticatedUser]);
 
- // Efecto para cargar el usuario (autenticación)
+    // Autorización para cerrar la aplicación
+    const requestExitAuthorization = useCallback((): Promise<boolean> => { 
+        const EXIT_PASSWORD = authenticatedUser?.username === 'admin' ? "ADM_EXIT_456" : "USER_EXIT_789";
+
+        return new Promise<boolean>((resolve) => {
+            const successAction = async () => { 
+                console.log("Autorización concedida para cerrar aplicación");
+                setExitAuthorized(true);
+                resolve(true);
+            };
+            const failureAction = async () => { 
+                console.log("Autorización denegada para cerrar aplicación");
+                setExitAuthorized(false);
+                resolve(false);
+            };
+            requestAuthorization(
+                "Autorización para Cerrar Aplicación",
+                EXIT_PASSWORD,
+                successAction, 
+                failureAction 
+            );
+        });
+    }, [requestAuthorization, authenticatedUser]);
+
+
+    // Manejo de beforeunload (Cierre de aplicación)
+    useEffect(() => {
+        const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+            if (exitAuthorized) {
+                setExitAuthorized(false); 
+                return; 
+            }
+            event.preventDefault();
+            event.returnValue = "¿Está seguro de que desea salir? Se requiere autorización para cerrar la aplicación.";
+            await requestExitAuthorization();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [exitAuthorized, requestExitAuthorization]); 
+
+    // Manejo de atajos de teclado (Ctrl+W, F5, etc.)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'w') {
+                e.preventDefault();
+                e.stopPropagation();
+
+                requestExitAuthorization().then(authorized => {
+                    if (authorized) {
+                        window.close();
+                    }
+                });
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [requestExitAuthorization]);
+
+
+    // Efecto para cargar el usuario (Autenticación)
     useEffect(() => {
         const loadUser = async () => {
             try {
-                const user = await authService.getAuthenticatedUser();
+                // 🚨 Usa la función federada 'getAuthenticatedUser'
+                const user = await getAuthenticatedUser(); 
                 console.log("🟢 Usuario cargado de authService:", user); 
                 if (user) {
                     setAuthenticatedUser(user);
@@ -132,21 +239,21 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                 console.error("Error al cargar el usuario:", error);
                 navigate("/login");
             } finally {
-                // 🔑 CLAVE: Marcar como cargado (haya éxito o error)
                 setIsLoading(false); 
             }
         };
         loadUser();
     }, [navigate]);
 
-    // 🔑 BLOQUE CLAVE: Conexión y suscripción al WebSocket
+    // Conexión y suscripción al WebSocket
     useEffect(() => {
         try {
-            hostWS.connect("ws://127.0.0.1:8001");
+            interface WebSocketMessage {
+                type: string;
+                payload: Record<string, unknown>;
+            }
 
-            const unsubscribe = hostWS.subscribe((msg: any) => {
-                console.log("📩 Notificación recibida del WS:", msg);
-
+            const unsubscribe = hostWS.subscribe((msg: WebSocketMessage) => {
                 addNotification({
                     id: uuidv4(),
                     type: msg.type || "GENERIC",
@@ -165,49 +272,17 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
         }
     }, [addNotification]);
 
-    // 🔑 LÓGICA DINÁMICA DEL BREADCRUMB
+    // Lógica del Breadcrumb
     const routeLabels: Record<string, string> = {
         dashboard: "Inicio", billing: "Facturación", cashregister: "Caja",
         inventary: "Inventario", audit: "Auditoría", report: "Reportes",
         admin: "Administración", groups: "Grupos de Usuarios", usermanagement: "Gestión de Usuarios",
+        client: "Clientes" 
     };
 
     const pathParts = location.pathname.split("/").filter(Boolean);
-        useEffect(() => {
-        // 1. Capturar el evento de Cierre de Ventana/Pestaña (incluye Alt + F4)
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            // Activa el cuadro de diálogo de advertencia nativo del navegador
-            event.preventDefault(); 
-            event.returnValue = "¡Advertencia! Perderá la sesión activa si cierra la ventana.";
-        };
-
-        // 2. Capturar eventos de teclado para bloquear recargas y cierre de pestañas
-        const disableKeyCombos = (e: KeyboardEvent) => {
-            // Bloquear F5 (recargar) y Ctrl + R (recargar)
-            if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
-                 e.preventDefault();
-                 e.stopPropagation(); // Prevenir propagación
-            }
-            // Bloquear Ctrl + W (cerrar pestaña en algunos navegadores)
-            if (e.ctrlKey && e.key.toLowerCase() === 'w') {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            // NOTA: Alt + F4 será manejado por handleBeforeUnload a nivel de OS.
-        };
-
-        // Agregar listeners
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('keydown', disableKeyCombos);
-
-        // Limpieza: Remover listeners cuando el componente se desmonte
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('keydown', disableKeyCombos);
-        };
-    }, []); // Se ejecuta solo una vez al montar
+    
     if (isLoading) {
-        // Esto previene que se renderice el dashboard *mientras* se verifica la sesión.
         return (
             <div 
                 className="dashboard-loading-screen" 
@@ -264,7 +339,6 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                         </button>
                     </div>
                     
-                    {/* 🎯 Breadcrumbs DINÁMICOS */}
                     <div className="header-center"> 
                         <Breadcrumbs 
                             items={breadcrumbs} 
@@ -280,13 +354,15 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                                 alt="Avatar"
                                 className="avatar"
                                 onClick={toggleUserMenu}
-                                style={{ cursor: "pointer" }}
+                                
+                                style={{ cursor: "pointer", width: '40px', height: '40px', borderRadius: '50%' }}
                             />
+                            <ConnectionIndicator isConnected={isConnected} />
+
                             <span
                                 onClick={toggleUserMenu}
                                 style={{ cursor: "pointer", marginRight: "0.5rem" }}
                             >
-                                {/* 🎯 CAMBIO CLAVE: Usamos "Usuario" como fallback. */}
                                 {authenticatedUser?.username || "Usuario"}
                             </span>
 
@@ -325,7 +401,6 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                             )}
                         </div>
 
-                        {/* 🎯 COMPONENTE DE NOTIFICACIONES */}
                         <NotificationDropdown icon={<FaBell />} label="Notificaciones" pageSize={5} />
                     </div>
                 </header>
@@ -342,7 +417,6 @@ const DashboardContent: React.FC<DashboardLayoutProps> = ({ menuItems }) => {
                 </main>
             </div>
             
-            {/* 🔑 MODAL DE CLAVE MAESTRA: Se renderiza en la capa superior del Shell */}
             <MasterPasswordLayout /> 
 
         </div>

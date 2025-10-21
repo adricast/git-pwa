@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import styles from './../styles/dialogLayout.module.scss';
+import styles from './../styles/dialogLayout.module.sass';
 
 // Define el tipo para las props del componente
 interface DialogProps {

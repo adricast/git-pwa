@@ -11,7 +11,7 @@ import {
     // NO debe importarla aquí:
     // type UpdateCardFunction 
 } from '../cardcontainer/interface'; // 🔑 Esta ruta DEBE contener las interfaces corregidas
-import './../styles/cardmanagerLayout.scss';
+import './../styles/cardmanagerLayout.sass';
 
 // Componentes de ejemplo (Se definirían en archivos separados)
 

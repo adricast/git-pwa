@@ -1,0 +1,373 @@
+// 🛑 IMPORTACIÓN DE VARIABLES: Necesaria para que el compilador reconozca tus colores.
+@import variables.sass
+
+// --- CONFIGURACIÓN DE ESPACIOS Y VARIABLES LOCALES ---
+$gap-size: 10px
+$form-max-width: 90%
+$success-color: #28a745
+$fieldset-border-color: #d1d5db 
+$border-radius-square: 8px 
+
+// ----------------------------------------------------
+// 1. CONTENEDOR DE FORMULARIO
+// ----------------------------------------------------
+
+.dynamic-form-container
+    display: flex
+    flex-direction: column
+    padding: $gap-size * 1.2
+    width: $form-max-width
+    margin: 0 auto
+    border: 1px solid $border-color
+    border-radius: 12px
+    background-color: $white
+    gap: $gap-size * 1.2
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+
+
+// ----------------------------------------------------
+// 2. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
+// ----------------------------------------------------
+
+.dynamic-form-section
+    // 🛑 COMPACTAR: Reducimos el padding vertical del contenedor de sección
+    padding-bottom: $gap-size / 4
+
+
+.dynamic-section-fields-grid
+    display: grid
+    gap: $gap-size
+
+// Layouts de Columnas
+.dynamic-section-columns-1 .dynamic-section-fields-grid
+    grid-template-columns: 1fr
+
+.dynamic-section-columns-2 .dynamic-section-fields-grid
+    grid-template-columns: 1fr
+
+    @media (min-width: 640px)
+        grid-template-columns: repeat(2, 1fr)
+
+.dynamic-section-columns-3 .dynamic-section-fields-grid
+    grid-template-columns: 1fr
+
+    @media (min-width: 1024px)
+        grid-template-columns: repeat(3, 1fr)
+
+// ----------------------------------------------------
+// 3. ESTILOS DE AGRUPACIÓN NATIVA (FIELDSET/LEGEND)
+// ----------------------------------------------------
+
+$group-title-padding-x: 10px
+$fieldset-padding: 16px 
+
+.dynamic-fieldset
+    border: 1px solid $fieldset-border-color
+    border-radius: 8px 
+    padding: 0 
+    margin: 0 
+    width: 100%
+
+    // 🛑 COMPACTAR: Margen inferior ajustado
+    margin-bottom: $gap-size 
+
+    // 🛑 COMPACTAR: Margen superior eliminado
+    margin-top: 0 
+
+    padding-top: $fieldset-padding * 1.2 
+    padding-bottom: $fieldset-padding 
+    padding-left: $fieldset-padding 
+    padding-right: $fieldset-padding 
+
+
+.dynamic-legend
+    padding: 0 $group-title-padding-x
+    margin: 0 
+
+    margin-left: -$group-title-padding-x
+
+    display: table
+
+    background-color: $white // Fondo blanco para tapar la línea
+
+    // 🛑 COMPACTAR: Desplazamiento reducido
+    transform: translateY(-12px) 
+
+    color: $text-color
+    font-weight: 700
+    font-size: 1.1rem
+
+.dynamic-fieldset > .dynamic-section-fields-grid
+    // 🛑 COMPACTAR: Margen negativo reducido
+    margin-top: -$gap-size / 2  
+
+
+// ----------------------------------------------------
+// 4. ESTILOS DE CAMPOS INDIVIDUALES (INPUTS, LABELS)
+// ----------------------------------------------------
+
+.dynamic-form-group
+    display: flex
+    flex-direction: column
+
+    label
+        font-weight: 600
+        margin-bottom: 4px
+        color: $text-color
+        font-size: 0.9rem
+
+.required-star
+    color: $error-color
+    margin-left: 4px
+
+.dynamic-form-input
+    padding: 8px 12px
+    border: 1px solid lighten($border-color, 10%)
+    border-radius: 8px
+    font-size: 1rem
+    box-sizing: border-box
+    width: 100%
+    transition: all 0.2s ease
+    
+    // 🛑 CORRECCIÓN SINTAXIS: Forzar fondo blanco y texto oscuro
+    background-color: $white !important 
+    color: $text-color !important
+
+    &:hover
+        border-color: $border-color
+
+    &:focus
+        border-color: $primary-color
+        outline: none
+        box-shadow: 0 1px 0 0 $primary-color
+
+textarea.dynamic-form-input
+    resize: vertical
+    min-height: 100px
+
+// ----------------------------------------------------
+// 5. ESTILOS DE CAMPOS ESPECIALES (CHECKBOX Y RADIO)
+// ----------------------------------------------------
+
+.dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label
+    display: flex
+    align-items: center
+    gap: 8px
+
+.dynamic-form-checkbox-group
+    input[type="checkbox"]
+        appearance: none
+        -webkit-appearance: none
+        width: 24px
+        height: 24px
+        min-width: 24px
+        min-height: 24px
+        border: 2px solid $border-color
+        border-radius: 50%
+        cursor: pointer
+        
+        // 🛑 CORRECCIÓN CHECKBOX: Forzar fondo blanco cuando no está marcado
+        background-color: $white 
+        
+        position: relative
+        transition: all 0.2s ease
+
+        &:focus
+            outline: none
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.2)
+
+        &:checked
+            background-color: $success-color
+            border-color: $success-color
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2)
+
+            &::after
+                content: ''
+                position: absolute
+                top: 4px
+                left: 7px
+                width: 6px
+                height: 12px
+                border: solid $white
+                border-width: 0 3px 3px 0
+                transform: rotate(45deg)
+
+.dynamic-form-radio-group
+    .radio-label
+        input[type="radio"]
+            &:checked
+                border-color: $primary-color
+
+                &::after
+                    background-color: $primary-color
+
+.dynamic-form-group.checkbox-wrapper
+    display: flex
+    flex-direction: row
+    align-items: center
+    gap: 16px
+
+    label
+        margin-bottom: 0
+        font-size: 1rem
+        font-weight: 500
+        cursor: pointer
+        color: $text-color
+
+// ----------------------------------------------------
+// 6. ESTILOS DE TABLA PARAMETRIZADA (DYNAMIC-TABLE)
+// ----------------------------------------------------
+
+.dynamic-form-table-group
+    // 🛑 COMPACTAR: Eliminar margen superior innecesario
+    margin-top: 0 
+
+.dynamic-table-wrapper
+    display: flex
+    flex-direction: column
+    width: 100%
+    overflow-x: auto
+    padding-bottom: 5px
+
+.dynamic-table
+    width: 100%
+    border-collapse: collapse
+    min-width: 600px
+    table-layout: fixed
+
+    // HEADERS (th)
+    thead th
+        background-color: $light-gray
+        color: $text-color
+        font-weight: 700
+        text-align: left
+        padding: 8px 8px 
+        border-bottom: 2px solid $border-color
+        font-size: 0.85rem
+        
+        &.action-column
+            width: 60px
+            text-align: center
+
+    // FILAS (tr)
+    tbody td
+        padding: 3px 8px 
+        border-bottom: 1px solid lighten($border-color, 5%)
+        vertical-align: middle
+        
+    // 🛑 INPUTS EN CELDA (INCLUYE SELECTS DE LA TABLA)
+    .dynamic-table-cell-input, select.dynamic-table-cell-input 
+        // 🛑 CORRECCIÓN SINTAXIS: Forzar fondo blanco y texto oscuro
+        background-color: $white !important
+        color: $text-color !important
+        padding: 4px 6px 
+        min-height: 28px 
+        
+        width: 100%
+        box-shadow: none
+        border: 1px solid transparent
+
+        &:focus
+            border: 1px solid $primary-color 
+
+    // BOTÓN ELIMINAR
+    .dynamic-table-remove-btn
+        background: transparent
+        color: $error-color
+        border: none
+        cursor: pointer
+        padding: 5px
+        border-radius: $border-radius-square
+        font-size: 1rem
+        transition: background-color 0.2s
+        
+        &:hover
+            background-color: lighten($error-color, 45%) 
+            
+    // BOTÓN AGREGAR
+    .dynamic-table-add-btn
+        // Usamos el estilo secundario base, pero con un color más suave
+        @extend .dynamic-form-btn--secondary
+        align-self: flex-start
+        margin-top: $gap-size
+        padding: 8px 15px
+        font-size: 0.9rem
+        color: $primary-color
+        border-color: $primary-color
+        
+        &:hover
+            background-color: lighten($primary-color, 45%)
+            color: $primary-color
+            border-color: $primary-color
+        
+        @media (max-width: 767px)
+            width: auto
+
+// ----------------------------------------------------
+// 7. BOTONES DE ACCIÓN (UNIFICADOS)
+// ----------------------------------------------------
+
+.dynamic-form-actions-wrapper
+    display: flex
+    justify-content: flex-end
+    gap: 10px
+    margin-top: $gap-size
+    padding-top: $gap-size
+    border-top: 1px solid lighten($border-color, 10%)
+
+/* Estilo Base del Botón */
+.dynamic-form-btn
+    padding: 10px 18px
+    border-radius: 8px
+    cursor: pointer
+    font-size: 0.95rem
+    font-weight: 600
+    transition: all 0.2s ease
+    white-space: nowrap
+    line-height: 1.2
+    border: none
+
+/* Estilo Primario (Botón Siguiente) */
+.dynamic-form-btn--primary
+    background-color: $primary-color
+    color: #fff
+
+    &:hover:not(:disabled)
+        background-color: darken($primary-color, 8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($primary-color, 0.3)
+
+/* Estilo Éxito (Botón Enviar Final) */
+.dynamic-form-btn--success
+    background-color: $success-color
+    color: #fff
+
+    &:hover:not(:disabled)
+        background-color: darken($success-color, 8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($success-color, 0.3)
+
+/* Estilo Secundario (Botón Anterior / Acciones Genéricas) */
+.dynamic-form-btn--secondary
+    background-color: transparent
+    color: $text-color
+    border: 1px solid $border-color
+    font-weight: 500
+
+    &:hover:not(:disabled)
+        background-color: $light-gray
+        border-color: $light-gray
+        color: $text-color
+        transform: none
+        box-shadow: none
+
+/* Estilo Deshabilitado */
+.dynamic-form-btn:disabled
+    background-color: $light-gray !important
+    color: #999 !important
+    cursor: not-allowed
+    opacity: 0.6
+    transform: none
+    box-shadow: none
+
+// ----------------------------------------------------

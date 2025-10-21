@@ -1,4 +1,3 @@
-// 📁 UserManagement.tsx (VERSION MOCK PARA DESARROLLO DE USUARIOS)
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 // 🟢 Solo necesitamos el hook para interactuar con el contexto
@@ -10,7 +9,7 @@ import { FaSyncAlt } from "react-icons/fa";
 // 🔑 CAMBIO: Definición del modelo de usuario según el prompt
 export interface User {
     userId?: string|number; 
-    tempId?: string; 
+    tempId?: string | number; 
     username: string;
     identification: string;
     email: string;
@@ -19,14 +18,12 @@ export interface User {
     users?: User[];
 }
 
-// ❌ COMENTAR: Eliminamos la importación del servicio real para usar mocks
-// import { getActiveUsers, softDeleteUsersMassive, createUser, updateUser } from "../../services/userServices"; 
 
 import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout";
 import AddEditUserContent from "./addedituser"; 
 import ReusableTable from "../../components/layout/reusabletableLayout"; 
 
-import "./../styles/generalLayout.scss"; 
+import "./../styles/generalLayout.sass"; 
 
 
 // =========================================================================
@@ -151,7 +148,7 @@ const UserManagement = forwardRef<UserManagementRef>((_, ref) => {
         const content = (
             <AddEditUserContent
                 user={userToEdit} 
-                onSave={handleSaveUser as any} 
+                onSave={handleSaveUser} 
                 onClose={closeTopScreen} 
             />
         );

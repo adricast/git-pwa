@@ -5,15 +5,17 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos los íconos específicos de Gestión de Clientes
 import { 
-    FaUserPlus,     // Crear Cliente
-    FaIdCard        // Perfil Cliente / Información
+  
+    FaLockOpen,     // Apertura de Caja
+    FaLock,         // Cierre de Caja
+    FaFileInvoiceDollar,   // Perfil Cliente / Información
 } from "react-icons/fa"; 
 
 // 🟢 AÑADIDA: Importación del ScreenContainerProvider
 import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; // Asegúrate de ajustar esta ruta
 
 // Importamos los estilos SCSS
-import "./adminPage.scss";
+import "./adminPage.sass";
 import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
 
 const AdminPage: React.FC = () => {
@@ -36,29 +38,43 @@ return (
 
 {showMenu && (
 <div className="menu-grid">
-<Link to="createclient">
+
+{/* 🟢 NUEVA OPCIÓN 1: Apertura de Caja */}
+<Link to="opencash">
 <OptionCard
-// ✅ CORREGIDO: Crear Cliente
-label="Crear Cliente" 
-icon={<FaUserPlus size={30} />} // Icono para añadir usuario
-color="#3c3c3c"
+label="Apertura de Caja" // Etiqueta para la Apertura
+icon={<FaLockOpen size={30} />} // Icono de Candado Abierto
+color="#28a745" // Color verde para una acción de inicio
 size={cardSize}
 textColor="#ffffff"
 iconColor="#ffffff"
 />
 </Link>
-<Link to="clientprofile">
+
+{/* 🟢 NUEVA OPCIÓN 2: Cierre de Caja */}
+<Link to="closecash">
 <OptionCard
-// ✅ CORREGIDO: Perfil Cliente
-label="Perfil Cliente"
-icon={<FaIdCard size={30} />} // Icono para identificación o perfil
-color="#5d3596"
+label="Cierre de Caja" // Etiqueta para el Cierre
+icon={<FaLock size={30} />} // Icono de Candado Cerrado
+color="#dc3545" // Color rojo para una acción de finalización
 size={cardSize}
 textColor="#ffffff"
 iconColor="#ffffff"
 />
 </Link>
- {/* Solo se muestran las 2 tarjetas de clientes */}
+
+{/* 🟢 NUEVA OPCIÓN 3: Cuentas por Cobrar */}
+<Link to="accountsreceivable">
+<OptionCard
+label="Cuentas por Cobrar" // Etiqueta para Cuentas por Cobrar
+icon={<FaFileInvoiceDollar size={30} />} // Icono de Factura con Dólar
+color="#5d3596" // Color distintivo para finanzas
+size={cardSize}
+textColor="#ffffff"
+iconColor="#ffffff"
+/>
+</Link>
+
 </div>
 )}
 

@@ -5,9 +5,12 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos FaUserEdit o FaUserCircle para Personas
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaUserCircle } from "react-icons/fa"; 
-import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
-import "./adminPage.scss";
-import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
+//import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
+import "./adminPage.sass";
+//import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
+import { ScreenContainerProvider } from '@dipaso/design-system'; 
+import { ScreenContainerLayout } from '@dipaso/design-system';
+import '@dipaso/design-system/dist/styles/index.css'; // O .sass, dependiendo de cómo compile Vite
 
 const AdminPage: React.FC = () => {
     const location = useLocation();
@@ -31,7 +34,7 @@ const AdminPage: React.FC = () => {
                     <div className="menu-grid">
                         
                        
-                        <Link to="person"> 
+                        <Link to="employ"> 
                             <OptionCard
                                 label="Gestión de Empleados"
                                 icon={<FaUserCircle size={30} />} // Usamos FaUserCircle o FaUserPlus

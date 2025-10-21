@@ -1,7 +1,7 @@
 // src/services/api/catalogService.ts (CORREGIDO)
 
-import { api } from "./../services/api"; 
-import { catalogsRouteApi } from "./../configurations/routes/apiRoutes"; 
+import { api } from "./api"; 
+import { catalogsRouteApi} from "./../configurations/routes/apiRoutes"; 
 import { type Catalog } from "./../models/api/catalogsModel" 
 // 🚨 CORRECCIÓN: Importamos el Repositorio de IndexedDB
 import { CatalogRepository } from "./../db/catalogRepository"; 

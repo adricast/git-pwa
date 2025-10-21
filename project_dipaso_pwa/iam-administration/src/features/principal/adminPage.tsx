@@ -5,12 +5,12 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos FaUserEdit o FaUserCircle para Personas
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaUserCircle } from "react-icons/fa"; 
-//import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider";
+//import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
+import "./adminPage.sass";
 //import ScreenContainerLayout from "../../components/layout/screencontainerLayout";
-// ✅ Correct Source: Provider from the design system library
 import { ScreenContainerProvider } from '@dipaso/design-system'; 
 import { ScreenContainerLayout } from '@dipaso/design-system';
-import "./adminPage.sass";
+import '@dipaso/design-system/dist/styles/index.css'; // O .sass, dependiendo de cómo compile Vite
 
 const AdminPage: React.FC = () => {
     const location = useLocation();

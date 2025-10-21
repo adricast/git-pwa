@@ -24,7 +24,7 @@ const catalogRepo = new CatalogRepository(); // ⬅️ Instancia del repositorio
  */
 export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catalog[]> {
     try {
-        const url = activeOnly ? `${BASE_ROUTE}?active=true` : BASE_ROUTE;
+        const url = activeOnly ? `${BASE_ROUTE}` : BASE_ROUTE;
         
         const response = await api.get<Catalog[]>(url); 
         

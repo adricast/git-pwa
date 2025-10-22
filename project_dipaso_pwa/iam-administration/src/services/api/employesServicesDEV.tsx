@@ -1,7 +1,7 @@
 // 📁 src/services/employeeService.tsx
 
 import type { PersonModel } from "../../models/api/personModel";
-import { apiEmpleados } from "./../api/api"; // Asume que 'api' es tu instancia configurada de Axios
+import { apiEmpleados } from "./api"; // Asume que 'api' es tu instancia configurada de Axios
 import { employeesRouteApi  } from "../../configurations/routes/apiroutes"; // Asume { employee: '/employee' }
 import type { EmployeeDetailsModel } from "../../models/api/employdetailsModel";
 import type { AddressModel } from "../../models/api/addressModel";

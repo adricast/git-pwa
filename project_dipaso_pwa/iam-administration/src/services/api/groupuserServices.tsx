@@ -1,5 +1,5 @@
 import type { Group } from "../../models/api/groupModel";
-import { api } from "./api";
+import { api } from "./api2";
 import { groupRouteApi } from "../../configurations/routes/apiroutes";
 import { v4 as uuidv4 } from "uuid";
 import CryptoJS from "crypto-js"; 

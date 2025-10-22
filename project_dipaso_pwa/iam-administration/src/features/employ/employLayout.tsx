@@ -5,11 +5,15 @@ import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } fro
 import { useScreenContainer, ReusableTableFilterLayout } from '@dipaso/design-system';
 // 🎯 IMPORTACIONES DE MODELOS: Usamos el modelo principal para la gestión
 import type { PersonModel } from "../../models/api/personModel"; 
-import type { AddressModel } from "../../models/api/addressModel";
+// Se ha eliminado el AddressModel importado para limpiar
 import type { DocumentModel } from "../../models/api/documentModel";
 
-// Importamos la configuración de servicios
-import { personServiceConfig } from "./employserviceconfig"; 
+// Importamos la configuración de servicios, incluyendo los tipos de payload.
+import { 
+    personServiceConfig, 
+    type PersonCreationPayload, // Importamos el tipo de payload correcto desde la config
+    type PersonUpdatePayload
+} from "./employserviceconfig"; 
 
 import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
 import EmployFormWrapper from "./employformwrapper"; // 🚨 Importamos el Wrapper
@@ -21,13 +25,7 @@ import "./../styles/generalLayout.sass";
 
 const MOCK_USER_ID = "00000000-0000-0000-0000-000000000001"; 
 
-// 🎯 TIPO DE PAYLOAD DE CREACIÓN DE PERSONA: Excluye IDs y campos de auditoría generados por el backend.
-type PersonCreatePayload = Omit<
-    PersonModel, 
-    'personId' | 'createdAt' | 'updatedAt' | 'createdByUserId' | 'updatedByUserId'
->;
-
-// 💡 TIPO DE DATOS DEL FORMULARIO
+// 💡 TIPO DE DATOS DEL FORMULARIO (Definición completa para desestructuración)
 interface EmployFormData { 
     givenName: string; 
     surName: string; 
@@ -35,13 +33,15 @@ interface EmployFormData {
     genderId?: string; 
     dateOfBirth?: string;
     
-    // 🛑 CAMBIO CLAVE: Usa el array documents[] de la tabla dinámica
+    // Estructuras complejas
     documents: DocumentModel[]; 
     
-    // Campos de dirección
+    // Campos planos de dirección (Necesarios para la desestructuración en handleSavePerson)
     street: string; 
     cityId: string; 
     postalCode?: string;
+    countryId?: string;
+    provinceId?: string;
 }
 
 
@@ -62,7 +62,6 @@ export type EmployManagementRef = {
 
 // ✅ Componente renombrado a EmployManagement
 const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => { 
-    // ❌ La línea de console.log ha sido ELIMINADA.
     const { openScreen, closeTopScreen } = useScreenContainer();
 
     // ✅ Estados usando PersonModel
@@ -75,7 +74,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
     const loadPeople = useCallback(async () => {
         setLoading(true);
         try {
-            // ✅ Esperamos PersonModel[] del servicio
+            // ✅ Usa el servicio configurado para obtener datos de la API real
             const dataFromService: PersonModel[] = await getActivePeople(); 
             
             console.log("🟢 Datos de la API descifrados:", dataFromService);
@@ -124,25 +123,33 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
     ) => {
         const isEditing = person && person.personId;
         
-        // 💡 Desestructuración para construir payload
-        const { documents, street, cityId, postalCode, ...personFields } = personPatch;
+        // 💡 CAMBIO CLAVE: Desestructuramos para excluir los campos planos de dirección.
+        // El resto (employee, documents, addresses) es el payload estructurado.
+        const { 
+            street, cityId, postalCode, countryId, provinceId,
+            ...personPayloadToSend 
+        } = personPatch;
+        
+        // El payload ya contiene los arrays 'addresses', 'documents', y el sub-objeto 'employee'.
+        const finalPayload = personPayloadToSend as unknown as PersonUpdatePayload;
 
         try {
             if (isEditing) {
-                // 1. ACTUALIZAR 
+                // 1. ACTUALIZAR: Enviamos el payload listo a la API
                 const updatedPerson: PersonModel = await updatePerson(
                     person.personId, 
                     MOCK_USER_ID, 
-                    personPatch
+                    finalPayload
                 );
 
                 setPeople(prev => prev.map(p => p.personId === updatedPerson.personId ? updatedPerson : p));
                 
             } else {
-                // 2. CREAR
+                // 2. CREAR: Añadimos campos de auditoría y roles.
                 
-                const newPersonData: PersonCreatePayload = { 
-                    ...(personFields as PersonCreatePayload), 
+                const newPersonData: PersonCreationPayload = { 
+                    // Usa el payload ya estructurado por el formulario
+                    ...(finalPayload as PersonCreationPayload), 
                     
                     // Asignación de ROLES y metadatos por defecto
                     isCustomer: true, 
@@ -151,25 +158,8 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
                     isActive: true, 
                     createdByUserId: MOCK_USER_ID, 
                     
-                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: documents
-                    documents: documents.map(doc => ({
-                        ...doc,
-                        issuingCountry: (doc as DocumentModel).issuingCountry || '', 
-                    })) as DocumentModel[], 
-                    
-                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: addresses
-                    addresses: [{
-                        addressId: person?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000', 
-                        street: street,
-                        cityId: cityId,
-                        postalCode: postalCode,
-                        personId: person?.personId || '00000000-0000-0000-0000-000000000000',
-                        stateId: '105fb4c5-0ae8-40e4-b315-2f6671b368ac', 
-                        countryId: 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
-                        typeAddressId: '8f2b1d3c-5e4a-7b0f-9d6c-1e8a9f0b2c3d', 
-                        isActive: true,
-                    }] as AddressModel[],
-                } as PersonCreatePayload;
+                    // 🛑 YA NO SE REQUIERE RECONSTRUCCIÓN MANUAL DE ARRAYS
+                };
 
 
                 const newPerson: PersonModel = await createPerson(
@@ -220,7 +210,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
         },
     }));
 
-    // DEFINICIÓN DE COLUMNAS (Aseguramos el tipo PersonModel)
+    // DEFINICIÓN DE COLUMNAS (Sin cambios)
     const columns = [
         { 
             field: "givenName", 
@@ -235,6 +225,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
         { field: "isSupplier", header: "Es Proveedor", bodyTemplate: (p: PersonModel) => (p.isSupplier ? "Sí" : "No") }, 
     ];
 
+    // Botones (Sin cambios)
     const buttons = [
         {
             label: "",
@@ -245,7 +236,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
             disabled: loading 
         },
         {
-            label: "Agregar Empleado", // ✅ Etiqueta más específica
+            label: "Agregar Empleado", 
             color: "btn-primary", 
             textColor: "text-light",
             onClick: () => handleOpenPersonScreen(), 
@@ -278,7 +269,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
         <div className="layout-container"> 
             <div className="table-wrapper-container"> 
                 <ReusableTableFilterLayout
-                    moduleName="Gestión de Empleados" // ✅ Módulo renombrado
+                    moduleName="Gestión de Empleados" 
                     data={people} 
                     rowKey="personId" 
                     columns={columns}
@@ -301,7 +292,7 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
                 onConfirm={handleSoftDeleteMassive} 
                 item={itemToDelete} 
                 itemsCount={selectedRows.length} 
-                entityName="empleado" // ✅ Entidad renombrada
+                entityName="empleado" 
                 itemNameKey="givenName" 
                 actionType="eliminar lógicamente"
             />

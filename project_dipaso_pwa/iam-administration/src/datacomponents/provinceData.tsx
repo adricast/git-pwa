@@ -32,16 +32,34 @@ const transformProvincesToOptions = (provinces: Province[]): ProvinceFormOption[
 /**
  * Hook para cargar las opciones de Provincias desde la caché de IndexedDB,
  * transformarlas y gestionar su estado.
+ * * ✅ CORRECCIÓN: Acepta 'isMapInitialized' para sincronizar la ejecución.
  */
-export function useProvinceOptionsLoader() {
+export function useProvinceOptionsLoader(isMapInitialized: boolean) {
     const [provinceOptions, setProvinceOptions] = useState<ProvinceFormOption[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // ✅ Estado inicial que refleja la espera del mapa.
+    const [isLoading, setIsLoading] = useState(!isMapInitialized); 
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
+        // 🛑 CONDICIÓN CLAVE: Si el mapa de IDs no está listo, sal del efecto.
+        if (!isMapInitialized) {
+            // Mantiene el estado de carga activo mientras espera.
+            setIsLoading(true); 
+            return;
+        }
+
+        // Si ya cargó y no tiene error, no cargamos de nuevo (optimización).
+        if (!isLoading && !error) {
+             return;
+        }
+
         async function fetchAndTransformProvinces() {
+            // Restablecer estados de carga y error antes de intentar la llamada
+            setIsLoading(true);
+            setError(null);
+            
             try {
-                // 1. Llama al servicio adaptador de Provincias
+                // 1. Llama al servicio adaptador (Esta llamada es ahora SEGURA).
                 const provinces: Province[] = await getLocalProvincesList();
                 
                 // 2. Transforma el resultado
@@ -57,8 +75,10 @@ export function useProvinceOptionsLoader() {
             }
         }
 
+        // Se ejecuta la carga asíncrona SOLAMENTE cuando isMapInitialized es true.
         fetchAndTransformProvinces();
-    }, []);
+    // ✅ Dependencia crítica: Se ejecuta solo cuando isMapInitialized cambia a true.
+    }, [isMapInitialized]); 
 
     // Exporta el estado completo.
     return { provinceOptions, isLoading, error };

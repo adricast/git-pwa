@@ -1,14 +1,8 @@
-// 📁 EmployManagement.tsx (Anteriormente PeopleManagement.tsx)
+// 📁 EmployManagement.tsx 
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-//import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
- 
-//import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
-
 
 import { useScreenContainer, ReusableTableFilterLayout } from '@dipaso/design-system';
-//import * as DesignSystem from '@dipaso/design-system';
-//import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 // 🎯 IMPORTACIONES DE MODELOS: Usamos el modelo principal para la gestión
 import type { PersonModel } from "../../models/api/personModel"; 
 import type { AddressModel } from "../../models/api/addressModel";
@@ -18,8 +12,6 @@ import type { DocumentModel } from "../../models/api/documentModel";
 import { personServiceConfig } from "./employserviceconfig"; 
 
 import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
-// 🚨 CORRECCIÓN DE IMPORTACIÓN: Reemplazamos AddEditPersonContent por el Wrapper
-// import AddEditPersonContent from "./addeditemploy"; 
 import EmployFormWrapper from "./employformwrapper"; // 🚨 Importamos el Wrapper
 
 import { FaSyncAlt } from "react-icons/fa"; 
@@ -35,8 +27,8 @@ type PersonCreatePayload = Omit<
     'personId' | 'createdAt' | 'updatedAt' | 'createdByUserId' | 'updatedByUserId'
 >;
 
-// 💡 TIPO DE DATOS DEL FORMULARIO (ACTUALIZADO para reflejar la tabla 'documents')
-interface EmployFormData { // Usamos el nombre EmployFormData para coincidir con addeditemploy.tsx
+// 💡 TIPO DE DATOS DEL FORMULARIO
+interface EmployFormData { 
     givenName: string; 
     surName: string; 
     phoneNumber?: string; 
@@ -70,7 +62,7 @@ export type EmployManagementRef = {
 
 // ✅ Componente renombrado a EmployManagement
 const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => { 
-    console.log("DEBUG: ReusableTableFilterLayout is", ReusableTableFilterLayout);
+    // ❌ La línea de console.log ha sido ELIMINADA.
     const { openScreen, closeTopScreen } = useScreenContainer();
 
     // ✅ Estados usando PersonModel
@@ -108,8 +100,8 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
             ? `Editar Empleado: ${personToEdit.givenName} ${personToEdit.surName}` 
             : "Crear Nuevo Empleado";
         
+        // 🚨 Renderiza el wrapper del formulario
         const content = (
-            // 🚨 CAMBIO CLAVE: Renderizamos el Wrapper que maneja la carga y la mutación
             <EmployFormWrapper 
                 employ={personToEdit} 
                 onSave={handleSavePerson} 
@@ -127,14 +119,12 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
 
     // 🟢 Maneja tanto la creación como la actualización
     const handleSavePerson = async (
-        person: PersonModel | null, // 🚨 ESTA ES LA VARIABLE CORRECTA
-        // 🛑 USAMOS EL NUEVO TIPO EmployFormData
+        person: PersonModel | null, 
         personPatch: Partial<PersonModel> & EmployFormData
     ) => {
         const isEditing = person && person.personId;
         
-        // 💡 EXTRAEMOS CAMPOS DEL ARRAY DOCUMENTS[]
-        // 🛑 Desestructuramos el array documents directamente (el cual contiene docTypeId y docNumber internamente)
+        // 💡 Desestructuración para construir payload
         const { documents, street, cityId, postalCode, ...personFields } = personPatch;
 
         try {
@@ -151,27 +141,24 @@ const EmployManagement = forwardRef<EmployManagementRef>((_, ref) => {
             } else {
                 // 2. CREAR
                 
-                // Aplicamos los ROLES POR DEFECTO aquí (isEmployee: true, isCustomer: true, isSupplier: false)
                 const newPersonData: PersonCreatePayload = { 
                     ...(personFields as PersonCreatePayload), 
                     
-                    // Asignación de ROLES por defecto
+                    // Asignación de ROLES y metadatos por defecto
                     isCustomer: true, 
                     isSupplier: false, 
                     isEmployee: true, 
                     isActive: true, 
-                    createdByUserId: MOCK_USER_ID, // Añadir el ID de creación
+                    createdByUserId: MOCK_USER_ID, 
                     
-                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: Usamos el array documents[] completo
+                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: documents
                     documents: documents.map(doc => ({
                         ...doc,
-                        // El issuingCountry ahora viene del select del formulario.
-                        // Si no lo seleccionó (y el campo no era requerido), lo dejamos como está o vacío.
                         issuingCountry: (doc as DocumentModel).issuingCountry || '', 
                     })) as DocumentModel[], 
                     
+                    // 🛑 CONSTRUCCIÓN DE ESTRUCTURAS ANIDADAS: addresses
                     addresses: [{
-                        // ✅ CORRECCIÓN: Usamos 'person' en lugar de 'employ'
                         addressId: person?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000', 
                         street: street,
                         cityId: cityId,

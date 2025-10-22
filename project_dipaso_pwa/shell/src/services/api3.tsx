@@ -30,6 +30,6 @@ export const api = axios.create({
     headers: {
         "Content-Type": "application/json",
         "X-Api-Key": API_KEY,
-        //"Access-Control-Allow-Origin": "http://localhost:3000/",
+       
     },
 });

@@ -1,4 +1,4 @@
-// src/entities/api/catalogApi.ts
+// 📁 src/entities/api/catalogApi.ts (FINAL Y CORREGIDO)
 
 /**
  * Tipo para el fragmento cifrado (payload + signature)
@@ -9,6 +9,10 @@ export interface EncryptedFragment {
     signature: string;
 }
 
+// ----------------------------------------------------------------------
+// INTERFAZ PRINCIPAL (TEXTO PLANO)
+// ----------------------------------------------------------------------
+
 /**
  * 🚨 INTERFAZ PRINCIPAL DE LA APLICACIÓN
  * Define la estructura del catálogo en texto plano (lo que la aplicación consume).
@@ -16,8 +20,8 @@ export interface EncryptedFragment {
 export interface Catalog {
     catalog_id: string;
     catalog_name: string;        // Ej: "countries", "document_types"
-    catalog_value: any;          // Puede ser objeto o lista, sin estructura fija
-    catalog_type: string;        // Ej: "list", "dropdown", "config"
+    catalog_value: any;          // Full, complex data
+    catalog_type: string;        
     description?: string;
     is_active: boolean;
     created_at: string;
@@ -26,22 +30,23 @@ export interface Catalog {
     updated_by_user_id?: string | null;
 }
 
+// ----------------------------------------------------------------------
+// INTERFAZ DE ALMACENAMIENTO (CIFRADA) - CORREGIDA PARA BÚSQUEDA EFICIENTE
+// ----------------------------------------------------------------------
+
 /**
- * 🚨 TIPO ALMACENADO REAL (IDB)
- * Define la estructura del objeto Catalog tal como se guarda en IndexedDB.
- * Es una réplica de Catalog, pero reemplaza 'catalog_value' por la versión cifrada.
+ * 🚨 TIPO ALMACENADO REAL (IDB) - FUNCIONAL
+ * Define la estructura del objeto tal como se guarda en IndexedDB.
+ * Mantiene las claves de búsqueda (sin cifrar) y cifra todo el resto del objeto.
  */
 export interface EncryptedCatalogRecord {
-    catalog_id: string;
-    catalog_name: string;
-    catalog_type: string;
-    description?: string;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-    created_by_user_id?: string | null;
-    updated_by_user_id?: string | null;
+    // 1. Clave Primaria (PK) - Sin cifrar para db.put(value)
+    catalog_id: string; 
     
-    // Campo CIFRADO que reemplaza el valor en texto plano
-    encrypted_catalog_value: EncryptedFragment;
+    // 2. Clave de Índice - Sin cifrar para búsqueda por nombre (by_catalog_name)
+    catalog_name: string;
+    
+    // 3. Payload Cifrado - Contiene *todos* los metadatos y el valor (CatalogValue)
+    // Se usa 'encrypted_data' como la clave para el payload cifrado TOTAL.
+    encrypted_data: EncryptedFragment; 
 }

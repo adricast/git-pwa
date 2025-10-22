@@ -1,16 +1,22 @@
-// src/services/idb/countryCatalogService.ts
+// 📁 src/services/idb/countryCatalogService.ts (CORRECCIÓN FINAL para Province)
 
 // 🚨 Importamos la función centralizada
 import { getLocalCatalogValue } from "./localCatalogServices"; 
 import { type Province } from "./../../models/idbencrypt/provinceModel"; // Modelo que creamos anteriormente
-import { CATALOG_NAMES, CATALOG_NAME_TO_ID_MAP } from "./../../configurations/parameters/catalogParameters"; 
+import { CATALOG_NAMES } from "./../../configurations/parameters/catalogParameters"; 
 
-const PROVINCE_CATALOG_ID = CATALOG_NAME_TO_ID_MAP[CATALOG_NAMES.PROVINCES];
+// ❌ ELIMINAR ESTA LÍNEA: Ya no dependemos de IDs estáticos
+// const PROVINCE_CATALOG_ID = CATALOG_NAME_TO_ID_MAP[CATALOG_NAMES.PROVINCES];
 
 /**
- * Obtiene la lista de países (Country[]) utilizando el servicio centralizado.
+ * Obtiene la lista de provincias (Province[]) utilizando el servicio centralizado.
  */
 export function getLocalProvincesList(): Promise<Province[]> {
-    // Llama a la función genérica, pasando el ID y el tipo esperado.
-    return getLocalCatalogValue<Province>(PROVINCE_CATALOG_ID, CATALOG_NAMES.PROVINCES);
+    
+    // 🎯 CORRECCIÓN CLAVE: 
+    // 1. Pasa solo el tipo del ELEMENTO INDIVIDUAL (Province) como genérico.
+    // 2. Pasa solo el NOMBRE del catálogo (CATALOG_NAMES.PROVINCES) como argumento.
+    // La función centralizada 'getLocalCatalogValue' buscará el ID internamente.
+    
+    return getLocalCatalogValue<Province>(CATALOG_NAMES.PROVINCES);
 }

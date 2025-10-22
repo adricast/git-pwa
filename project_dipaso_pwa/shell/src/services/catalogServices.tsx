@@ -1,17 +1,27 @@
-// src/services/api/catalogService.ts (CORREGIDO)
 
-import { api } from "./api"; 
+
+import { api } from "./api2"; 
 import { catalogsRouteApi} from "./../configurations/routes/apiRoutes"; 
 import { type Catalog } from "./../models/api/catalogsModel" 
 // 🚨 CORRECCIÓN: Importamos el Repositorio de IndexedDB
 import { CatalogRepository } from "./../db/catalogRepository"; 
 
 // ----------------------------------------------------------------------
-// 1. CONSTANTES E INSTANCIAS
+// 1. CONSTANTES, INTERFACES Y INSTANCIAS
 // ----------------------------------------------------------------------
 
 const BASE_ROUTE = `${catalogsRouteApi.catalog}`; 
-const catalogRepo = new CatalogRepository(); // ⬅️ Instancia del repositorio
+const catalogRepo = new CatalogRepository(); 
+
+/**
+ * Define la estructura esperada de la respuesta estructurada del backend (paginada).
+ */
+interface CatalogApiResponse {
+    total: number;
+    skip: number;
+    limit: number;
+    items: Catalog[]; // <-- El array real de catálogos
+}
 
 
 // ----------------------------------------------------------------------
@@ -24,15 +34,23 @@ const catalogRepo = new CatalogRepository(); // ⬅️ Instancia del repositorio
  */
 export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catalog[]> {
     try {
-        const url = activeOnly ? `${BASE_ROUTE}` : BASE_ROUTE;
+        // La URL completa es BASE_URL/api/catalogs/ o BASE_URL/api/catalogs/?active=true
+        const url = activeOnly ? `${BASE_ROUTE}?active=true` : BASE_ROUTE;
         
-        const response = await api.get<Catalog[]>(url); 
+        // 1. Axios recibe la respuesta estructurada
+        const response = await api.get<CatalogApiResponse>(url); 
         
-        if (!Array.isArray(response.data)) {
-            throw new Error("API response unexpected: Array of catalogs expected.");
+        // 2. Extrae el array de la propiedad 'items'
+        const catalogsArray = response.data.items;
+        
+        if (!Array.isArray(catalogsArray)) {
+            // Este error ya no debería ocurrir si la API siempre envía 'items'
+            throw new Error("API response unexpected: 'items' property is not an array.");
         }
 
-        return response.data; 
+        // 3. RETORNO: Se retorna el arreglo real
+        return catalogsArray; 
+        
     } catch (error: any) {
         console.error("Error fetching all catalogs from API:", error);
         throw error;
@@ -65,14 +83,29 @@ export async function getCatalogById(catalogId: string | number): Promise<Catalo
 export async function syncAndCacheAllCatalogs(): Promise<void> {
     try {
         console.log("Sync: 1. Fetching active catalogs from API (PREREQUISITE)...");
-        // Trae los catálogos de la API
-        const allCatalogs = await getAllCatalogs(true); 
-
-        console.log(`Sync: 2. ${allCatalogs.length} catalogs fetched. Saving to IndexedDB...`);
         
-        // 🚨 USO DEL REPOSITORIO: Llama al método de guardado masivo, el cual
-        // se encarga de CIFRAR cada registro antes de insertarlo en IndexedDB.
-        await catalogRepo.clearAndBulkPutCatalogs(allCatalogs);
+        // 1. Trae los catálogos de la API (solo los activos, ya extraídos del campo 'items')
+        const fetchedCatalogs = await getAllCatalogs(true); 
+
+        // 2. Mapeo para asegurar la clave primaria.
+        // El backend devuelve 'catalogId' (camelCase) y 'catalogName' (camelCase). 
+        // IndexedDB necesita 'catalog_id' y 'catalog_name' (snake_case) como claves sin cifrar.
+        const catalogsForRepo = fetchedCatalogs.map(catalog => {
+            const apiCatalog = catalog as any; // Para acceder a claves en camelCase de la API
+            
+            return {
+                ...catalog,
+                // 🚨 CORRECCIÓN CLAVE: Mapeo de camelCase API a snake_case DB/Modelo
+                catalog_id: apiCatalog.catalogId || catalog.catalog_id, // Garantiza PK
+                catalog_name: apiCatalog.catalogName || catalog.catalog_name, // Garantiza Índice
+            }
+        });
+
+
+        console.log(`Sync: 2. ${catalogsForRepo.length} catalogs fetched. Saving to IndexedDB...`);
+        
+        // 🚨 USO DEL REPOSITORIO: Llama al método de guardado masivo con los datos mapeados
+        await catalogRepo.clearAndBulkPutCatalogs(catalogsForRepo);
 
         console.log("Sync: 3. Catalogs successfully saved/updated in IndexedDB.");
         
@@ -120,7 +153,7 @@ export async function getLocalCatalogsByName(name: string): Promise<Catalog[]> {
  * Obtiene todos los catálogos del caché, ordenados por fecha de actualización.
  * La data regresada ya está DESCIFRADA.
  */
-export async function getLocalAllCatalogsOrdered(): Promise<Catalog[]> {
+export async function getAllOrderedByUpdate(): Promise<Catalog[]> {
     console.log("Cache: Fetching all catalogs ordered by update date from IndexedDB.");
     // Usa el índice 'by_updated_at' del repositorio, regresando data descifrada
     return catalogRepo.getAllOrderedByUpdate();

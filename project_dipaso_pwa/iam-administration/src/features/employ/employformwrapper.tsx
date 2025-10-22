@@ -12,7 +12,7 @@ import { useCityOptionsLoader } from "./../../datacomponents/cityData";
 import { useCatalogMapInitializationStatus } from "./../../hooks/useCatalogMapInitializationStatus"; 
 
 
-// Importamos los CINCO arrays mutables (placeholders) desde la configuración
+// Importamos los CINCO arrays mutables (placeholders) desde la configuraciónaq
 import { 
     genderOptions, 
     countryOptions, 

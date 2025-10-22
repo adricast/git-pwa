@@ -5,39 +5,31 @@ import React, { useCallback, useMemo } from "react";
 import type { PersonModel } from "./../../models/api/personModel"; 
 import type { AddressModel } from "../../models/api/addressModel"; 
 import type { DocumentModel } from "./../../models/api/documentModel";
-// ✅ NUEVO: Importamos el modelo de detalles de empleado
 import type { EmployeeDetailsModel } from "./../../models/api/employdetailsModel"; 
 
 // ✅ Ahora:
 import { DynamicFormProviderSections } from '@dipaso/design-system'; 
-// Y asegúrate de usar la importación separada para los types:
 import type { DynamicButtonProps } from '@dipaso/design-system';
 import { employFormSections } from "./employformconfig";
-//import DynamicForm from "./../../components/multisectiondinamicform/dynamicformProvider"; 
-//import type { DynamicButtonProps } from './../../components/multisectiondinamicform/interface'; 
 
-//import "./../../components/styles/multisectiondynamicform.sass"; 
-
-
-// 💡 Tipo de datos PLANA del formulario
+// 💡 Tipo de datos PLANA del formulario (CORREGIDO)
 interface EmployFormData {
-    // Campos de PersonModel (Nivel Superior)
+    // ... (Campos de PersonModel y EmployeeDetailsModel)
     givenName: string;
     surName: string;
     phoneNumber?: string;
     genderId?: string;
     dateOfBirth?: string;
-    
-    // Campos de EmployeeDetailsModel (Nivel Superior Plano)
     employeeCode: string; 
-    
-    // 🛑 CAMPO DE TABLA: Ahora es un array de objetos (DocumentModel)
     documents: DocumentModel[]; 
     
-    // Campos de AddressModel (Simplificación)
+    // ✅ CORRECCIÓN DE TIPO: Estos campos son planos en la data del formulario,
+    // pero deben ser tratados como si existieran en el AddressModel subyacente para el mapeo.
     street: string;
     cityId: string;
     postalCode?: string;
+    countryId: string; // <-- CRÍTICO
+    provinceId: string; // <-- CRÍTICO
 }
 
 /**
@@ -48,37 +40,37 @@ const AddEditEmployContent: React.FC<{
     onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
     onClose: () => void;
 }> = ({ employ, onSave, onClose }) => {
-    console.log("DEBUG: DynamicFormProviderSections is", DynamicFormProviderSections);
+    
     // 1. Preparamos los datos iniciales para el formulario dinámico
     const initialData: Partial<EmployFormData> = useMemo(() => {
-        if (!employ) {
-            return { dateOfBirth: "", genderId: "", employeeCode: "", documents: [] };
-        }
         
-        // --- 🟢 Mapeo de PersonModel a Formulario Plano (Edición) ---
+        // ❌ ELIMINADA 'const defaultAddressId' para evitar error ts(6133).
+        const primaryAddress = employ?.addresses?.[0]; // Dirección principal, si existe
+
+        // --- 🟢 BASE DE DATOS INICIAL (Edición y Creación) ---
         const baseData: Partial<EmployFormData> = {
             // Campos de Persona
-            givenName: employ.givenName || "",
-            surName: employ.surName || "",
-            phoneNumber: employ.phoneNumber || "",
-            dateOfBirth: employ.dateOfBirth ? employ.dateOfBirth.substring(0, 10) : "", 
-            genderId: employ.genderId || "",
+            givenName: employ?.givenName || "",
+            surName: employ?.surName || "",
+            phoneNumber: employ?.phoneNumber || "",
+            dateOfBirth: employ?.dateOfBirth ? employ.dateOfBirth.substring(0, 10) : "", 
+            genderId: employ?.genderId || "",
             
-            // ✅ Mapeo de Detalle de Empleado
-            employeeCode: employ.employee?.employeeCode || "", 
+            // Detalle de Empleado
+            employeeCode: employ?.employee?.employeeCode || "", 
             
-            // 🛑 Mapeo de Documentos (Pasamos el array completo)
-            // Esto prepara el array de documentos existente para ser editable en la tabla.
-            documents: employ.documents || [],
+            // 🛑 Documentos
+            documents: employ?.documents || [],
+            
+            // ✅ DIRECCIÓN (Inicialización de Campos Individuales)
+            // Se usa el encadenamiento opcional para la seguridad del objeto
+            street: primaryAddress?.street || "",
+            cityId: primaryAddress?.cityId || "",
+            postalCode: primaryAddress?.postalCode || "",
+            // ✅ ASUMIMOS que estos campos existen en el objeto AddressModel (primaryAddress)
+            countryId: (primaryAddress as AddressModel)?.countryId || "", 
+            provinceId: (primaryAddress as AddressModel)?.stateId || "", 
         };
-
-        // Mapeo de Dirección Principal (addresses[0])
-        if (employ.addresses && employ.addresses.length > 0) {
-            const primaryAddress = employ.addresses[0];
-            baseData.street = primaryAddress.street;
-            baseData.cityId = primaryAddress.cityId;
-            baseData.postalCode = primaryAddress.postalCode;
-        }
 
         return baseData;
     }, [employ]);
@@ -87,10 +79,13 @@ const AddEditEmployContent: React.FC<{
     const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
         const formData = data as unknown as EmployFormData;
         
-        // 💡 Separamos los campos de Person/Document/Address de los campos de Employee
-        const { employeeCode, documents, street, cityId, postalCode, ...personFields } = formData;
+        // 💡 Separamos los campos de dirección y employeeCode de PersonModel
+        const { employeeCode, documents, street, cityId, postalCode, countryId, provinceId, ...personFields } = formData;
         
-        // 💡 Lógica de mapeo para crear el PATCH de PersonModel
+        // Usamos valores por defecto si no existen
+        const personId = employ?.personId || '00000000-0000-0000-0000-000000000000'; 
+        const defaultAddressId = employ?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000';
+
         const patchPayload: Partial<PersonModel> = {
             // 1. Campos de PersonModel (Nivel Superior)
             ...personFields, 
@@ -99,46 +94,42 @@ const AddEditEmployContent: React.FC<{
             employee: {
                 employeeId: employ?.employee?.employeeId || '00000000-0000-0000-0000-000000000000', 
                 employeeCode: employeeCode,
-                personId: employ?.personId || '00000000-0000-0000-0000-000000000000',
+                personId: personId,
                 isActive: true,
                 employeeStatus: employ?.employee?.employeeStatus || 'A',
             } as EmployeeDetailsModel,
             
-            // 🛑 3. Arrays anidados (Documents): CORRECCIÓN DEL MAPEO PARA EVITAR LA SOBRESCRITURA
+            // 🛑 3. Arrays anidados (Documents): Mapeo de la Tabla
             documents: documents.map((doc, index) => {
-                
-                // 1. Obtener el ID existente del documento original, si aplica.
                 const existingDocumentId = employ?.documents?.[index]?.personDocumentId || '00000000-0000-0000-0000-000000000000';
                 
-                // 2. Mapear la data de la tabla, asegurando que los IDs y valores fijos se apliquen al final.
                 return {
-                    // Cargar todos los campos editables desde la tabla (docTypeId, docNumber, etc.)
                     ...doc,
-                    
-                    // Sobrescribir/Asegurar las claves de estructura al final:
-                    personDocumentId: existingDocumentId, // Usamos el ID recuperado/por defecto
-                    personId: employ?.personId || '00000000-0000-0000-0000-000000000000', 
-                    // Asegurar valores por defecto/fijos que podrían no estar en la tabla
+                    personDocumentId: existingDocumentId,
+                    personId: personId, 
+                    // Asegura que los campos de selección se pasen
                     issuingCountry: (doc as DocumentModel).issuingCountry || 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
                     isActive: (doc as DocumentModel).isActive ?? true,
                 }
             }) as DocumentModel[],
             
-            // 4. Arrays anidados (Addresses) - Se mantiene simplificado a 1
+            // 4. Arrays anidados (Addresses)
             addresses: [{
-                addressId: employ?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000', 
+                addressId: defaultAddressId, 
                 street: street,
                 cityId: cityId,
                 postalCode: postalCode,
-                personId: employ?.personId || '00000000-0000-0000-0000-000000000000',
-                stateId: '105fb4c5-0ae8-40e4-b315-2f6671b368ac', 
-                countryId: 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
-                typeAddressId: '8f2b1d3c-5e4a-7b0f-9d6c-1e8a9f0b2c3d', 
+                countryId: countryId,   // ✅ Usamos el valor del formulario
+                stateId: provinceId, // ✅ Usamos el valor del formulario
+                
+                // Valores Fijos/Backend
+                personId: personId,
+              
+                typeAddressId: '8f2b1d3c-5e4a-4d45-98f1-a160240bdecd', // ID de tipo de dirección (mock)
                 isActive: true,
             }] as AddressModel[],
         };
         
-        // Ejecutamos la lógica de guardado
         await onSave(employ, patchPayload as Partial<PersonModel> & EmployFormData);
     }, [employ, onSave]);
 
@@ -169,5 +160,4 @@ const AddEditEmployContent: React.FC<{
     );
 };
 
-// ✅ Exportamos el componente
 export default AddEditEmployContent;

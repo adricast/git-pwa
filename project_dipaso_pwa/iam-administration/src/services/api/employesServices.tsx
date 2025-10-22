@@ -196,3 +196,46 @@ export async function softDeletePeopleMassive(
         throw error;
     }
 }
+
+export async function getAllEmployees(activeOnly: boolean = false): Promise<PersonModel[]> {
+    try {
+        const query = activeOnly ? '?active=true' : '';
+        
+        // URL: /api/employee o /api/employee?active=true
+        const response = await api.get<any>(`${employeesRouteApi.employ}${query}`); 
+        
+        if (!Array.isArray(response.data)) {
+            // El backend DEBE devolver un array para la consulta general
+            throw new Error("Respuesta de lista de empleados inválida.");
+        }
+
+        // Se asume que mapPersonFromApi está disponible y mapea snake_case a PersonModel[]
+        return response.data.map(mapPersonFromApi);
+    } catch (error) {
+        console.error("Error al obtener la lista de empleados:", error);
+        throw error;
+    }
+}
+
+/**
+ * Consulta los detalles de un empleado específico por ID (GET /employee/{id}).
+ * 🎯 Llama a la ruta con el ID.
+ * @param personId El UUID del empleado.
+ */
+export async function getEmployeeById(personId: string): Promise<PersonModel> {
+    try {
+        // URL: /api/employee/{personId}
+        const response = await api.get<any>(`${employeesRouteApi.employ}/${personId}`);
+        
+        // El backend devuelve un único objeto.
+        if (!response.data || Array.isArray(response.data)) {
+            throw new Error("Respuesta de detalle de empleado inválida o vacía.");
+        }
+        
+        return mapPersonFromApi(response.data);
+    } catch (error) {
+        console.error(`Error al obtener el empleado ${personId}:`, error);
+        // El backend devuelve 404 si no existe, lo cual debe ser manejado por el consumidor
+        throw error; 
+    }
+}

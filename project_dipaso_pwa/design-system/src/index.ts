@@ -2,12 +2,13 @@
 
 // ===== COMPONENTS =====
 
-
-
 export { default as CardContainer } from './components/cardcontainer/cardcontainer';
 export { default as CardContainer2 } from './components/cardcontainer2/cardcontainer';
 export { default as DynamicForm } from './components/dinamicform/dynamicfield';
 export { default as MultiSectionDynamicForm } from './components/multisectiondinamicform/dynamicsection';
+
+// ✅ EXPORTACIÓN CRÍTICA: Añadir DynamicTable (asumiendo su ruta)
+export { default as DynamicTable } from './components/multisectiondinamicform/dynamictable'; 
 
 export type { 
     DynamicFormProviderProps as MultiSectionDynamicFormProviderProps, 
@@ -16,9 +17,6 @@ export type {
     FormSection as MultiSectionFormSection, 
 
 } from './components/multisectiondinamicform/interface';
-// export { default as ReusableTable } from './components/reusabletable/interface';
-//export { default as ReusableTableFilter } from './components/reusabletablefilter/columfilter';
-// export { default as ScreenContainer } from './components/screencontainer/usescreencontainer';
 
 // ===== LAYOUTS =====
 export { default as CardManagerLayout } from './components/layout/cardmanagerLayout';
@@ -54,6 +52,4 @@ export type { ReusableTableFilterProps } from './components/reusabletablefilter/
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'
 
 // ===== UTILITIES =====
-// export { default as TableLogic } from './components/reusabletable/tablelogic'
-// export { default as TableFilterLogic } from './components/reusabletablefilter/tablelogic'
-export { default as ColumnFilter } from './components/reusabletablefilter/columfilter'
+export { default as ColumnFilter } from './components/reusabletablefilter/columfilter';

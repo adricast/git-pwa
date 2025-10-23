@@ -8,8 +8,10 @@ import type { DocumentModel } from "./../../models/api/documentModel";
 import type { EmployeeDetailsModel } from "./../../models/api/employdetailsModel"; 
 
 // ✅ Ahora:
-import { DynamicFormProviderSections } from '@dipaso/design-system'; 
+import { DynamicFormProviderSections } from '@dipaso/design-system';
+// Use the FormSection type from the same path as DynamicFormProviderSections expects:
 import type { DynamicButtonProps } from '@dipaso/design-system';
+import type { FormSection } from '@dipaso/design-system/dist/components/multisectiondinamicform/interface';
 import { employFormSections } from "./employformconfig";
 
 // 💡 Tipo de datos PLANA del formulario (CORREGIDO)
@@ -149,7 +151,7 @@ const AddEditEmployContent: React.FC<{
         <div className="person-form-wrapper">
             
             <DynamicFormProviderSections
-                sections={employFormSections} 
+                sections={employFormSections as FormSection[]} 
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
                 buttonText={employ ? "Actualizar Empleado" : "Crear Empleado"}

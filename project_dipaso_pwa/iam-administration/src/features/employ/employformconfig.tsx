@@ -1,11 +1,9 @@
 // 📁 src/components/forms/employformconfig.tsx (Configuración Final para Empleado)
 
+import type { FormSection } from "@dipaso/design-system";
+
 //import type { FormSection } from '../../components/multisectiondinamicform/interface'; 
-import { 
 
-  type MultiSectionFormSection, 
-
-} from '@dipaso/design-system';
 /**
  * Interface para las opciones de formulario { value: string, label: string }
  */
@@ -39,7 +37,7 @@ const employeeStatusOptions: FormOption[] = [
 /**
  * EXPORTACIÓN ORIGINAL MANTENIDA: La constante employFormSections[]
  */
-export const employFormSections: MultiSectionFormSection[] = [
+export const employFormSections: FormSection[] = [
 
     // ----------------------------------------------------
     // SECCIÓN 1: DATOS PERSONALES
@@ -154,8 +152,7 @@ export const employFormSections: MultiSectionFormSection[] = [
             label: "Calle Principal y Secundaria", 
             type: "textarea", 
             required: true, 
-            placeholder: "Calle principal y secundaria (Obligatorio)", 
-            helperText: "Asegúrese de incluir calle principal y secundaria." 
+            placeholder: "Calle principal y secundaria (Obligatorio)",
         },
 
         // 5. postalCode (Mantenido)

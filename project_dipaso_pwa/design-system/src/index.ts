@@ -10,13 +10,13 @@ export { default as MultiSectionDynamicForm } from './components/multisectiondin
 // ✅ EXPORTACIÓN CRÍTICA: Añadir DynamicTable (asumiendo su ruta)
 export { default as DynamicTable } from './components/multisectiondinamicform/dynamictable'; 
 
-export type { 
-    DynamicFormProviderProps as MultiSectionDynamicFormProviderProps, 
-    DynamicButtonProps as MultiSectionDynamicButtonProps, 
-    FormField as MultiSectionFormField, 
-    FormSection as MultiSectionFormSection, 
-
-} from './components/multisectiondinamicform/interface';
+// Exporta los tipos de formularios desde el archivo centralizado
+export type {
+    DynamicFormProviderProps,
+    DynamicButtonProps,
+    FormField,
+    FormSection
+} from './types/form';
 
 // ===== LAYOUTS =====
 export { default as CardManagerLayout } from './components/layout/cardmanagerLayout';
@@ -34,6 +34,7 @@ export { default as CardProvider } from './components/cardcontainer/cardprovider
 export { default as CardManagerProvider } from './components/cardcontainer/cardmanagerprovider';
 export { default as DynamicFormProvider } from './components/dinamicform/dynamicformProvider';
 export { default as DynamicFormProviderSections } from './components/multisectiondinamicform/dynamicformProvider';
+// export { default as DynamicForm } from './components/multisectiondinamicform/dynamicformProvider';
 export { default as ScreenContainerProvider } from './components/screencontainer/screencontainerprovider';
 
 export { default as DynamicSectionComponent } from './components/multisectiondinamicform/dynamicsection';
@@ -46,7 +47,7 @@ export { useScreenContainer } from './components/screencontainer/usescreencontai
 
 // ===== TYPES =====
 export type { CardContainerProps } from './components/cardcontainer/interface';
-export type { DynamicFormProviderProps,DynamicButtonProps, FormField, FormSection,  CustomComponentProps, CustomReactComponent} from './components/dinamicform/interface';
+// (ya se exportan arriba desde './types/form')
 export type { ReusableTableProps } from './components/reusabletable/interface';
 export type { ReusableTableFilterProps } from './components/reusabletablefilter/interface'
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'

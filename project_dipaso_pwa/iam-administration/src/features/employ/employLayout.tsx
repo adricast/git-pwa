@@ -15,12 +15,12 @@ import {
     type PersonUpdatePayload
 } from "./employserviceconfig"; 
 
-import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
 import EmployFormWrapper from "./employformwrapper"; // 🚨 Importamos el Wrapper
 
 import { FaSyncAlt } from "react-icons/fa"; 
 
 import "./../styles/generalLayout.sass"; 
+import DeleteConfirmationDialog from "@dipaso/design-system/dist/components/layout/deletedialogLayout";
 
 
 const MOCK_USER_ID = "00000000-0000-0000-0000-000000000001"; 

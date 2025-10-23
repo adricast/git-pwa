@@ -1,7 +1,6 @@
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 // 🟢 Solo necesitamos el hook para interactuar con el contexto
-import { useScreenContainer } from "../../components/screencontainer/usescreencontainer"; 
 
 import { v4 as uuidv4 } from "uuid";
 import { FaSyncAlt } from "react-icons/fa"; 
@@ -19,11 +18,12 @@ export interface User {
 }
 
 
-import DeleteConfirmationDialog from "../../components/layout/deletedialogLayout";
 import AddEditUserContent from "./addedituser"; 
-import ReusableTable from "../../components/layout/reusabletableLayout"; 
 
 import "./../styles/generalLayout.sass"; 
+import { useScreenContainer } from "@dipaso/design-system";
+import DeleteConfirmationDialog from "@dipaso/design-system/dist/components/layout/deletedialogLayout";
+import ReusableTable from "@dipaso/design-system/dist/components/layout/reusabletableLayout";
 
 
 // =========================================================================

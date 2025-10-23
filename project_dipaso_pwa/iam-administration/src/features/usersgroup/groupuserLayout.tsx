@@ -1,17 +1,17 @@
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
-import { useScreenContainer } from "./../../components/screencontainer/usescreencontainer"; 
 
 import type { Group } from "./../../models/api/groupModel";
 import { groupServiceConfig } from "./groupserviceconfig"; 
 
-import DeleteConfirmationDialog from "./../../components/layout/deletedialogLayout";
 import AddEditGroupContent from "./addeditgroup";
-import ReusableTable from "./../../components/layout/reusabletablefilterLayout"; 
 import { v4 as uuidv4 } from "uuid";
 
 import "./../styles/generalLayout.sass"; 
 import { FaSyncAlt } from "react-icons/fa"; 
+import { useScreenContainer } from "@dipaso/design-system";
+import DeleteConfirmationDialog from "@dipaso/design-system/dist/components/layout/deletedialogLayout";
+import ReusableTable from "@dipaso/design-system/dist/components/layout/reusabletableLayout";
 const { 
     getActiveGroups, 
     softDeleteGroupsMassive, 

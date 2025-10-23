@@ -1,5 +1,5 @@
+import type { FormSection } from "@dipaso/design-system";
 
-import type { FormSection } from './../../components/dinamicform/interface'; 
 
 export const groupFormSections: FormSection[] = [
     {

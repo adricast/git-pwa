@@ -1,10 +1,11 @@
 
 import React, { useCallback, useMemo } from "react";
 import type { User } from "../../models/api/userModel";
-import DynamicForm from "../../components/multisectiondinamicform/dynamicformProvider"; // Ajusta la ruta a tu nuevo componente
 import { userFormSections } from "./userformconfig"; 
+import { DynamicFormProviderSections } from '@dipaso/design-system';
+// Use the FormSection type from the same path as DynamicFormProviderSections expects:
+import type { FormSection } from '@dipaso/design-system/dist/components/multisectiondinamicform/interface';
 
-import "./../../components/styles/multisectiondynamicform.sass"; 
 
 interface UserFormData {
     username: string;
@@ -55,9 +56,9 @@ const AddEditUserContent: React.FC<{
         <div className="group-form-wrapper">
             
             {/* El DynamicForm renderiza automáticamente las secciones con paginación */}
-        
-            <DynamicForm
-                sections={userFormSections}
+
+            <DynamicFormProviderSections
+                sections={userFormSections as FormSection[]}
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
                 // Este es el botón "Guardar" / "Actualizar"

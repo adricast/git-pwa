@@ -1,9 +1,9 @@
 // 📁 src/services/catalogServices.tsx
 
 import { api } from "./api2"; 
-import { catalogsRouteApi} from "./../configurations/routes/apiRoutes"; 
-import { type Catalog } from "./../models/api/catalogsModel" 
-import { CatalogRepository } from "./../db/catalogRepository"; 
+import { catalogsRouteApi} from "../configurations/routes/apiRoutes"; 
+import { type Catalog } from "../models/api/catalogsModel" 
+import { CatalogRepository } from "../db/catalogRepositoryLocal"; 
 
 // ----------------------------------------------------------------------
 // 1. CONSTANTES, INTERFACES Y INSTANCIAS

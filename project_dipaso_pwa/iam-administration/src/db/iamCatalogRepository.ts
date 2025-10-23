@@ -1,12 +1,15 @@
-// 📁 iam-administration/src/db/iamCatalogRepository.ts
+// 📁 iam-administration/src/db/iamCatalogRepository.ts (CORREGIDO)
 
+// 💡 CORRECCIÓN: Importamos getLocalDB y LocalEncryptedCatalogRecordValue
+// de los archivos que has subido. Ajusta las rutas relativas si es necesario.
+
+
+// 💡 CORRECCIÓN: Importamos getLocalDB y LocalEncryptedCatalogRecordValue
 import { getLocalDB } from "./localIDBdatabase"; 
-import type { LocalEncryptedCatalogRecordValue } from "./LocalCatalogsDB";
-import type { IDBPDatabase } from 'idb';
-// Importamos solo Catalog localmente
-import type { Catalog } from "./../models/idb/catalogsModel"; 
+import type { LocalEncryptedCatalogRecordValue } from "./LocalCatalogsDB"; 
 
-// ASUME: La función de descifrado es accesible
+// Importaciones existentes (se mantienen)
+import type { Catalog } from "./../models/idb/catalogsModel"; 
 import { decryptAndVerifyData } from "./../hooks/encrypterIdb/useMac"; 
 
 const STORE_NAME = "catalogs";
@@ -31,6 +34,7 @@ export class IamCatalogRepository {
      * Obtiene el objeto de catálogo completo (descifrado) por su ID desde la DB local.
      */
     async getCatalogById(catalogId: string): Promise<Catalog | undefined> {
+        // 💡 getLocalDB ahora se encuentra
         const db = await getLocalDB(); 
         
         const encryptedRecord: LocalEncryptedCatalogRecordValue | undefined = await db.get(STORE_NAME, catalogId); 
@@ -49,10 +53,8 @@ export class IamCatalogRepository {
     async getAllCatalogs(): Promise<Catalog[]> {
         const db = await getLocalDB(); 
         
-        // Obtenemos todos los registros cifrados
         const encryptedRecords: LocalEncryptedCatalogRecordValue[] = await db.getAll(STORE_NAME);
 
-        // Mapear y descifrar cada registro
         return encryptedRecords.map(record => this.decryptCatalog(record));
     }
     
@@ -63,27 +65,21 @@ export class IamCatalogRepository {
    async getCatalogsByName(catalogName: string): Promise<Catalog[]> {
         const db = await getLocalDB();
         
-        // 1. Asertamos el tipo del objeto db para obtener el método getAllFromIndex correctamente tipado.
-        // Esto le dice a TypeScript que el métodogetAllFromIndex del store 'catalogs'
-        // para el índice 'by_catalog_name' acepta una clave de tipo 'string'.
-        const typedDb = db as unknown as IDBPDatabase<{
-            catalogs: {
-                indexes: { by_catalog_name: string };
-            };
-        }>;
+        // 1. Abrir la transacción
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const index = store.index('by_catalog_name'); 
+        
+        // 2. Usar el casting para evitar el error ts(2345)
+        const typedIndex = index as unknown as { getAll: (key: string) => Promise<any[]> };
 
-        // 2. Usamos el objeto con el tipo asertado. El error de asignación de 'string' desaparece.
-        const encryptedRecords: LocalEncryptedCatalogRecordValue[] = await typedDb.getAllFromIndex(
-            STORE_NAME, 
-            'by_catalog_name', // Nombre del índice
-            catalogName        // Valor de la clave (string, ahora aceptado)
-        );
+        // 3. Obtener los registros del índice
+        const encryptedRecords: LocalEncryptedCatalogRecordValue[] = await typedIndex.getAll(catalogName);
+
+        await tx.done;
         
         if (!encryptedRecords.length) return [];
         
-        // 3. Mapear y descifrar
         return encryptedRecords.map(record => this.decryptCatalog(record));
     }
-    // Nota: Otros métodos como getActiveCatalogs se implementarían de manera similar, 
-    // usando db.getAllFromIndex con el índice 'by_is_active'.
 }

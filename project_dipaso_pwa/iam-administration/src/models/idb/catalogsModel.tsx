@@ -25,17 +25,17 @@ export interface CatalogValue {
  * Define el modelo Catalog completo (el objeto que existe antes de cifrar y después de descifrar).
  */
 export interface Catalog {
-    catalog_id: string;
-    catalog_name: string;
-    catalog_type: 'list' | 'hierarchical' | 'simple'; // Ejemplo
+    catalogId: string;
+    catalogName: string;
+    catalogType: 'list' | 'hierarchical' | 'simple'; // Ejemplo
     description?: string;
-    is_active: boolean;
+    isActive: boolean;
     // La lista de valores internos
-    values?: CatalogValue[]; 
+    catalogValue?: CatalogValue[]; 
     
     // ... otros campos de metadata
-    created_at: string;
-    updated_at: string;
+    createdAt: string;
+    updatedAt: string;
     created_by_user_id: string;
     updated_by_user_id: string;
 }

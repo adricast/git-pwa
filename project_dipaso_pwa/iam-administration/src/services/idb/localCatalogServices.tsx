@@ -5,8 +5,11 @@
 //************************************** */
 
 // 🚨 IMPORTACIÓN DEL REPOSITORY Y MODELOS NECESARIOS
-import { IamCatalogRepository } from "./../../db/iamCatalogRepository"; // La clase que maneja la DB
-import type { Catalog } from "./../../models/idb/catalogsModel"; // Modelo completo del catálogo
+// 📁 src/services/idb/localCatalogService.ts (VERSIÓN FINAL Y CORREGIDA)
+
+// 🚨 IMPORTACIÓN DEL REPOSITORY Y MODELOS NECESARIOS
+import { IamCatalogRepository } from "./../../db/iamCatalogRepository"; 
+import type { Catalog } from "./../../models/idb/catalogsModel"; 
 
 // IMPORTACIONES GLOBALES
 import { 
@@ -27,7 +30,8 @@ export async function getLocalCatalogValue<T>(
     
     if (!catalogId) {
         console.warn(`WARN: Catalog name '${catalogName}' ID not found in map. Waiting for initialization...`);
-        return Promise.resolve([] as T[]);
+        // Si el mapa aún no está listo, retornamos una promesa resuelta.
+        return Promise.resolve([] as T[]); 
     }
     
     console.log(`IAM-Administration: Reading local cache for ${catalogName} (ID: ${catalogId}).`);
@@ -41,13 +45,13 @@ export async function getLocalCatalogValue<T>(
     }
 
     // 3. EXTRAER EL VALOR: 
-    // ✅ CORRECCIÓN CLAVE: La lista de ítems está en la propiedad catalog.catalog_value.
-    const catalogValues = (catalog as any).catalog_value; 
+    // ✅ CORRECCIÓN CLAVE: Acceder a la propiedad correcta: catalog.catalogValue
+    const catalogValues = catalog.catalogValue; 
 
     // 4. Validar y retornar.
     if (!Array.isArray(catalogValues)) {
         // El mensaje de error ahora es más informativo
-        const message = `Expected an array at catalog.catalog_value, but found type: ${typeof catalogValues}.`;
+        const message = `Expected an array at catalog.catalogValue, but found type: ${typeof catalogValues}.`;
 
         console.error(`Error: Decrypted data for ${catalogName} is not an array.`, message);
         throw new Error(`Decrypted data for ${catalogName} is not an array. (Internal structure incorrect)`);

@@ -1,5 +1,5 @@
-@import ./variables.sass
-
+@use './variables' as *;
+@use 'sass:color'
 // 👈 Importamos las variables corporativas
 
 .notification-dropdown
@@ -69,7 +69,7 @@
         font-size: 0.75rem
 
       &:hover
-        background-color: lighten($primary-color, 35%)
+        background-color: color.adjust($primary-color, $lightness: 35%)
 
     .load-more-btn
       width: 100%
@@ -81,4 +81,4 @@
       transition: background $transition-speed
 
       &:hover
-        background: lighten($background-color, 5%)
+        background: color.adjust($background-color, $lightness: 5%)

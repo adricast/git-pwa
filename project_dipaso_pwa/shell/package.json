@@ -2,7 +2,7 @@
   "name": "shell",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "module","proxy": "https://az3c95sk.execute-api.us-east-1.amazonaws.com",
   "scripts": {
     "dev": "vite --port 3000 --strictPort",
     "build": "tsc -b && vite build",

@@ -1,23 +1,18 @@
 {
-  "name": "project_dipaso_pwa",
-  "version": "1.0.0",
-  "private": true,
   "scripts": {
-    "dev": "concurrently \"npm:start-shell\" \"npm:start-iam\" \"npm:start-billing\" \"npm:start-cash\" \"npm:start-inventory\" \"npm:start-clients\" \"npm:start-audit\"",
-    "start-shell": "cd shell && npm install && npm run dev",
-    "start-iam": "cd iam-administration && npm install && npm run dev",
-    "start-billing": "cd pos-billing && npm install && npm run dev",
-    "start-cash": "cd pos-cash && npm install && npm run dev",
-    "start-inventory": "cd pos-inventory && npm install && npm run dev",
-    "start-clients": "cd pos-clients && npm install && npm run dev",
-    "start-audit": "cd pos-audit && npm install && npm run dev",
-    "start-authorizer": "cd authorizer && npm install && npm run dev"
+    "dev": "npm run dev:shell",
+    "dev:shell": "npm --prefix ./shell run dev",
+    "dev:iam": "npm --prefix ./iam-administration run dev",
+    "dev:billing": "npm --prefix ./pos-billing run dev",
+    "dev:cash": "npm --prefix ./pos-cash run dev",
+    "dev:inventory": "npm --prefix ./pos-inventory run dev",
+    "dev:clients": "npm --prefix ./pos-clients run dev",
+    "dev:audit": "npm --prefix ./pos-audit run dev",
+    "dev:authorizer": "npm --prefix ./authorizer run dev",
+    "dev:all": "concurrently -n \"SHELL,IAM,BILLING,CASH,INVENTORY,CLIENTS,AUDIT,AUTHORIZER\" -c \"bgBlue.bold,bgMagenta.bold,bgYellow.bold,bgCyan.bold,bgGreen.bold,bgRed.bold,bgWhite.bold,bgGray.bold\" \"npm run dev:shell\" \"npm run dev:iam\" \"npm run dev:billing\" \"npm run dev:cash\" \"npm run dev:inventory\" \"npm run dev:clients\" \"npm run dev:audit\" \"npm run dev:authorizer\""
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "vite-plugin-pwa": "^1.0.3"
-  },
-  "dependencies": {
-    "axios": "^1.12.2"
+    "concurrently": "^8.2.2",
+    "npm-run-all": "^4.1.5"
   }
 }

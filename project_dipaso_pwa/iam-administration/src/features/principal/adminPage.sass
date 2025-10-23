@@ -1,7 +1,9 @@
 // src/features/admin/adminPage.scs.sass
 
 // Asegúrate de que esta ruta a tus variables globales es correcta
-@import "../../components/styles/variables"
+@use "../../components/styles/variables" as *
+@use 'sass:color'
+//add variables.sass
 
 /* Aplicado a WebKit (Chrome, Safari, Edge)
 .page-container::-webkit-scrollbar
@@ -89,10 +91,10 @@
     transition: all $transition-speed ease
 
     &:hover
-      background-color: lighten($primary-color, 35%)
+      background-color: color.adjust($primary-color, $lightness: 35%)
 
       // Fondo lila muy suave al pasar el ratón
-      color: darken($secondary-color, 5%)
+      color: color.adjust($secondary-color, $lightness: 5%)
 
       // El texto se oscurece un poco
       border-color: $primary-color

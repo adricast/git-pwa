@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppRoutes } from "./configurations/routes/appRoutes";
 import { authSensor, initAuthService } from "authorizer/authExports"; 
-import { syncAndCacheAllCatalogs } from "./services/catalogServices";
+import { syncAndCacheAllCatalogs } from "./services/catalogServicesLocal";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);

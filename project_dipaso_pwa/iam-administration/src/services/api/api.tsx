@@ -30,7 +30,7 @@ export const apiEmpleados = axios.create({
     headers: {
         "Content-Type": "application/json",
         "X-Api-Key": API_KEY,
-        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MTQ5YWE0Yi0yYjAyLTQ0MmEtOWZhMy0yNTI5NmIxMDlhZGUiLCJ1c2VybmFtZSI6InVzZXJnZW4xIiwiZW1haWwiOiJyb25hbGQ2OEBleGFtcGxlLm5ldCIsImV4cCI6MTc2MTE2MzMzOCwiaWF0IjoxNzYxMTU5NzM4LCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiaXNzIjoiY29tLmRpcGFzby5pYW0uZGV2IiwiYXVkIjoiY29tLmRpcGFzby5wb3MuZGV2In0.WWZl7fSJwiCp_DIsI3GLGVC7ABrjXgMVaLSpQ9SmoF8"
+        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MTQ5YWE0Yi0yYjAyLTQ0MmEtOWZhMy0yNTI5NmIxMDlhZGUiLCJlbWFpbCI6InJvbmFsZDY4QGV4YW1wbGUubmV0IiwiZ3JvdXBzIjpbImFkMjUyMTEzLTU4Y2MtNDViMC1hMGU2LTA1YWY3OTRhYTNlMCJdLCJleHAiOjE3NjEyMzgzMTksImlhdCI6MTc2MTIzNDcxOSwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlzcyI6ImNvbS5kaXBhc28uaWFtLmRldiIsImF1ZCI6ImNvbS5kaXBhc28ucG9zLmRldiJ9.HLQmiwUnAPqSU1jCjcrulFrp1vFw2KcAiZQc8PyJS18"
        
     },
 });

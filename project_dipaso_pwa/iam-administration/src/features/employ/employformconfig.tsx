@@ -180,9 +180,10 @@ export const employFormSections: FormSection[] = [
                 name: "employeeStatus", 
                 label: "Estado Laboral",
                 type: "select",
-                required: true, 
+                required: false, 
                 options: employeeStatusOptions,
                 placeholder: "Selecciona el estado (Activo/Inactivo)",
+                isVisible: (data: Record<string, any>) => !!data.employExists,
             },
             // 13. integrationCode (Mapea al campo de nivel superior)
             {

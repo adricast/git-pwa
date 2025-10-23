@@ -18,14 +18,14 @@ export interface EncryptedFragment {
  * Define la estructura del catálogo en texto plano (lo que la aplicación consume).
  */
 export interface Catalog {
-    catalog_id: string;
-    catalog_name: string;        // Ej: "countries", "document_types"
-    catalog_value: any;          // Full, complex data
-    catalog_type: string;        
+    catalogId: string;
+    catalogName: string;        // Ej: "countries", "document_types"
+    catalogValue: any;          // Full, complex data
+    catalogtype: string;        
     description?: string;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
     created_by_user_id?: string | null;
     updated_by_user_id?: string | null;
 }

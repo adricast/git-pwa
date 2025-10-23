@@ -13,9 +13,9 @@ export const CATALOG_NAMES = {
     GENDERS: 'genders',
     AUTH_PARAMETERS: 'auth_parameters',
     AUTH_METHODS: 'auth_methods',
-    MODULES: 'modules',
+    //MODULES: 'modules',
     KEYBOARD_SHORTCUTS: 'keyboard_shortcuts',
-    CURRENCIES: 'currencies',
+    //CURRENCIES: 'currencies',
     TAX_TYPES: 'tax_types',
 } as const;
 

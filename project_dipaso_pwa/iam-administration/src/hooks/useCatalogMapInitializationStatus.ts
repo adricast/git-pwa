@@ -37,7 +37,7 @@ export const useCatalogMapInitializationStatus = (): InitializationStatus => {
                     
                     if (catalogs.length > 0) {
                         // 2. Llenar el mapa global
-                        GLOBAL_CATALOG_ID_MAP[name] = catalogs[0].catalog_id;
+                        GLOBAL_CATALOG_ID_MAP[name] = catalogs[0].catalogId;
                     } else {
                         // Si un catálogo crítico falta en IndexedDB, lanzamos un error
                         console.error(`Error de inicialización: El catálogo crítico '${name}' no fue encontrado en IndexedDB.`);

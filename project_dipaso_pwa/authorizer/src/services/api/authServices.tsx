@@ -1,4 +1,4 @@
-import { api } from "./api2";
+import { api } from "./api";
 import { authRouteApi } from "../../configurations/routes/apiRoutes"; // authRouteApi.login es "/auth/token"
 import { authSensor } from "../../hooks/sensors/authSensor";
 import { AuthRepository } from "../../db/authRepository";

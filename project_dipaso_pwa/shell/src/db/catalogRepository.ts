@@ -24,17 +24,17 @@ export class CatalogRepository {
 
         // 2. REGISTRO FINAL: Incluimos las claves necesarias para keyPath e índices (sin cifrar).
         const recordToStore = {
-            catalog_id: catalog.catalog_id,      // ⬅️ Clave necesaria para 'keyPath'
-            catalog_name: catalog.catalog_name,  // ⬅️ Clave necesaria para índice 'by_catalog_name'
-            is_active: catalog.is_active,        // ⬅️ Clave necesaria para índice 'by_is_active'
-            updated_at: catalog.updated_at,      // ⬅️ Clave necesaria para índice 'by_updated_at'
+            catalog_id: catalog.catalogId,      // ⬅️ Clave necesaria para 'keyPath'
+            catalog_name: catalog.catalogName,  // ⬅️ Clave necesaria para índice 'by_catalog_name'
+            is_active: catalog.isActive,        // ⬅️ Clave necesaria para índice 'by_is_active'
+            updated_at: catalog.updatedAt,      // ⬅️ Clave necesaria para índice 'by_updated_at'
             encrypted_data: encryptedData, 
         };
         
         // 3. CLAVE SEPARADA: Se mantiene para referencia.
         return {
             record: recordToStore, 
-            key: catalog.catalog_id 
+            key: catalog.catalogId 
         };
     }
 

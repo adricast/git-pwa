@@ -8,7 +8,7 @@ export const groupRouteApi = {
 
 export const employeesRouteApi = {
   employ: "/employee/",
-  employbuild: "/people/",
+  employbuild: "/people",
  
 };
 

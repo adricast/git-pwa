@@ -19,36 +19,60 @@ interface CatalogApiResponse {
     total: number;
     skip: number;
     limit: number;
-    items: Catalog[]; // <-- El array real de catálogos
+    items: any[]; // Usamos 'any[]' porque los campos son snake_case y serán mapeados
 }
 
 // ----------------------------------------------------------------------
-// 2. FUNCIÓN AUXILIAR DE LIMPIEZA DE ÍTEMS DE CATÁLOGO
+// 2. FUNCIÓN AUXILIAR DE LIMPIEZA Y MAPEO DE ÍTEMS DE CATÁLOGO (snake_case -> camelCase)
 // ----------------------------------------------------------------------
 
 /**
- * Asegura que todos los ítems dentro de catalogValue tengan los campos
- * de auditoría y estado requeridos, proporcionando valores por defecto si faltan.
+ * Mapea los campos de snake_case a camelCase para los ítems internos
+ * y asegura que los campos de auditoría y estado requeridos tengan valores por defecto.
  */
-function cleanCatalogValueItems(value: any): any {
+function cleanAndMapCatalogValueItems(value: any): any {
     if (Array.isArray(value)) {
         return value.map(item => ({
-            ...item,
-            // Saneamiento de campos de auditoría internos
-            isActive: item.isActive ?? true, 
-            updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
-            createdByUserId: item.createdByUserId || 'SYSTEM',
-            updatedByUserId: item.updatedByUserId || item.createdByUserId || 'SYSTEM',
+            // Mapeo snake_case a camelCase para ítems internos
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            editable: item.editable,
+            order: item.order,
+            type: item.type,
+            mnemonic: item.mnemonic,
+            integrationCode: item.integration_code, // LEE snake_case
+            referenceCode: item.reference_code,     // LEE snake_case
+            // Campos específicos (e.g., currencies, auth)
+            decimalPlaces: item.decimal_places,     // LEE snake_case
+            symbol: item.symbol,
+            actions: item.actions, 
+            screens: item.screens, 
+
+            // Saneamiento de campos de auditoría internos (mapeo y limpieza)
+            isActive: item.is_active ?? true, // LEE snake_case
+            createdAt: item.created_at, // LEE snake_case
+            updatedAt: item.updated_at || item.created_at || new Date().toISOString(), // LEE snake_case
+            createdByUserId: item.created_by_user_id || 'SYSTEM', // LEE snake_case
+            updatedByUserId: item.updated_by_user_id || item.created_by_user_id || 'SYSTEM', // LEE snake_case
         }));
     }
-    // Saneamiento para catálogos 'single'
+    
+    // Mapeo y saneamiento para catálogos 'single'
     if (typeof value === 'object' && value !== null) {
         return {
-            ...value,
-            isActive: value.isActive ?? true, 
-            updatedAt: value.updatedAt || value.createdAt || new Date().toISOString(),
-            createdByUserId: value.createdByUserId || 'SYSTEM',
-            updatedByUserId: value.updatedByUserId || value.createdByUserId || 'SYSTEM',
+            ...value, 
+            
+            // Mapeo snake_case a camelCase para campos de 'single'
+            defaultAuthMethod: value.default_auth_method, // LEE snake_case
+            maxFailedAttempts: value.max_failed_attempts, // LEE snake_case
+
+            // Saneamiento de campos de auditoría internos (mapeo y limpieza)
+            isActive: value.is_active ?? true, // LEE snake_case
+            createdAt: value.created_at, // LEE snake_case
+            updatedAt: value.updated_at || value.created_at || new Date().toISOString(), // LEE snake_case
+            createdByUserId: value.created_by_user_id || 'SYSTEM', // LEE snake_case
+            updatedByUserId: value.updated_by_user_id || value.created_by_user_id || 'SYSTEM', // LEE snake_case
         };
     }
     return value;
@@ -56,7 +80,35 @@ function cleanCatalogValueItems(value: any): any {
 
 
 // ----------------------------------------------------------------------
-// 3. FUNCIONES DE CONSULTA GENERAL (API)
+// 3. FUNCIÓN DE MAPEO PRINCIPAL (API snake_case -> Catalog camelCase)
+// ----------------------------------------------------------------------
+
+/**
+ * Mapea el objeto Catalog (snake_case) de la API al modelo de frontend (camelCase).
+ */
+function mapCatalogFromApi(apiCatalog: any): Catalog {
+    const cleanedValue = cleanAndMapCatalogValueItems(apiCatalog.catalog_value); // LEE snake_case: catalog_value
+
+    return {
+        // Mapeo de campos de nivel superior: snake_case -> camelCase
+        catalogId: apiCatalog.catalog_id, // LEE snake_case
+        catalogName: apiCatalog.catalog_name, // LEE snake_case
+        catalogtype: apiCatalog.catalog_type, // LEE snake_case
+        catalogValue: cleanedValue,
+        description: apiCatalog.description,
+
+        // Mapeo y saneamiento de auditoría de nivel superior
+        isActive: apiCatalog.is_active ?? true, // LEE snake_case
+        createdByUserId: apiCatalog.created_by_user_id, // LEE snake_case
+        updatedByUserId: apiCatalog.updated_by_user_id, // LEE snake_case
+        createdAt: apiCatalog.created_at, // LEE snake_case
+        updatedAt: apiCatalog.updated_at || apiCatalog.created_at || new Date().toISOString(), // LEE snake_case
+    } as Catalog;
+}
+
+
+// ----------------------------------------------------------------------
+// 4. FUNCIONES DE CONSULTA GENERAL (API)
 // ----------------------------------------------------------------------
 
 /**
@@ -66,6 +118,7 @@ export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catal
     try {
         const url = activeOnly ? `${BASE_ROUTE}?active=true` : BASE_ROUTE;
         
+        // La respuesta es CatalogApiResponse<any> porque 'items' viene en snake_case
         const response = await api.get<CatalogApiResponse>(url); 
         
         const catalogsArray = response.data.items;
@@ -74,16 +127,8 @@ export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catal
             throw new Error("API response unexpected: 'items' property is not an array.");
         }
 
-        // 🚨 APLICA LIMPIEZA DE DATOS (Mapeo de la respuesta)
-        return catalogsArray.map(catalog => ({
-            ...catalog,
-            // 1. Limpieza de metadatos del catálogo principal (camelCase)
-            isActive: catalog.isActive ?? true, 
-            updatedAt: catalog.updatedAt || catalog.createdAt || new Date().toISOString(),
-
-            // 2. Limpieza de los ítems internos del catálogo (catalogValue)
-            catalogValue: cleanCatalogValueItems(catalog.catalogValue)
-        }));
+        // 🚨 APLICA MAPEO Y LIMPIEZA DE DATOS
+        return catalogsArray.map(mapCatalogFromApi);
         
     } catch (error: any) {
         console.error("Error fetching all catalogs from API:", error);
@@ -96,8 +141,11 @@ export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catal
  */
 export async function getCatalogById(catalogId: string | number): Promise<Catalog | null> {
     try {
-        const response = await api.get<Catalog>(`${BASE_ROUTE}${catalogId}`);
-        return response.data; 
+        // Esperamos 'any' de la API debido al snake_case
+        const response = await api.get<any>(`${BASE_ROUTE}${catalogId}`); 
+        
+        // 🚨 APLICA MAPEO
+        return mapCatalogFromApi(response.data); 
     } catch (error: any) {
         if (error.response && error.response.status === 404) {
             return null;
@@ -108,7 +156,7 @@ export async function getCatalogById(catalogId: string | number): Promise<Catalo
 }
 
 // ----------------------------------------------------------------------
-// 4. FUNCIÓN DE SINCRONIZACIÓN Y CACHÉ (SIN INYECCIÓN DE MOCK)
+// 5. FUNCIÓN DE SINCRONIZACIÓN Y CACHÉ (SIN INYECCIÓN DE MOCK)
 // ----------------------------------------------------------------------
 
 /**
@@ -118,16 +166,16 @@ export async function syncAndCacheAllCatalogs(): Promise<void> {
     try {
         console.log("Sync: 1. Fetching active catalogs from API (PREREQUISITE)...");
         
-        // 1. Trae los catálogos de la API (ya están limpios)
+        // 1. Trae los catálogos de la API (ya están en camelCase después de mapCatalogFromApi)
         const fetchedCatalogs = await getAllCatalogs(true); 
 
-        // 2. Mapeo para asegurar la clave primaria de IndexedDB (snake_case).
-        // 🚨 NOTA: NO se inyecta el catálogo 'modules' aquí.
+        // 2. Mapeo para asegurar la clave primaria de IndexedDB.
+        // Se mantiene el mapeo de camelCase (Modelo) a snake_case (Repo Local) justo antes de guardar.
         const catalogsForRepo = fetchedCatalogs.map(catalog => {
             
             return {
                 ...catalog,
-                // Mapeo camelCase API a snake_case DB/Modelo (para PKs e índices)
+                // Mapeo camelCase (Catalog Model) a snake_case (DB/Modelo Local)
                 catalog_id: catalog.catalogId, 
                 catalog_name: catalog.catalogName, 
                 is_active: catalog.isActive, 
@@ -150,7 +198,7 @@ export async function syncAndCacheAllCatalogs(): Promise<void> {
 }
 
 // ----------------------------------------------------------------------
-// 5. FUNCIONES DE CONSULTA LOCAL (INDEXEDDB)
+// 6. FUNCIONES DE CONSULTA LOCAL (INDEXEDDB)
 // ... (Se mantienen sin cambios)
 
 export async function getLocalCatalogById(catalogId: string): Promise<Catalog | undefined> {

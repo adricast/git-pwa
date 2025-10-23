@@ -143,5 +143,6 @@ export async function softDeleteEmployeesMassive(
     } catch (error) {
         console.error("Error performing massive soft delete:", error);
         throw error;
+    
     }
 }

@@ -1,7 +1,7 @@
+
+@use './variables' as *;
+
 @use "sass:color"
-
-@import "./variables.sass";
-
 
 .dashboard-container
   display: flex
@@ -86,10 +86,10 @@
       transition: background $transition-speed ease
 
       &:hover
-        background: adjust-color($secondary-color, $lightness: 10%)
+        background: color.adjust($secondary-color, $lightness: 10%)
 
       &.active
-        background: adjust-color($primary-color, $lightness: -10%)
+        background: color.adjust($primary-color, $lightness: -10%)
 
       .item-icon
         margin-right: 0.5rem
@@ -174,7 +174,7 @@
   transition: background 0.2s ease
 
   &:hover
-    background: adjust-color($secondary-color, $lightness: 10%)
+    background: color.adjust($secondary-color, $lightness: 10%)
 
   .notification-count
     position: absolute
@@ -247,7 +247,7 @@
     transition: background 0.2s ease
 
     &:hover
-      background: adjust-color($secondary-color, $lightness: 10%)
+      background: color.adjust($secondary-color, $lightness: 10%)
 
     .notifications-btn
       position: relative

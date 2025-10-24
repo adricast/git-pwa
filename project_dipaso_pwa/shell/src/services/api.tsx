@@ -30,6 +30,6 @@ export const api = axios.create({
     headers: {
         "Content-Type": "application/json",
         "X-Api-Key": API_KEY,
-        //"Access-Control-Allow-Origin": "http://localhost:3000/",
+        "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MTQ5YWE0Yi0yYjAyLTQ0MmEtOWZhMy0yNTI5NmIxMDlhZGUiLCJ1c2VybmFtZSI6InVzZXJnZW4xIiwiZW1haWwiOiJyb25hbGQ2OEBleGFtcGxlLm5ldCIsImV4cCI6MTc2MTE2NTAyNywiaWF0IjoxNzYxMTYxNDI3LCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiaXNzIjoiY29tLmRpcGFzby5pYW0uZGV2IiwiYXVkIjoiY29tLmRpcGFzby5wb3MuZGV2In0.IKhVTTR-fEMzcXgWeV064lRrdQoulpRmPRTqM0rp9Ck",
     },
 });

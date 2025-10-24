@@ -1,6 +1,5 @@
-// src/features/usersgroup/styles/UserGroupLayout.sass
-// 🚩 NOTA: Asegura que la ruta a tu archivo global es correcta.
-@import "./../../components/styles/variables.sass";
+@use "../../components/styles/variables" as *
+@use 'sass:color'
 
 // Ensure the imported file exists and is valid
 
@@ -15,7 +14,7 @@
 .back-btn
   // Estilos para el botón "Volver"
 
-  background-color: lighten($secondary-color, 35%)
+  background-color: color.adjust($secondary-color, $lightness: 35%)
 
   // Tono de gris/lila claro
   color: $text-color
@@ -29,7 +28,7 @@
   // Para que no ocupe todo el ancho
 
   &:hover
-    background-color: lighten($secondary-color, 30%)
+    background-color: color.adjust($secondary-color, $lightness: 30%)
 
 .page-title
   // Estilos para el título principal

@@ -1,6 +1,32 @@
 {
-  "dependencies": {
-    "@types/uuid": "^10.0.0",
-    "uuid": "^13.0.0"
+  "name": "project_dipaso_pwa",
+  "private": true,
+  "workspaces": [
+    "shell",
+    "iam-administration",
+    "pos-billing",
+    "pos-cash",
+    "pos-inventory",
+    "pos-clients",
+    "pos-audit",
+    "authorizer",
+    "design-system"
+  ],
+  "scripts": {
+    "dev": "npm run dev:shell",
+    "dev:shell": "cd shell && vite",
+    "dev:iam": "cd iam-administration && vite",
+    "dev:billing": "cd pos-billing && vite",
+    "dev:cash": "cd pos-cash && vite",
+    "dev:inventory": "cd pos-inventory && vite",
+    "dev:clients": "cd pos-clients && vite",
+    "dev:audit": "cd pos-audit && vite",
+    "dev:authorizer": "cd authorizer && vite",
+    "dev:all": "concurrently -n \"SHELL,IAM,BILLING,CASH,INVENTORY,CLIENTS,AUDIT,AUTHORIZER\" -c \"bgBlue.bold,bgMagenta.bold,bgYellow.bold,bgCyan.bold,bgGreen.bold,bgRed.bold,bgWhite.bold,bgGray.bold\" \"npm run dev:shell\" \"npm run dev:iam\" \"npm run dev:billing\" \"npm run dev:cash\" \"npm run dev:inventory\" \"npm run dev:clients\" \"npm run dev:audit\" \"npm run dev:authorizer\"",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

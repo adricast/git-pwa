@@ -1,7 +1,10 @@
+@use 'sass:color'
+@use './variables' as *;
+  
 $nav-bg: #624A89
 $nav-active-bg: #4d3a6b
 $nav-hover-bg: #c57d7d
-$text-color: white
+$text-color: #ffffff
 
 // ------------------------------------
 // 1. BASE NAV CONTAINER (80px Wide - Desktop)
@@ -61,7 +64,7 @@ $text-color: white
       width: 30px
       height: 30px
       border-radius: 50%
-      background-color: lighten($nav-bg, 10%)
+      background-color: color.adjust($nav-bg, $lightness: 10%)
       color: $text-color
       display: flex
       justify-content: center

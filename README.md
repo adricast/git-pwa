@@ -1,186 +1,142 @@
-# DIPASO PWA
+# DIPASO PWA - Microfrontends Monorepo
 
+Este repositorio contiene la plataforma **DIPASO POS Web**, una solución modular de punto de venta (POS) basada en microfrontends (MFEs) usando React y Vite. El sistema permite gestionar usuarios, facturación, caja, inventario, clientes y auditoría, integrando cada dominio como un microfrontend independiente, orquestado por el contenedor central `shell`.
 
+---
 
-Este repositorio contiene la aplicación **DIPASO POS Web**, una plataforma modular de punto de venta (POS) con gestión de usuarios (IAM), facturación, inventario, caja, clientes, auditoría y reportes.  
+## Estructura del Proyecto
 
-El proyecto combina **React** para el frontend.
+```
+project_dipaso_pwa/
+│
+├── design-system/         # Paquete compartido de componentes, estilos y tokens
+├── shell/                 # Contenedor principal (host) que orquesta los MFEs
+├── iam-administration/    # MFE: Gestión de usuarios, roles y permisos (IAM)
+├── pos-billing/           # MFE: Facturación POS
+├── pos-cash/              # MFE: Caja POS (apertura/cierre)
+├── pos-inventory/         # MFE: Inventario POS
+├── pos-clients/           # MFE: Gestión de clientes POS
+├── pos-auditory/          # MFE: Auditoría POS
+├── authorizer/            # MFE: Autenticación/autorización
+├── documentacion/         # Documentación y bitácoras
+├── package.json           # Configuración de workspaces y scripts globales
+└── README.md              # Este archivo
+```
 
+---
 
+## Arquitectura
+
+- **Microfrontends (MFEs):** Cada dominio funcional es un microfrontend independiente, con su propio ciclo de vida, dependencias y despliegue.
+- **Shell (Host):** El contenedor central (`shell/`) carga y orquesta los MFEs usando Module Federation (Vite).
+- **Design System:** Paquete compartido de componentes UI, estilos y utilidades para mantener consistencia visual y funcional.
+- **Comunicación:** Los MFEs se comunican con el shell y entre sí mediante rutas, props y eventos compartidos.
+
+---
+
+## Tecnologías Principales
+
+- **Frontend:** React, TypeScript, Vite, CSS/SASS
+- **Microfrontends:** Module Federation (via `@originjs/vite-plugin-federation`)
+- **Estilos:** CSS Modules, SASS, Design System propio
+- **Ruteo:** React Router DOM
+- **Gestión de estado:** Context API, hooks personalizados
+- **Backend (según módulo):** Python (Flask/FastAPI/Django), PostgreSQL/SQLite
+- **Control de versiones:** Git
+
+---
+
+## Scripts principales
+
+Desde la raíz (`project_dipaso_pwa/`):
+
+```sh
+# Instalar todas las dependencias
+npm install
+
+# Levantar todos los MFEs y el shell en modo desarrollo
+npm run dev:all
+
+# Compilar todos los MFEs y el shell
+npm run build
+
+# Limpiar dist de todos los MFEs y shell
+npm run clean
+```
+
+Cada microfrontend tiene sus propios scripts (`dev`, `build`, `start`, etc.) en su carpeta respectiva.
+
+---
+
+## Cómo ejecutar localmente
+
+1. Clona el repositorio:
+   ```sh
+   git clone https://github.com/adricast/git-pwa.git
+   cd project_dipaso_pwa
+   ```
+
+2. Instala las dependencias:
+   ```sh
+   npm install
+   ```
+
+3. Levanta todos los microfrontends y el shell:
+   ```sh
+   npm run dev
+   ```
+   Esto inicia cada MFE en su propio puerto y el shell en el puerto principal (por defecto, 3000).
+
+4. Accede a la aplicación en [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Estructura de carpetas típica de un MFE
+
+```
+iam-administration/
+├── public/
+├── src/
+│   ├── features/         # Lógica de negocio por dominio
+│   ├── components/       # Componentes reutilizables
+│   ├── pages/            # Vistas y rutas principales
+│   ├── services/         # Llamadas a APIs y lógica de datos
+│   ├── App.tsx           # Componente raíz del MFE
+│   └── main.tsx          # Entry point
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+---
+
+## Design System
+
+El paquete [`design-system`](project_dipaso_pwa/design-system) contiene:
+
+- Componentes React reutilizables (botones, formularios, tablas, layouts)
+- Tokens de diseño (colores, tipografía, espaciado)
+- Helpers y utilidades
+- Estilos globales y por componente
+
+Todos los MFEs deben consumir componentes y estilos desde este paquete para mantener la coherencia visual.
+
+---
+
+## Buenas prácticas
+
+- Cada MFE debe ser autónomo y desacoplado.
+- Usa el design-system para UI y estilos.
+- Mantén las rutas y la lógica de negocio separadas por dominio.
+- Usa scripts y configuraciones centralizadas para facilitar el mantenimiento.
+- Realiza commits claros y descriptivos.
+- Asegúrate de que los tests pasen antes de abrir un pull request.
 
 ---
 
 
+## Créditos
 
-## Estructura principal del proyecto
-
-
-
-/apps  
-
-├─ shell/ # Contenedor host que integra los módulos  
-
-├─ iam-management/ # Módulo remoto de gestión de usuarios y permisos (IAM)  
-
-├─ pos-billing/ # Módulo remoto de facturación POS  
-
-├─ pos-cash/ # Módulo remoto de caja POS  
-
-├─ pos-inventory/ # Módulo remoto de inventario POS  
-
-├─ pos-customers/ # Módulo remoto de gestión de clientes POS  
-
-├─ pos-audit/ # Módulo remoto de auditoría POS  
-
-└─ pos-reports/ # Módulo remoto de reportes POS
-
-
-
-### Detalles por módulo
-
-
-
-- **shell/**: Contenedor principal que orquesta todos los módulos remotos y carga la aplicación frontend.  
-
-- **iam-management/**: Maneja autenticación, autorización y gestión de roles de usuarios.  
-
-- **pos-billing/**: Control de facturación y emisión de comprobantes.  
-
-- **pos-cash/**: Registro de movimientos de caja, apertura y cierre.  
-
-- **pos-inventory/**: Gestión de inventario, entradas y salidas de productos.  
-
-- **pos-customers/**: Administración de información de clientes y fidelización.  
-
-- **pos-audit/**: Auditoría de transacciones y operaciones.  
-
-- **pos-reports/**: Generación de reportes financieros, ventas y estadísticas.
-  
-  
+Desarrollado por el equipo Hitss para Dipaso.
 
 ---
-
-
-
-## Tecnologías
-
-
-
-- **Frontend:** React, TypeScript, CSS/SCSS  
-
-- **Control de versiones:** Git  
-
-- **Base de datos:** PostgreSQL / SQLite (según módulo)  
-  
-  
-
----
-
-
-
-## Archivos importantes
-
-
-
-- `.gitignore` → Configuración de archivos ignorados por Git (Node, IDE, OS).  
-
-- `README.md` → Documentación del proyecto.  
-
-- `package.json` → Dependencias del frontend.  
-  
-  
-
----
-
-
-
-## Cómo ejecutar
-
-
-!Importante:
-
-Generar un archivo .env en la raíz del mf de IAM
-
-
-1. Clona el repositorio:  
-
-   ```bash
-
-   git clone https://github.com/adricast/git-pwa.git
-
-   ```
-
-
-
-2. Instala dependencias frontend (React):
-   
-
-       cd shell
-
-       npm install
-
-       npm start
-       
-       cd iam-administration
-
-       npm install
-
-       npm start
-
-
-
-      cd pos-auditory
-
-       npm install
-
-       npm start
-
-
-
-     cd pos-billing
-
-     npm install
-
-     npm start
-
-
-
-     cd pos-cash
-
-     npm install
-
-     npm start
-
-
-
-     cd pos-clients
-
-     npm install
-
-     npm start
-
-
-
-     cd pos-inventory
-
-     npm install
-
-     npm start
-
-
-
-Contribuir
-
-----------
-
-
-
-* Sigue la rama `main` para producción y crea ramas de desarrollo para nuevas funcionalidades.
-  
-  
-
-* Realiza commits claros y descriptivos.
-  
-  
-
-* Asegúrate de que los tests pasen antes de abrir un pull request.

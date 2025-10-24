@@ -32,16 +32,35 @@ const transformCitiesToOptions = (cities: City[]): CityFormOption[] => {
 /**
  * Hook para cargar las opciones de Ciudades desde la caché de IndexedDB,
  * transformarlas y gestionar su estado.
+ * * ✅ CORRECCIÓN: Acepta 'isMapInitialized' para sincronizar la ejecución.
  */
-export function useCityOptionsLoader() {
+export function useCityOptionsLoader(isMapInitialized: boolean) {
     const [cityOptions, setCityOptions] = useState<CityFormOption[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    // ✅ Empezamos en 'false' si el mapa no está listo, reflejando que estamos esperando.
+    const [isLoading, setIsLoading] = useState(!isMapInitialized); 
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
+        // 🛑 CONDICIÓN CLAVE: Si el mapa de IDs no está listo, sal del efecto.
+        if (!isMapInitialized) {
+            // Si el mapa aún no está listo, el hook no ha fallado, solo está esperando.
+            setIsLoading(true); 
+            return;
+        }
+        
+        // Si ya cargó y no tiene error, no cargamos de nuevo.
+        if (!isLoading && !error) {
+             return;
+        }
+
         async function fetchAndTransformCities() {
+            // Restablecer estados de carga y error antes de intentar la llamada
+            setIsLoading(true);
+            setError(null);
+            
             try {
                 // 1. Llama al servicio adaptador de Ciudades
+                // Esta llamada ahora es SEGURA porque el GLOBAL_CATALOG_ID_MAP está lleno.
                 const cities: City[] = await getLocalCitiesList();
                 
                 // 2. Transforma el resultado.
@@ -57,8 +76,10 @@ export function useCityOptionsLoader() {
             }
         }
 
+        // Se ejecuta la carga asíncrona SOLAMENTE cuando isMapInitialized es true.
         fetchAndTransformCities();
-    }, []);
+    // ✅ Dependencia crítica: Se ejecuta solo cuando isMapInitialized cambia a true.
+    }, [isMapInitialized]); 
 
     // Exporta el estado completo.
     return { cityOptions, isLoading, error };

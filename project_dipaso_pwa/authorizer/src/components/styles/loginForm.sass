@@ -1,5 +1,6 @@
 // src/styles/loginForm.sass
-@import "./variables.sass";
+@use './variables' as *;
+@use 'sass:color';
 
 // src/styles/loginForm.sass
 // src/styles/loginForm.sass
@@ -17,7 +18,7 @@
   width: 100%
 
   // Fondo de degradado suave para la página
-  background: linear-gradient(135deg, lighten($background-color, 2%) 0%, $background-color 100%)
+  background: linear-gradient(135deg, color.adjust($background-color, $lightness: 2%) 0%, $background-color 100%)
 
 // --- Estilos de la Imagen (Eliminada en diseño compacto) ---
 // La eliminamos del layout general para centrar el foco en el cuadrado.
@@ -33,7 +34,7 @@
   width: 90%
 
   // Degradado sutil en el fondo de la tarjeta
-  background: linear-gradient(145deg, $card-bg 0%, lighten($card-bg, 2%) 100%)
+  background: linear-gradient(145deg, $card-bg 0%, color.adjust($card-bg, $lightness: 2%)  100%)
 
   // Sombra pronunciada para el efecto flotante
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)
@@ -63,7 +64,7 @@
     font-size: 0.9rem
 
     // Reducción de fuente
-    color: lighten($text-color, 10%)
+    color: color.adjust($text-color, $lightness: 10%)
     margin-bottom: 2rem
 
   // --- Grid de Selección de Método ---
@@ -120,7 +121,7 @@
 
         &:focus
           border-color: $primary-color
-          box-shadow: 0 0 0 2px lighten($primary-color, 35%)
+          box-shadow: 0 0 0 2px color.adjust($primary-color, $lightness: 35%)
 
       button[type="submit"]
         background: linear-gradient(90deg, $primary-color 0%, $secondary-color 100%)

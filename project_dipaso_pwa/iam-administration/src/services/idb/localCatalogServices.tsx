@@ -1,63 +1,62 @@
-// src/services/idb/localCatalogService.ts
+// 📁 src/services/idb/localCatalogService.ts (VERSIÓN FINAL Y LIMPIA)
 
 //************************************** */
-//* PATRON DE DISEÑO FABRICA (REPOSITORY)
+//* SERVICIO DE APLICACIÓN (LÓGICA DE NEGOCIO)
 //************************************** */
 
-import { decryptAndVerifyData } from "./../../hooks/encrypterIdb/useMac"; 
-import { getLocalDB } from "./../../db/localIDBdatabase"; 
-import { type LocalEncryptedCatalogRecordValue } from "./../../db/LocalCatalogsDB"; 
+// 🚨 IMPORTACIÓN DEL REPOSITORY Y MODELOS NECESARIOS
+// 📁 src/services/idb/localCatalogService.ts (VERSIÓN FINAL Y CORREGIDA)
 
-// Definición local de la interfaz para el fragmento cifrado (si no se importó)
-interface LocalEncryptedFragment {
-    payload: string;
-    signature: string;
-}
+// 🚨 IMPORTACIÓN DEL REPOSITORY Y MODELOS NECESARIOS
+import { IamCatalogRepository } from "./../../db/iamCatalogRepository"; 
+import type { Catalog } from "./../../models/idb/catalogsModel"; 
 
-const STORE_NAME = "catalogs";
+// IMPORTACIONES GLOBALES
+import { 
+    GLOBAL_CATALOG_ID_MAP, 
+    type CatalogNameKey
+} from "./../../configurations/parameters/catalogParameters";
 
-/**
- * 🚨 FUNCIÓN CENTRALIZADA
- * Lee un catálogo cifrado de IndexedDB, lo desencripta y devuelve su valor tipificado.
- * * @param catalogId El ID del catálogo a buscar (ej: GENDER_CATALOG_ID).
- * @param catalogName Nombre legible del catálogo para mensajes de error.
- * @returns Una promesa que resuelve con el valor del catálogo descifrado, tipificado como T[].
- */
+// Instanciar el Repository para usar sus métodos de lectura
+const iamCatalogRepo = new IamCatalogRepository(); 
+
+
 export async function getLocalCatalogValue<T>(
-    catalogId: string, 
-    catalogName: string
+    catalogName: CatalogNameKey
 ): Promise<T[]> {
     
-    console.log(`IAM-Administration: Direct read and decrypt for ${catalogName} catalog.`);
+    // 🎯 1. OBTENER ID: Usar el mapa global
+    const catalogId = GLOBAL_CATALOG_ID_MAP[catalogName]; 
+    
+    if (!catalogId) {
+        console.warn(`WARN: Catalog name '${catalogName}' ID not found in map. Waiting for initialization...`);
+        // Si el mapa aún no está listo, retornamos una promesa resuelta.
+        return Promise.resolve([] as T[]); 
+    }
+    
+    console.log(`IAM-Administration: Reading local cache for ${catalogName} (ID: ${catalogId}).`);
 
-    const db = await getLocalDB();
+    // 🚨 2. DELEGAR AL REPOSITORY: Obtener el objeto Catalog COMPLETO y DESCIFRADO
+    const catalog: Catalog | undefined = await iamCatalogRepo.getCatalogById(catalogId);
 
-    // 1. Obtener el registro CIFRADO por su clave primaria (catalog_id)
-    const encryptedRecord: LocalEncryptedCatalogRecordValue | undefined = 
-        await db.get(STORE_NAME, catalogId);
-
-    if (!encryptedRecord) {
+    if (!catalog) {
         console.error(`Error: ${catalogName} Catalog ID ${catalogId} not found in local IndexedDB.`);
         throw new Error(`${catalogName} catalog not available locally for consumption.`);
     }
 
-    // 2. Extraer el campo CIFRADO
-    const encryptedFragment: LocalEncryptedFragment = encryptedRecord.encrypted_catalog_value; 
+    // 3. EXTRAER EL VALOR: 
+    // ✅ CORRECCIÓN CLAVE: Acceder a la propiedad correcta: catalog.catalogValue
+    const catalogValues = catalog.catalogValue; 
 
-    let catalogValue: any;
-    try {
-        // 3. Descifrar el fragmento para obtener el valor en texto plano.
-        catalogValue = decryptAndVerifyData(encryptedFragment);
-    } catch (error) {
-        console.error(`Error: Falló el descifrado o verificación del catálogo ${catalogName} (ID: ${catalogId}).`, error);
-        throw new Error(`Security Error: Failed to decrypt or verify ${catalogName} data.`);
-    }
-    
     // 4. Validar y retornar.
-    if (!Array.isArray(catalogValue)) {
-        console.error(`Error: Decrypted data for ${catalogName} is not an array.`);
-        return [] as T[];
+    if (!Array.isArray(catalogValues)) {
+        // El mensaje de error ahora es más informativo
+        const message = `Expected an array at catalog.catalogValue, but found type: ${typeof catalogValues}.`;
+
+        console.error(`Error: Decrypted data for ${catalogName} is not an array.`, message);
+        throw new Error(`Decrypted data for ${catalogName} is not an array. (Internal structure incorrect)`);
     }
     
-    return catalogValue as T[];
+    // El valor final se retorna con el tipo genérico T[]
+    return catalogValues as T[];
 }

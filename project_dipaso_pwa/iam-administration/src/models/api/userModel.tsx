@@ -1,14 +1,34 @@
+// 📁 src/models/iam/userModel.ts
 
+import type { UserGroupModel } from "./userGroupModel"; // Asumo esta ruta
+import type { BranchModel } from "./branchModel"; 
+import type { AuthMethodModel } from "./authmethodModel";
+import type { PolicyModel } from "./policyModel"; // Asumo esta ruta
+import type { PersonModel } from "./personModel"; // Modelo Persona detallado
 
-// Usuario
-export interface User {
-  userId?: string|number;       // UUID del backend
-  tempId?: string|number;       // ID temporal offline
-  username: string;
-  identification: string;
+/**
+ * Modelo completo del Usuario (IAM).
+ * Refleja los campos de la cuenta y la relación con la persona asociada.
+ */
+export interface UserModel {
+  // --- Campos de la Cuenta de Usuario ---
+  userId: string;
+  userName: string;
   email: string;
-  isactive:boolean;
-  groupId?: string;      // referencia al grupo
-
-  users?: User[];       // usuarios locales o cache
+  isActive: boolean;
+  isLocked: boolean; // 🛑 isLocked es un campo de la raíz del JSON
+  
+  // --- Relaciones Anidadas Opcionales (Arrays) ---
+  groups?: UserGroupModel[];
+  branchs?: BranchModel[]; // Nota: Usamos el BranchModel que ya tenías
+  authMethods?: AuthMethodModel[];
+  userPolicies?: PolicyModel[];
+  
+  // --- Relación de Persona ---
+  // 🛑 CRÍTICO: La relación 'people' puede faltar o ser null si el backend lo omite.
+  people?: PersonModel; 
+  
+  // --- Otros campos de la raíz
+  integrationCode?: string;
+  // (No incluimos 'identification' de tu interfaz inicial ya que no está en la raíz del JSON)
 }

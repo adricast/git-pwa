@@ -2,7 +2,7 @@
  * Define la estructura de los detalles específicos de un empleado,
  * reflejando el objeto anidado 'employee' del JSON.
  */
-export interface EmployeeDetailsModel {
+export interface EmployeeModel {
     /** Clave principal de los detalles del empleado. Corresponde a 'employee_id' (UUID). */
     employeeId: string;
     

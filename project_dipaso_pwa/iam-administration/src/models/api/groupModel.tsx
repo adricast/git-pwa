@@ -1,4 +1,4 @@
-  import type { User } from "./userModel";
+  import type { UserModel } from "./userModel";
 
   export interface Group {
     /** ID oficial del servidor */
@@ -11,7 +11,7 @@
     description?: string;
 
     /** Relación con usuarios */
-    users?: User[];
+    users?: UserModel[];
 
     /** Fecha de última modificación */
     lastModifiedAt: string;

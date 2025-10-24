@@ -25,7 +25,7 @@ export const cityOptions: FormOption[] = [];
 const employeeStatusOptions: FormOption[] = [
     { value: 'A', label: 'Activo' }, 
     { value: 'I', label: 'Inactivo' }, 
-    { value: 'L', label: 'Licencia' }, 
+
 ];
 
 // 🛑 Listado de países MOCK

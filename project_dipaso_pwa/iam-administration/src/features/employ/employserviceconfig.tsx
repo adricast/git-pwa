@@ -21,7 +21,7 @@ import {
    // Importamos los tipos de PAYLOAD usando 'type' para evitar conflictos de declaración
    type PersonCreationPayload,
    type PersonUpdatePayload,
-} from "./../../services/api/employesServicesLocal"; 
+} from "./../../services/api/employesServices"; 
 
 
 // ----------------------------------------------------------------------

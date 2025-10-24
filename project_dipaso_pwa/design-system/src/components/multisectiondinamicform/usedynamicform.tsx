@@ -1,11 +1,11 @@
-// usedynamicform.tsx (FINAL CON SOPORTE PARA TABLA)
+// usedynamicform.tsx (FINAL CON SOPORTE PARA TABLA Y VISIBILIDAD CONDICIONAL)
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { FormEvent } from 'react'; // Importar FormEvent
+import type { FormEvent } from 'react'; 
 import type { 
     DynamicFormContextData, 
     FormSection,
-    FormField // 🛑 Importar FormField para el tipado en la validación
+    FormField 
 } from './interface'; 
 
 interface UseDynamicFormHookProps {
@@ -24,53 +24,51 @@ const validateField = (field: FormField, value: any): boolean => {
         return false;
     }
 
-    // 🛑 VALIDACIÓN ESPECÍFICA PARA TABLA: Debe ser un array con al menos 1 elemento.
+    // VALIDACIÓN ESPECÍFICA PARA TABLA: Debe ser un array con al menos 1 elemento.
     if (field.type === 'table') {
-        return Array.isArray(value) && value.length > 0; //
+        // Podrías añadir validación profunda aquí si fuera necesario
+        return Array.isArray(value) && value.length > 0;
     }
 
-    // VALIDACIÓN ESTÁNDAR para strings (text, email, date, etc.) y numbers (cuando son '')
+    // VALIDACIÓN ESTÁNDAR para strings
     if (typeof value === 'string' && value.trim() === '') {
-        return false; //
+        return false;
     }
     
-    // Para 'checkbox', 'file', y otros, si no es null/undefined, es válido.
     return true;
 };
 
 
 /**
- * Hook personalizado que gestiona el estado, la lógica central del formulario dinámico,
- * y el manejo de los pasos (multi-sección).
+ * Hook personalizado que gestiona el estado y la lógica central del formulario dinámico.
  */
 export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDynamicFormHookProps): DynamicFormContextData => {
  
-    // 1. Estado de los datos del formulario (Añadido 'table')
+    // 1. Estado de los datos del formulario
     const [formData, setFormData] = useState<Record<string, any>>(() => {
         const initialState: Record<string, any> = {};
 
         sections.forEach(section => {
             section.fields.forEach(field => {
                 if (field.type === 'checkbox') {
-                    initialState[field.name] = initialData[field.name] ?? false; //
+                    initialState[field.name] = initialData[field.name] ?? false;
                 } 
-                // 🛑 Inicializar campos 'table' como un array vacío o con datos iniciales
                 else if (field.type === 'table') { 
-                    initialState[field.name] = initialData[field.name] ?? []; //
+                    initialState[field.name] = initialData[field.name] ?? [];
                 } 
                 else {
-                    initialState[field.name] = initialData[field.name] ?? ''; //
+                    initialState[field.name] = initialData[field.name] ?? '';
                 }
             });
         });
         return initialState;
     });
 
-    // 2. ESTADO DE LA PAGINACIÓN/PASOS (NUEVO)
+    // 2. ESTADO DE LA PAGINACIÓN/PASOS
     const [currentStep, setCurrentStep] = useState(0); 
-    const totalSteps = useMemo(() => sections.length, [sections]); //
+    const totalSteps = useMemo(() => sections.length, [sections]);
 
-    // 3. Sincronización de estado (Añadido 'table' en la inicialización de estado)
+    // 3. Sincronización de estado (Asegura que el formulario recoja nuevos campos de initialData/sections)
     useEffect(() => {
         const updatedState: Record<string, any> = {};
 
@@ -86,14 +84,13 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
                 } else if (field.type === 'checkbox') {
                     updatedState[field.name] = false;
                 } else if (field.type === 'table') { 
-                    updatedState[field.name] = []; // Por defecto, array vacío
+                    updatedState[field.name] = []; 
                 } else {
                     updatedState[field.name] = '';
                 }
             });
         });
 
-        // Solo actualizar si realmente ha cambiado la estructura de datos
         setFormData(prevData => {
             const hasChanged = Object.keys(updatedState).some(key => prevData[key] !== updatedState[key]);
             return hasChanged ? updatedState : prevData;
@@ -101,20 +98,20 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
 
     }, [initialData, sections]); 
 
-    // 4. NAVEGACIÓN ENTRE PASOS (Se mantiene sin cambios)
+    // 4. NAVEGACIÓN ENTRE PASOS
     const nextStep = useCallback(() => {
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1);
         }
-    }, [currentStep, totalSteps]); //
+    }, [currentStep, totalSteps]);
 
     const prevStep = useCallback(() => {
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         }
-    }, [currentStep]); //
+    }, [currentStep]);
 
-    // 5. Manejador de cambios (ACTUALIZADO para manejar campos de tipo 'table' que pasan el array completo)
+    // 5. Manejador de cambios
     const handleChange = useCallback((name: string, value: any) => {
         setFormData(prevData => {
             const field = sections
@@ -125,17 +122,15 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
             
             if (field) {
                 if (field.type === 'number') {
-                    // ✅ Manejo de números para mantener cadena vacía si se borra el input.
                     if (value === '') {
                         finalValue = ''; 
                     } else {
                         const numValue = parseFloat(value);
                         finalValue = isNaN(numValue) ? value : numValue;
-                    } //
+                    }
                 } else if (field.type === 'checkbox') {
                     finalValue = !!value; 
                 } 
-                // Los campos de tipo 'table' (que son arrays) simplemente usan finalValue = value.
             }
 
             return {
@@ -145,43 +140,49 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
         });
     }, [sections]);
 
-    // 6. LÓGICA DE VALIDACIÓN DEL PASO ACTUAL (isCurrentStepValid) (ACTUALIZADO para usar validateField)
+    // 6. LÓGICA DE VALIDACIÓN DEL PASO ACTUAL (isCurrentStepValid)
     const isCurrentStepValid = useMemo(() => {
         if (totalSteps === 0 || currentStep >= totalSteps) {
             return false;
         }
 
         const currentSection = sections[currentStep];
-        const requiredFields = currentSection.fields.filter(f => f.required); //
+        
+        // 🛑 APLICACIÓN DE LA CORRECCIÓN: Filtrar por requerido Y por visibilidad
+        const visibleRequiredFields = currentSection.fields.filter(f => 
+            f.required && (f.isVisible ? f.isVisible(formData) : true)
+        );
 
-        if (requiredFields.length === 0) {
+        if (visibleRequiredFields.length === 0) {
             return true;
         }
 
-        // 🛑 Usar la función auxiliar para la validación
-        return requiredFields.every(field => validateField(field, formData[field.name])); //
+        return visibleRequiredFields.every(field => validateField(field, formData[field.name]));
         
     }, [formData, sections, currentStep, totalSteps]);
 
-    // 7. LÓGICA DE VALIDACIÓN DEL FORMULARIO COMPLETO (isFormValid) (ACTUALIZADO para usar validateField)
+    // 7. LÓGICA DE VALIDACIÓN DEL FORMULARIO COMPLETO (isFormValid)
     const isFormValid = useMemo(() => {
-        const requiredFields = sections
+        
+        // 🛑 APLICACIÓN DE LA CORRECCIÓN: Filtrar por requerido Y por visibilidad en todo el formulario
+        const visibleRequiredFields = sections
             .flatMap(s => s.fields)
-            .filter(f => f.required);
+            .filter(f => 
+                f.required && (f.isVisible ? f.isVisible(formData) : true)
+            );
 
-        // 🛑 Usar la función auxiliar para la validación
-        return requiredFields.every(field => validateField(field, formData[field.name])); //
+        return visibleRequiredFields.every(field => validateField(field, formData[field.name]));
         
     }, [formData, sections]);
 
-    // 8. Manejador de envío (con tipado explícito para FormEvent - sin cambios)
+    // 8. Manejador de envío
     const handleSubmit = useCallback((e: FormEvent) => {
         e.preventDefault();
         if (isFormValid) {
             onSubmit(formData);
         } else {
             console.error("No se puede enviar. Faltan campos requeridos en el formulario.");
-        } //
+        }
     }, [formData, onSubmit, isFormValid]);
 
     

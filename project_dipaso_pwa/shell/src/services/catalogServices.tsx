@@ -1,6 +1,6 @@
 // 📁 src/services/catalogServices.tsx
 
-import { api } from "./api2"; 
+import { api } from "./api"; 
 import { catalogsRouteApi} from "./../configurations/routes/apiRoutes"; 
 import { type Catalog } from "./../models/api/catalogsModel" 
 import { CatalogRepository } from "./../db/catalogRepository"; 
@@ -64,7 +64,7 @@ function cleanCatalogValueItems(value: any): any {
  */
 export async function getAllCatalogs(activeOnly: boolean = false): Promise<Catalog[]> {
     try {
-        const url = activeOnly ? `${BASE_ROUTE}?active=true` : BASE_ROUTE;
+        const url = activeOnly ? `${BASE_ROUTE}` : BASE_ROUTE;
         
         const response = await api.get<CatalogApiResponse>(url); 
         

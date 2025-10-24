@@ -1,62 +1,38 @@
+// 📁 src/models/api/personModel.tsx (REVISADO)
+
 import type { AddressModel } from "./addressModel";
 import type { DocumentModel } from "./documentModel";
-import type { EmployeeDetailsModel } from "./employdetailsModel";
+import type { EmployeeModel } from "./employeeModel";
 
-/**
- * Define la estructura completa de una Persona, incluyendo sus relaciones
- * anidadas (direcciones, documentos y detalles de empleado).
- */
 export interface PersonModel {
-    /** Clave principal. Corresponde a 'person_id' (UUID). */
+    // --- Campos de Identificación Básica (CRÍTICO) ---
     personId: string;
+    givenName: string; // Obligatorio para la identidad
+    surName: string;   // Obligatorio para la identidad
 
-    /** Corresponde a 'given_name' (Nombre de pila). */
-    givenName: string;
+    // --- Campos de Detalle y Catálogo (OPCIONALES en la DB/API) ---
+    dateOfBirth?: string; // 🛑 Opcional: Una persona puede no tener fecha de nacimiento registrada.
+    phoneNumber?: string; // 🛑 Opcional: El contacto telefónico no es siempre obligatorio.
+    genderId?: string;    // 🛑 Opcional: Puede ser nulo si no se registra el género.
+    integrationCode?: string; // Opcional: Código de integración del sistema externo.
 
-    /** Corresponde a 'sur_name' (Apellido). */
-    surName: string;
-
-    /** Corresponde a 'date_of_birth' (Fecha de nacimiento). Formato ISO 8601 string. */
-    dateOfBirth?: string; 
-
-    /** Corresponde a 'phone_number'. Puede ser opcional. */
-    phoneNumber?: string; 
-
-    /** ID del género. Corresponde a 'gender_id' (UUID). */
-    genderId?: string;
-
-    /** ID del usuario que creó el registro. Corresponde a 'created_by_user_id'. */
-    createdByUserId: string; // Movido de Auditoría y hecho obligatorio basado en el JSON
-
-    // --- Roles (Flags Booleanos) ---
-
-    /** Indica si esta persona es un cliente ('is_customer'). */
+    // --- Campos de Roles y Estado (Generalmente Obligatorios/Defecto, pero se deja 'isActive' simple) ---
     isCustomer: boolean;
-
-    /** Indica si esta persona es un proveedor ('is_supplier'). */
     isSupplier: boolean;
-
-    /** Indica si esta persona es un empleado ('is_employee'). */
     isEmployee: boolean;
-
-    /** Estado de actividad ('is_active'). */
     isActive: boolean;
 
-    /** Código de integración con sistemas externos ('integration_code'). */
-    integrationCode?: string;
-    
-    // --- Estructuras Anidadas ---
-    
-    /** Array de direcciones asociadas a la persona. Corresponde a 'addresses'. */
-    addresses: AddressModel[];
-    
-    /** Array de documentos de la persona. Corresponde a 'documents'. */
-    documents: DocumentModel[];
-    
-    /** Detalles específicos del empleado (opcional si `isEmployee` es false). Corresponde a 'employee'. */
-    employee?: EmployeeDetailsModel; 
+    // --- Relaciones Anidadas ---
+    addresses: AddressModel[]; // Aunque el array debe estar siempre presente, puede ser un array vacío.
+    documents: DocumentModel[]; // Aunque el array debe estar siempre presente, puede ser un array vacío.
+
+    // 🛑 CRÍTICO: Relación de Detalle de Empleado (Opcional)
+    // El objeto completo puede faltar si la persona no es (o ya no es) empleada.
+    employee?: EmployeeModel; 
+
+    // --- Campos de Auditoría (Generalmente Obligatorios) ---
     createdAt: string; 
     updatedAt: string; 
-    updatedByUserId?: string;
-    
+    updatedByUserId?: string; // 🛑 Opcional: El usuario actualizador podría no estar siempre disponible.
+    createdByUserId: string; // Se mantiene como obligatorio.
 }

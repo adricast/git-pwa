@@ -3,7 +3,7 @@
 import type { PersonModel } from "../../models/api/personModel";
 import { api } from "./../api/api2"; // Asume que 'api' es tu instancia configurada de Axios
 import { employeesRouteApi } from "../../configurations/routes/apiroutes"; // Asume { employee: '/employee' }
-import type { EmployeeDetailsModel } from "../../models/api/employdetailsModel";
+import type { EmployeeModel } from "../../models/api/employeeModel";
 import type { AddressModel } from "../../models/api/addressModel";
 import type { DocumentModel } from "../../models/api/documentModel";
 
@@ -78,35 +78,34 @@ function mapPersonToApiPayload(personData: PersonCreationPayload | PersonUpdateP
 }
 
 /** 🛑 Mapea los datos de la API al frontend (PersonModel). 
- * CRÍTICO: Los campos de nivel superior vienen en camelCase, pero los sub-objetos de la API usan snake_case para algunos campos (employee, addresses, documents).
+ * CRÍTICO: Los campos de nivel superior y los sub-arrays vienen en camelCase, solo sub-objetos usan snake_case.
  */
 function mapPersonFromApi(apiPerson: any): PersonModel {
     // Leemos desde camelCase para los campos de nivel superior (según tu nuevo JSON)
     return {
         // --- CAMPOS DE NIVEL SUPERIOR (Leídos directamente en camelCase) ---
-        personId: apiPerson.personId, // 🛑 CAMBIO CLAVE: De person_id a personId
-        givenName: apiPerson.givenName, // 🛑 CAMBIO CLAVE: De given_name a givenName
-        surName: apiPerson.surName, // 🛑 CAMBIO CLAVE: De sur_name a surName
-        phoneNumber: apiPerson.phoneNumber, // De phone_number a phoneNumber
-        genderId: apiPerson.genderId, // De gender_id a genderId
-        dateOfBirth: apiPerson.dateOfBirth, // De date_of_birth a dateOfBirth
-        isEmployee: apiPerson.isEmployee, // De is_employee a isEmployee
-        isCustomer: apiPerson.isCustomer, // De is_customer a isCustomer
-        isSupplier: apiPerson.isSupplier, // De is_supplier a isSupplier
-        isActive: apiPerson.isActive, // De is_active a isActive
-        integrationCode: apiPerson.integrationCode, // De integration_code a integrationCode
+        personId: apiPerson.personId, 
+        givenName: apiPerson.givenName, 
+        surName: apiPerson.surName, 
+        phoneNumber: apiPerson.phoneNumber, 
+        genderId: apiPerson.genderId, 
+        dateOfBirth: apiPerson.dateOfBirth, 
+        isEmployee: apiPerson.isEmployee, 
+        isCustomer: apiPerson.isCustomer, 
+        isSupplier: apiPerson.isSupplier, 
+        isActive: apiPerson.isActive, 
+        integrationCode: apiPerson.integrationCode, 
 
         // --- AUDITORIA ---
-        createdByUserId: apiPerson.createdByUserId, // De created_by_user_id a createdByUserId
-        updatedByUserId: apiPerson.updatedByUserId, // De updated_by_user_id a updatedByUserId
-        createdAt: apiPerson.createdAt, // De created_at a createdAt
-        updatedAt: apiPerson.updatedAt, // De updated_at a updatedAt
+        createdByUserId: apiPerson.createdByUserId, 
+        updatedByUserId: apiPerson.updatedByUserId, 
+        createdAt: apiPerson.createdAt, 
+        updatedAt: apiPerson.updatedAt, 
         
-        // --- ESTRUCTURAS ANIDADAS (Las sub-propiedades mantienen el mapeo original si usan snake_case internamente) ---
+        // --- ESTRUCTURAS ANIDADAS (Vienen en camelCase en la API) ---
         
-        // Mapeo de Addresses (Asumiendo que las propiedades dentro de addresses SI vienen en camelCase)
+        // Mapeo de Addresses (Mantener el mapeo a camelCase)
         addresses: apiPerson.addresses ? apiPerson.addresses.map((a: any) => ({
-            // Los campos internos del array Addresses deben seguir siendo camelCase si vienen asi de la API
             addressId: a.addressId,
             street: a.street,
             cityId: a.cityId,
@@ -120,9 +119,8 @@ function mapPersonFromApi(apiPerson: any): PersonModel {
             createdByUserId: a.createdByUserId,
         } as AddressModel)) : [],
         
-        // Mapeo de Documents (Asumiendo que las propiedades dentro de documents SI vienen en camelCase)
+        // Mapeo de Documents (Mantener el mapeo a camelCase)
         documents: apiPerson.documents ? apiPerson.documents.map((d: any) => ({
-            // Los campos internos del array Documents deben seguir siendo camelCase si vienen asi de la API
             personDocumentId: d.personDocumentId,
             docTypeId: d.docTypeId,
             docNumber: d.docNumber,
@@ -134,15 +132,18 @@ function mapPersonFromApi(apiPerson: any): PersonModel {
             createdByUserId: d.createdByUserId,
         } as DocumentModel)) : [],
 
-        // El objeto employee (CRÍTICO: Mapeo de snake_case interno a camelCase)
+        // El objeto employee (CRÍTICO: Mapeo manual de snake_case/camelCase interno a EmployeeDetailsModel)
         employee: apiPerson.employee ? {
-            employeeId: apiPerson.employee.employeeId || apiPerson.employee.employee_id, // Soporte a ambos
+            // Intentamos leer ambas convenciones para ser robustos (camelCase API || snake_case API)
+            employeeId: apiPerson.employee.employeeId || apiPerson.employee.employee_id, 
             employeeCode: apiPerson.employee.employeeCode || apiPerson.employee.employee_code,
             personId: apiPerson.employee.personId || apiPerson.employee.person_id,
             isActive: apiPerson.employee.isActive || apiPerson.employee.is_active,
             employeeStatus: apiPerson.employee.employeeStatus || apiPerson.employee.employee_status, 
             createdByUserId: apiPerson.employee.createdByUserId || apiPerson.employee.created_by_user_id,
-        } as EmployeeDetailsModel : undefined,
+            updatedAt: apiPerson.employee.updatedAt || apiPerson.employee.updated_at,
+            updatedByUserId: apiPerson.employee.updatedByUserId || apiPerson.employee.updated_by_user_id,
+        } as EmployeeModel : undefined,
         
     } as PersonModel;
 }
@@ -200,7 +201,7 @@ export async function getActivePeople(): Promise<PersonModel[]> {
     const response = await api.get<any>(`${employeesRouteApi.employ}`);
     
         // 🛑 CRÍTICO: El listado general viene como array en response.data, no encapsulado.
-        // Se usa response.data si es un array, o response.data.item si es el objeto de paginación.
+        // Se usa response.data si es un array (como el JSON de ejemplo), o response.data.item si es el objeto de paginación.
     const rawData = Array.isArray(response.data) ? response.data : response.data.item; 
     
     if (!Array.isArray(rawData)) {
@@ -238,7 +239,7 @@ export async function getAllEmployees(activeOnly: boolean = false): Promise<Pers
     const query = activeOnly ? '?active=true' : '';
     const response = await api.get<any>(`${employeesRouteApi.employ}${query}`); 
     
-    // Usa response.data si es un array, o response.data.item si es el objeto de paginación.
+    // Usa response.data si es un array, o intenta desencapsular
     const rawData = Array.isArray(response.data) ? response.data : response.data.data?.item || response.data.item;
     
     if (!Array.isArray(rawData)) {
@@ -261,20 +262,20 @@ export async function getPersonById(personId: string): Promise<PersonModel> {
 export async function getPersonByUuid(personId: string): Promise<PersonModel> {
     try {
     // La URL de ejemplo usa /api/people/{uuid}
-    const apiRoute = employeesRouteApi.employ.replace('/employee', '/people');
+    const apiRoute = employeesRouteApi.employ;
     
-    const response = await api.get<any>(`${apiRoute}/${personId}`);
+    const response = await api.get<any>(`${apiRoute}${personId}`);
     
     // Intenta desencapsular de response.data.data si existe, o usa la raiz de response.data
-    // Si la respuesta individual es un array de un solo elemento (raro, pero posible) lo extrae.
     let itemData = response.data.data || response.data; 
 
-        if (Array.isArray(itemData) && itemData.length > 0) {
-            itemData = itemData[0];
-        }
+  // Si la respuesta individual es un array de un solo elemento (como tu JSON de ejemplo en la lista) lo extrae.
+  if (Array.isArray(itemData) && itemData.length > 0) {
+   itemData = itemData[0];
+  }
 
-    if (!itemData || Array.isArray(itemData)) {
-        throw new Error("Respuesta de detalle de persona invalida o vacia.");
+ if (!itemData || Array.isArray(itemData)) {
+  throw new Error("Respuesta de detalle de persona invalida o vacia.");
     }
     return mapPersonFromApi(itemData);
     } catch (error) {

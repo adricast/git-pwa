@@ -148,7 +148,7 @@ export async function createPerson(
         const payloadToSend = { ...personData, createdByUserId: createdByUserId };
         const apiPayload = mapPersonToApiPayload(payloadToSend);
         
-        const response = await api.post<any>(employeesRouteApi.employbuild, apiPayload, { 
+        const response = await api.post<any>(employeesRouteApi.employ, apiPayload, { 
             headers: { "X-Creator-User-Id": createdByUserId, "Content-Type": "application/json" } 
         });
         
@@ -170,7 +170,7 @@ export async function updatePerson(
         const payloadToSend = { ...personPatch, updatedByUserId: updatedByUserId };
         const apiPayload = mapPersonToApiPayload(payloadToSend);
         
-        const response = await api.put<any>(`${employeesRouteApi.employbuild}${personId}`, apiPayload, { 
+        const response = await api.put<any>(`${employeesRouteApi.employ}${personId}`, apiPayload, { 
             headers: { "X-Updater-User-Id": updatedByUserId, "Content-Type": "application/json" }
         });
         
@@ -185,7 +185,7 @@ export async function updatePerson(
 /** Obtiene todos los empleados activos (GET /employee) */
 export async function getActivePeople(): Promise<PersonModel[]> {
     try {
-        const response = await api.get<any>(`${employeesRouteApi.employbuild}`);
+        const response = await api.get<any>(`${employeesRouteApi.employ2}`);
     
         // Se usa response.data.item basado en la ultima estructura del API
         const employeesArray = response.data.item; 
@@ -209,7 +209,7 @@ export async function softDeletePeopleMassive(
 ): Promise<{ message: string; count: number; }> {
     try {
         const response = await api.patch<any>(
-            `${employeesRouteApi.employbuild}massive-soft`,
+            `${employeesRouteApi.employ}massive-soft`,
             { person_ids: personIds, updated_by_user_id: updatedByUserId }, 
             { headers: { "X-Updater-User-Id": updatedByUserId, "Content-Type": "application/json" }}
         );
@@ -223,7 +223,7 @@ export async function softDeletePeopleMassive(
 export async function getAllEmployees(activeOnly: boolean = false): Promise<PersonModel[]> {
     try {
         const query = activeOnly ? '?active=true' : '';
-        const response = await api.get<any>(`${employeesRouteApi.employbuild}${query}`); 
+        const response = await api.get<any>(`${employeesRouteApi.employ2}${query}`); 
         
         // Usa response.data.item si la API es consistente, sino usa la logica de anidamiento
         const employeesArray = response.data.data?.item || response.data.item; 
@@ -248,7 +248,7 @@ export async function getPersonById(personId: string): Promise<PersonModel> {
 export async function getPersonByUuid(personId: string): Promise<PersonModel> {
     try {
         // La URL de ejemplo usa /api/people/{uuid}
-        const apiRoute = employeesRouteApi.employbuild.replace('/employee', '/people');
+        const apiRoute = employeesRouteApi.employ2.replace('/employee', '/people');
         
         // CRÍTICO: Llamada de detalle
         const response = await api.get<any>(`${apiRoute}${personId}`);

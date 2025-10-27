@@ -1,8 +1,9 @@
-// 📁 src/components/forms/employformconfig.tsx (Configuración Final para Empleado)
+// 📁 src/components/forms/employformconfig.tsx
 
-import type { FormSection } from "@dipaso/design-system";
+// Importamos FormSection y FormField desde el archivo local de interfaces (asumo que se llama './interface')
+import type { FormSection, FormField } from '@dipaso/design-system'; 
+// Mantenemos la importación de la librería para satisfacer la estructura de los tipos base
 
-//import type { FormSection } from '../../components/multisectiondinamicform/interface'; 
 
 /**
  * Interface para las opciones de formulario { value: string, label: string }
@@ -12,30 +13,33 @@ interface FormOption {
     label: string;
 }
 
-// 🚨 PLACEHOLDER DE GÉNERO: Array vacío que será llenado por el Wrapper.
-// Mantenemos el nombre original 'genderOptions' pero con un valor vacío.
+// 🛑 Definición del marcador de posición para documentos nuevos (ID por defecto)
+const DEFAULT_ID_PLACEHOLDER = "00000000-0000-0000-0000-000000000000";
+
+// ... (Opciones MOCK y constantes sin cambios) ...
 export const genderOptions: FormOption[] = []; 
 export const countryOptions: FormOption[] = [];
-// Opciones de MOCK para campos tipo select
 export const identificationOptions: FormOption[] = [];
 export const provinceOptions: FormOption[] = []; 
 export const cityOptions: FormOption[] = [];
 
-// Opciones de MOCK para el estado del empleado (employee_status)
 const employeeStatusOptions: FormOption[] = [
     { value: 'A', label: 'Activo' }, 
     { value: 'I', label: 'Inactivo' }, 
-
 ];
 
-// 🛑 Listado de países MOCK
+// Define la plantilla para las nuevas filas (para inicializar el array)
+const INITIAL_DOCUMENT_ROW = {
+    docTypeId: "", 
+    docNumber: "",
+    issuingCountry: "",
+    isActive: true, 
+    personDocumentId: DEFAULT_ID_PLACEHOLDER, // Usamos la constante
+};
 
-
-
-// --------------------------------------------------------------------------
 
 /**
- * EXPORTACIÓN ORIGINAL MANTENIDA: La constante employFormSections[]
+ * EXPORTACIÓN CORREGIDA: Usamos el tipo local FormSection
  */
 export const employFormSections: FormSection[] = [
 
@@ -46,107 +50,63 @@ export const employFormSections: FormSection[] = [
         title: "Datos Personales",
         columns: 2, 
         fields: [
-            // 1. givenName
             { name: "givenName", label: "Nombres", type: "text", required: true, placeholder: "Nombres del Empleado (Obligatorio)" },
-            // 2. surName
             { name: "surName", label: "Apellidos", type: "text", required: true, placeholder: "Apellidos del Empleado (Obligatorio)" },
-            // 5. phoneNumber
             { name: "phoneNumber", label: "Teléfono", type: "text", required: false, placeholder: "000 000 0000" },
-            // 6. genderId
-            // 🚨 Referencia al array vacío global 'genderOptions' que el Wrapper llenará.
             { name: "genderId", label: "Sexo", type: "select", required: false, options: genderOptions, placeholder: "Selecciona el Genero" },
-            // 7. dateOfBirth
             { name: "dateOfBirth", label: "Fecha de Nacimiento", type: "date", required: false },
-        ],
+        ] as FormField[], // Casteo a FormField[]
     },
     
     // 🛑 SECCIÓN 2: Documentación (Tabla Parametrizada)
     {
         title: "Documentación de Identificación",
-        columns: 1, // La tabla usa todo el ancho
+        columns: 1, 
         fields: [
             { 
                 name: "documents", 
                 label: "Documentos del Empleado", 
                 type: "table", 
                 required: true, 
-                // Definición de las columnas de la tabla:
+                uniqueByField: "docTypeId",
+                // 🔥 PROPIEDADES DE PAGINACIÓN:
+                paginationEnabled: true,      
+                initialRowsPerPage: 5,        
+                
+                initialValue: [INITIAL_DOCUMENT_ROW], 
+
                 columnsDefinition: [
+                    { name: "docTypeId", label: "Tipo", type: "select", required: true, options: identificationOptions },
+                    { name: "docNumber", label: "Número", type: "text", required: true, placeholder: "Número de identificación" },
+                    { name: "issuingCountry", label: "País de Emisión", type: "select", required: true, options: countryOptions },
+                    { name: "isActive", label: "Activo", type: "checkbox", required: false },
+                    
+                    // ✅ COLUMNA DE ACCIÓN AÑADIDA CON LÓGICA DE VISIBILIDAD
                     { 
-                        name: "docTypeId", 
-                        label: "Tipo", 
-                        type: "select", 
-                        required: true, 
-                        options: identificationOptions 
-                    },
-                    { 
-                        name: "docNumber", 
-                        label: "Número", 
-                        type: "text", 
-                        required: true, 
-                        placeholder: "Número de identificación" 
-                    },
-                    // 🛑 REINCORPORADA LA COLUMNA DE PAÍS COMO SELECT (es requerida)
-                    { 
-                        name: "issuingCountry", 
-                        label: "País de Emisión", 
-                        type: "select", 
-                        required: true, 
-                        options: countryOptions 
-                    },
-                    { 
-                        name: "isActive", 
-                        label: "Activo", 
-                        type: "checkbox", 
-                        required: false 
-                    },
+                        name: "actions", 
+                        label: "ACCIONES", 
+                        type: "action",
+                        actionType: "delete", // Tipo de acción para renderizar la 'X' de eliminar
+                        // CRÍTICO: Muestra la 'X' SOLO si el ID del documento es el placeholder
+                        isVisible: (rowData: Record<string, any>) => 
+                            rowData.personDocumentId === DEFAULT_ID_PLACEHOLDER || !rowData.personDocumentId
+                    }
                 ]
-            },
-        ],
+            } as FormField, // 🛑 Casting
+        ] as FormField[],
     },
 
 
     // ----------------------------------------------------
-    // SECCIÓN 3: DIRECCIÓN PRINCIPAL (Simplificación)
+    // SECCIÓN 3: DIRECCIÓN PRINCIPAL
     // ----------------------------------------------------
-   {
+    {
     title: "Dirección de Residencia",
-    columns: 2, // Se divide la sección en dos columnas
+    columns: 2, 
     fields: [
-        // 1. countryId (PAÍS - Nuevo select)
-        { 
-            name: "countryId", 
-            label: "País", 
-            type: "select", 
-            required: true, 
-            options: countryOptions, // Opciones inyectadas por el Wrapper
-            placeholder: "Selecciona el País" 
-        },
-
-        // 2. provinceId (PROVINCIA - Nuevo select)
-        // Este campo se añade para la cascada, usando el placeholder mutado.
-        { 
-            name: "provinceId", 
-            label: "Provincia", 
-            type: "select", 
-            required: true, 
-            options: provinceOptions, 
-            placeholder: "Selecciona la Provincia" 
-        },
-        
-        // 3. cityId (CIUDAD - Convierte el campo ID en Select)
-        // Reemplaza el antiguo campo de texto cityId.
-        { 
-            name: "cityId", 
-            label: "Ciudad", 
-            type: "select", 
-            required: true, 
-            options: cityOptions, 
-            placeholder: "Selecciona la Ciudad" 
-        },
-        
-        // 4. street (Ocupa el resto de espacio si es necesario, o se deja en su propia fila/columna)
-        // Manteniendo el diseño de dos columnas, street puede ir en una fila separada o al lado de postalCode.
+        { name: "countryId", label: "País", type: "select", required: true, options: countryOptions, placeholder: "Selecciona el País" },
+        { name: "provinceId", label: "Provincia", type: "select", required: true, options: provinceOptions, placeholder: "Selecciona la Provincia" },
+        { name: "cityId", label: "Ciudad", type: "select", required: true, options: cityOptions, placeholder: "Selecciona la Ciudad" },
         { 
             name: "street", 
             label: "Calle Principal y Secundaria", 
@@ -154,28 +114,18 @@ export const employFormSections: FormSection[] = [
             required: true, 
             placeholder: "Calle principal y secundaria (Obligatorio)",
         },
-
-        // 5. postalCode (Mantenido)
         { name: "postalCode", label: "Código Postal", type: "text", required: false, placeholder: "Código Postal (Ej: 566)" },
-    ],
-},
+    ] as FormField[],
+    },
     
     // ----------------------------------------------------
-    // SECCIÓN 4: DETALLES ESPECÍFICOS DEL EMPLEADO (Sub-objeto 'employee')
+    // SECCIÓN 4: DETALLES ESPECÍFICOS DEL EMPLEADO
     // ----------------------------------------------------
     {
         title: "Datos Laborales del Empleado",
         columns: 2, 
         fields: [
-            // 11. employeeCode (Mapea a employee.employeeCode)
-            {
-                name: "employeeCode", 
-                label: "Código de Empleado",
-                type: "text",
-                required: true, 
-                placeholder: "Ej: 566 (Código Interno)",
-            },
-            // 12. employeeStatus (Mapea a employee.employeeStatus)
+            { name: "employeeCode", label: "Código de Empleado", type: "text", required: true, placeholder: "Ej: 566 (Código Interno)" },
             {
                 name: "employeeStatus", 
                 label: "Estado Laboral",
@@ -185,14 +135,7 @@ export const employFormSections: FormSection[] = [
                 placeholder: "Selecciona el estado (Activo/Inactivo)",
                 isVisible: (data: Record<string, any>) => !!data.employExists,
             },
-            // 13. integrationCode (Mapea al campo de nivel superior)
-            {
-                name: "integrationCode",
-                label: "Código de Integración",
-                type: "text", 
-                required: false,
-                placeholder: "Código de sistema externo (Opcional)",
-            },
-        ],
+            { name: "integrationCode", label: "Código de Integración", type: "text", required: false, placeholder: "Código de sistema externo (Opcional)" },
+        ] as FormField[],
     },
-];
+] as FormSection[]; // Casting final

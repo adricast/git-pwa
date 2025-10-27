@@ -7,6 +7,9 @@ import type { EmployeeModel } from "../../models/api/employeeModel";
 import type { AddressModel } from "../../models/api/addressModel";
 import type { DocumentModel } from "../../models/api/documentModel";
 
+// 🛑 CRÍTICO: Importar la función para generar UUIDs
+import { v4 as uuidv4 } from 'uuid'; 
+
 
 // NOTA: Estos tipos deben coincidir con los definidos en tu archivo EmployManagement.tsx
 export type PersonCreationPayload = Omit<PersonModel, "personId" | "createdAt" | "updatedAt" | "updatedByUserId">;
@@ -17,9 +20,7 @@ export type PersonUpdatePayload = Partial<PersonCreationPayload>;
 // AUXILIARES DE MAPPING (snake_case -> camelCase)
 // ----------------------------------------------------------------
 
-/** Mapea el objeto PersonModel (camelCase) al payload de la API (snake_case). 
- * Se mantiene la logica de mapeo de envio de camelCase a snake_case.
- */
+/** Mapea el objeto PersonModel (camelCase) al payload de la API (snake_case). */
 function mapPersonToApiPayload(personData: PersonCreationPayload | PersonUpdatePayload): any {
     const payload: any = {};
     
@@ -77,9 +78,7 @@ function mapPersonToApiPayload(personData: PersonCreationPayload | PersonUpdateP
     return payload;
 }
 
-/** 🛑 Mapea los datos de la API al frontend (PersonModel). 
- * CRÍTICO: Los campos de nivel superior y los sub-arrays vienen en camelCase, solo sub-objetos usan snake_case.
- */
+/** 🛑 Mapea los datos de la API al frontend (PersonModel). */
 function mapPersonFromApi(apiPerson: any): PersonModel {
     // Leemos desde camelCase para los campos de nivel superior (según tu nuevo JSON)
     return {
@@ -161,8 +160,15 @@ export async function createPerson(
     const payloadToSend = { ...personData, createdByUserId: createdByUserId };
     const apiPayload = mapPersonToApiPayload(payloadToSend);
     
+    // 🛑 AGREGAR HEADER DE IDEMPOTENCIA
+    const idempotencyKey = uuidv4();
+    
     const response = await api.post<any>(employeesRouteApi.employ, apiPayload, { 
-        headers: { "X-Creator-User-Id": createdByUserId, "Content-Type": "application/json" } 
+        headers: { 
+            "X-Creator-User-Id": createdByUserId, 
+            "Content-Type": "application/json",
+            "X-Idempotency-Key": idempotencyKey, // 🚀 AÑADIDO
+        } 
     });
     
     return mapPersonFromApi(response.data);
@@ -183,8 +189,15 @@ export async function updatePerson(
     const payloadToSend = { ...personPatch, updatedByUserId: updatedByUserId };
     const apiPayload = mapPersonToApiPayload(payloadToSend);
     
+    // 🛑 AGREGAR HEADER DE IDEMPOTENCIA
+    const idempotencyKey = uuidv4();
+
     const response = await api.put<any>(`${employeesRouteApi.employ}${personId}`, apiPayload, { 
-        headers: { "X-Updater-User-Id": updatedByUserId, "Content-Type": "application/json" }
+        headers: { 
+            "X-Updater-User-Id": updatedByUserId, 
+            "Content-Type": "application/json",
+            "X-Idempotency-Key": idempotencyKey, // 🚀 AÑADIDO
+        }
     });
     
     return mapPersonFromApi(response.data);
@@ -200,8 +213,6 @@ export async function getActivePeople(): Promise<PersonModel[]> {
     try {
     const response = await api.get<any>(`${employeesRouteApi.employ}`);
     
-        // 🛑 CRÍTICO: El listado general viene como array en response.data, no encapsulado.
-        // Se usa response.data si es un array (como el JSON de ejemplo), o response.data.item si es el objeto de paginación.
     const rawData = Array.isArray(response.data) ? response.data : response.data.item; 
     
     if (!Array.isArray(rawData)) {
@@ -239,7 +250,6 @@ export async function getAllEmployees(activeOnly: boolean = false): Promise<Pers
     const query = activeOnly ? '?active=true' : '';
     const response = await api.get<any>(`${employeesRouteApi.employ}${query}`); 
     
-    // Usa response.data si es un array, o intenta desencapsular
     const rawData = Array.isArray(response.data) ? response.data : response.data.data?.item || response.data.item;
     
     if (!Array.isArray(rawData)) {
@@ -258,24 +268,21 @@ export async function getPersonById(personId: string): Promise<PersonModel> {
     return getPersonByUuid(personId); // Delega al UUID
 }
 
-/** 🚀 NUEVA FUNCION: Consulta los detalles de una persona especifica por UUID (GET /people/{uuid}). */
+/** Consulta los detalles de una persona especifica por UUID (GET /people/{uuid}). */
 export async function getPersonByUuid(personId: string): Promise<PersonModel> {
     try {
-    // La URL de ejemplo usa /api/people/{uuid}
     const apiRoute = employeesRouteApi.employ;
     
     const response = await api.get<any>(`${apiRoute}${personId}`);
     
-    // Intenta desencapsular de response.data.data si existe, o usa la raiz de response.data
     let itemData = response.data.data || response.data; 
 
-  // Si la respuesta individual es un array de un solo elemento (como tu JSON de ejemplo en la lista) lo extrae.
-  if (Array.isArray(itemData) && itemData.length > 0) {
-   itemData = itemData[0];
-  }
+    if (Array.isArray(itemData) && itemData.length > 0) {
+        itemData = itemData[0];
+    }
 
- if (!itemData || Array.isArray(itemData)) {
-  throw new Error("Respuesta de detalle de persona invalida o vacia.");
+    if (!itemData || Array.isArray(itemData)) {
+        throw new Error("Respuesta de detalle de persona invalida o vacia.");
     }
     return mapPersonFromApi(itemData);
     } catch (error) {

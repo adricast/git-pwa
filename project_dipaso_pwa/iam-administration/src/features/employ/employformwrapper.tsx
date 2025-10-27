@@ -20,7 +20,7 @@ import {
     provinceOptions, 
     cityOptions 
 } from "./employformconfig"; 
-import AddEditEmployContent from "./addeditemploy"; 
+import AddEditEmployContent from "./addeditemployLocal"; 
 import type { PersonModel } from "../../models/api/personModel";
 
 export const EmployFormWrapper: React.FC<{

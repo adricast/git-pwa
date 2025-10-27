@@ -4,574 +4,407 @@
 // --- CONFIGURACIÓN DE ESPACIOS ---
 $gap-size: 10px
 $form-max-width: 900px
-
-// Aumentado para mejor uso de espacio en desktop
 $mobile-padding: 16px
 
-// Nuevo: padding para móvil
+// --- TIPOGRAFÍA Y COLORES DE SOPORTE ---
+$header-color: #1f2937
+$table-header-bg: #f9faff
+$table-border-color: #c8ccd2
+$table-action-color: #3b82f6 // Azul principal para acciones en tabla
 
+//=====================================================
+// 1. ESTRUCTURA GENERAL DEL FORMULARIO
+//=====================================================
 .dynamic-form-container
-  display: flex
-  flex-direction: column
-
-  // --- RESPONSIVE GENERAL ---
-  width: 100%
-
-  // Ocupa todo el ancho por defecto (móvil)
-  max-width: $form-max-width
-  margin: 0 auto
-  padding: $mobile-padding
-
-  // Padding generoso en móvil
-
-  // Uso de variables importadas
-  border: 1px solid $border-color
-  border-radius: 12px
-  background-color: $white
-  gap: $gap-size * 1.5
-
-  // Mayor separación entre secciones en móvil
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
-
-  @media (min-width: 768px)
-    // Tablet y Desktop
-    width: 90%
-    padding: $gap-size * 2
-
-    // Más padding en desktop
-    gap: $gap-size * 1.2
-
-    // Separación entre secciones en desktop
-
-//-----------------------------------------------------
-// steps indicators
-//-----------------------------------------------------
-.form-steps-indicator
-  counter-reset: step-counter
-  display: flex
-  justify-content: space-between
-  align-items: flex-start
-
-  // Alineamos al inicio para que el diseño sea más limpio
-  margin-bottom: $gap-size * 2
-  padding: $gap-size 0
-
-  @media (max-width: 767px)
-    display: none
-
-.step-item
-  // 🛑 CAMBIO CLAVE: Dirección de columna para apilar el círculo y el texto
-  display: flex
-  align-items: center
-
-  // Centrar el contenido dentro de cada paso
-  flex-direction: column
-  position: relative
-  flex-grow: 1
-  color: color.adjust($text-color, $lightness: 30%)
-  font-size: 0.7rem
-
-  // Reducido ligeramente el tamaño del texto del título
-  font-weight: 500
-  text-align: center
-
-  // Centramos el texto del título
-
-  // Estilo del SEPARADOR (Línea entre círculos)
-  &:not(:last-child)
-    &::after
-      content: ''
-      position: absolute
-
-      // 🛑 POSICIONAMIENTO ACTUALIZADO: Centrado en la vertical y horizontal del círculo
-      top: 15px
-
-      // Centrado en el centro vertical del círculo (asumiendo 28px de altura)
-      left: 50%
-      transform: translateX(0)
-
-      // Quitar el transform: translateY(-50%) si ya se usa flex-direction: column
-      height: 2px
-      width: calc(100% - 30px)
-
-      // Ajusta el ancho para conectar los círculos
-      background-color: $border-color
-      z-index: 1
-
-  // Estilo del NÚMERO (Círculo)
-  &::before
-    content: counter(step-counter)
-    counter-increment: step-counter
     display: flex
-    justify-content: center
-    align-items: center
-    width: 28px
-    height: 28px
-    border-radius: 50%
-    background-color: $border-color
-    color: $white
-    font-weight: 700
-    margin-bottom: 5px
+    flex-direction: column
+    width: 100%
+    max-width: $form-max-width
+    margin: 0 auto
+    padding: $mobile-padding
+    border: 1px solid $border-color
+    border-radius: 12px
+    background-color: $white
+    gap: $gap-size * 1.5
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
 
-    // Espacio entre el círculo y el título
-    flex-shrink: 0
-    z-index: 2
-    border: 2px solid $border-color
-    transition: all 0.3s
+    @media (min-width: 768px)
+        width: 90%
+        padding: $gap-size * 2
+        gap: $gap-size * 1.2
 
-  // Contenedor del título
-  & > span
-    position: relative
-    z-index: 3
-    white-space: normal
+//=====================================================
+// 2. INDICADORES DE PASOS (STEPPER)
+//=====================================================
+.form-steps-indicator
+    counter-reset: step-counter
+    display: flex
+    justify-content: space-between
+    align-items: flex-start
+    margin-bottom: $gap-size * 2
+    padding: $gap-size 0
 
-    // Permitir que el título salte de línea si es necesario
-
-/* Paso ACTIVO
-.step-item-active
-  color: $text-color
-
-  &::before
-    background-color: $primary-color
-    border-color: $primary-color
-    color: $white
-
-/* 🛑 Paso COMPLETO/PASADO
-.step-item-completed
-  color: $text-color
-  cursor: pointer
-
-  &::before
-    // En lugar del número, un ícono de check
-    // content: '✔';
-    background-color: $success-color
-    border-color: $success-color
-    font-size: 1.2rem
-
-  &:not(:last-child)
-    &::after
-      // Línea de color de éxito para mostrar progreso completado
-      background-color: $success-color
-
-// ----------------------------------------------------
-// 1. ESTILOS DE SECCIONES Y LAYOUT DE COLUMNAS (GRID)
-// ----------------------------------------------------
-
-.dynamic-form-section
-  padding-bottom: math.div($gap-size, 2)
-
-  // Estilos antiguos del h3 (Aplicarán solo en desktop o si no se usa .section-header)
-  h3
-    margin-top: 0
-    margin-bottom: math.div($gap-size, 2)
-    padding-bottom: 8px
-    border-bottom: 2px solid $primary-color
-    color: $text-color
-    font-weight: 700
-    font-size: 1.25rem
-
-// ----------------------------------------------------
-// NUEVO: ESTILOS PARA LA CABECERA (PASOS NUMERADOS Y TOOLTIP)
-// ----------------------------------------------------
-
-.section-header
-  display: flex
-  align-items: center
-  gap: math.div($gap-size, 2)
-  margin-bottom: $gap-size
-  padding-bottom: 8px
-  border-bottom: 2px solid $primary-color
-  position: relative
-
-  // Necesario para el tooltip
-
-  // Estilo del Título principal (si se muestra)
-  .section-title
-    color: $text-color
-    font-weight: 700
-    font-size: 1.25rem
-    margin: 0
-
-    // Ocultar título en móvil, mostrar el paso
     @media (max-width: 767px)
-      display: none
+        display: none
 
-.section-step-number
-  // Estilo del círculo
-  display: flex
-  justify-content: center
-  align-items: center
-  width: 28px
-  height: 28px
-  border-radius: 50%
-  background-color: $primary-color
-  color: $white
-  font-weight: 700
-  font-size: 0.9rem
-  flex-shrink: 0
+    .step-item
+        display: flex
+        align-items: center
+        flex-direction: column
+        position: relative
+        flex-grow: 1
+        color: color.adjust($text-color, $lightness: 30%)
+        font-size: 0.7rem
+        font-weight: 500
+        text-align: center
 
-  // Evita que se encoja
+        // Estilo del SEPARADOR (Línea entre círculos)
+        &:not(:last-child)::after
+            content: ''
+            position: absolute
+            top: 15px
+            left: 50%
+            transform: translateX(0)
+            height: 2px
+            width: calc(100% - 30px)
+            background-color: $border-color
+            z-index: 1
 
-  // Configuración del Tooltip (Aparecerá el texto en pantallas pequeñas)
-  @media (max-width: 767px)
-    cursor: help
+        // Estilo del NÚMERO (Círculo)
+        &::before
+            content: counter(step-counter)
+            counter-increment: step-counter
+            display: flex
+            justify-content: center
+            align-items: center
+            width: 28px
+            height: 28px
+            border-radius: 50%
+            background-color: $border-color
+            color: $white
+            font-weight: 700
+            margin-bottom: 5px
+            flex-shrink: 0
+            z-index: 2
+            border: 2px solid $border-color
+            transition: all 0.3s
 
-    // Indicador de que es interactivo
-    position: relative
+        & > span
+            position: relative
+            z-index: 3
+            white-space: normal
 
-    // Base para el tooltip
+    /* Paso ACTIVO */
+    .step-item-active
+        color: $text-color
 
-    // Tooltip container (el texto que aparece)
-    &::after
-      content: attr(data-tooltip)
+        &::before
+            background-color: $primary-color
+            border-color: $primary-color
+            color: $white
 
-      // Obtiene el texto del atributo data-tooltip
-      position: absolute
-      left: 50%
-      top: 120%
+//=====================================================
+// 3. SECCIONES Y LAYOUT DE CAMPOS
+//=====================================================
+.dynamic-form-section
+    // 🔥 AÑADIDO PARA LA LÍNEA GRIS
+    border: 1px solid #ccc      // Color gris claro
+    border-radius: 6px      // Borde redondeado sutil
+    padding: $gap-size      // Relleno interno completo (arriba, derecha, abajo, izquierda)
+    
+    // Antiguo padding-bottom (ahora redundante si usamos padding completo)
+    // padding-bottom: math.div($gap-size, 2) 
 
-      // Posiciona debajo del círculo
-      transform: translateX(-50%)
-      background-color: $text-color
+    .section-header
+        display: flex
+        align-items: center
+        gap: math.div($gap-size, 2)
+        margin-bottom: $gap-size
+        padding-bottom: 8px
+        border-bottom: 2px solid $primary-color
+        position: relative
 
-      // Fondo oscuro
-      color: $white
-      padding: 6px 10px
-      border-radius: 4px
-      font-size: 0.8rem
-      white-space: nowrap
+        .section-title
+            color: $text-color
+            font-weight: 700
+            font-size: 1.25rem
+            margin: 0
+            
+            @media (max-width: 767px)
+                display: none
 
-      // Evita saltos de línea
-      opacity: 0
+    .dynamic-section-fields-grid
+        display: grid
+        gap: $gap-size
 
-      // Oculto por defecto
-      visibility: hidden
-      transition: opacity 0.3s, visibility 0.3s
-      z-index: 10
+    // Lógica de Grid para columnas
+    @for $i from 1 through 4
+        .dynamic-section-columns-#{$i} .dynamic-section-fields-grid
+            grid-template-columns: 1fr
+    
+    @media (min-width: 640px)
+        .dynamic-section-columns-2 .dynamic-section-fields-grid
+            grid-template-columns: repeat(2, 1fr)
+    
+    @media (min-width: 768px)
+        .dynamic-section-columns-4 .dynamic-section-fields-grid
+            grid-template-columns: repeat(2, 1fr)
+    
+    @media (min-width: 1024px)
+        .dynamic-section-columns-3 .dynamic-section-fields-grid
+            grid-template-columns: repeat(3, 1fr)
+    
+    @media (min-width: 1200px)
+        .dynamic-section-columns-4 .dynamic-section-fields-grid
+            grid-template-columns: repeat(4, 1fr)
 
-    // Triángulo (flecha) del tooltip
-    &::before
-      content: ''
-      position: absolute
-      bottom: 100%
-      left: 50%
-      margin-left: -5px
-      border-width: 5px
-      border-style: solid
-      border-color: transparent transparent $text-color transparent
-      opacity: 0
-
-      // Oculto por defecto
-      visibility: hidden
-      transition: opacity 0.3s, visibility 0.3s
-      z-index: 11
-
-    // Mostrar Tooltip al pasar el ratón o tocar
-    &:hover::after, &:hover::before
-      opacity: 1
-      visibility: visible
-
-.dynamic-section-fields-grid
-  display: grid
-  gap: $gap-size
-
-// Layout de 1 Columna (El default en móvil)
-.dynamic-section-columns-1 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
-
-// Layout de 2 Columnas (1 columna en móvil, 2 en pantallas >= 640px)
-.dynamic-section-columns-2 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
-
-  // Móvil: 1 columna
-
-  @media (min-width: 640px)
-    // sm: 640px
-    grid-template-columns: repeat(2, 1fr)
-
-    // Dos columnas
-
-// Layout de 3 Columnas (1 columna en móvil, 3 en pantallas >= 1024px)
-.dynamic-section-columns-3 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
-
-  // Móvil: 1 columna
-
-  @media (min-width: 1024px)
-    // lg: 1024px
-    grid-template-columns: repeat(3, 1fr)
-
-    // Tres columnas
-
-// Layout de 4 Columnas (1 columna en móvil, 2 en tablet, 4 en desktop) (NUEVO)
-.dynamic-section-columns-4 .dynamic-section-fields-grid
-  grid-template-columns: 1fr
-
-  // Móvil: 1 columna
-
-  @media (min-width: 768px)
-    // md: 768px (Tablet)
-    grid-template-columns: repeat(2, 1fr)
-
-    // Dos columnas
-
-  @media (min-width: 1200px)
-    // xl: 1200px (Desktop)
-    grid-template-columns: repeat(4, 1fr)
-
-    // Cuatro columnas
-
-// ----------------------------------------------------
-// 2. ESTILOS DE CAMPOS INDIVIDUALES 
-// ----------------------------------------------------
+//=====================================================
+// 4. ESTILOS DE INPUTS Y GRUPOS
+//=====================================================
 
 .dynamic-form-group
-  display: flex
-  flex-direction: column
-
-  label
-    font-weight: 600
-    margin-bottom: 4px
-    color: $text-color
-    font-size: 0.9rem
-
-.required-star
-  color: $error-color
-  margin-left: 4px
-
-.dynamic-form-input
-  padding: 8px 12px
-  border: 1px solid color.adjust($border-color, $lightness: 10%)
-  border-radius: 8px
-  font-size: 1rem
-  box-sizing: border-box
-  width: 100%
-  transition: all 0.2s ease
-  background-color: $card-bg
-
-  &:hover
-    border-color: $border-color
-
-  &:focus
-    border-color: $primary-color
-    outline: none
-    box-shadow: 0 1px 0 0 $primary-color
-
-textarea.dynamic-form-input
-  resize: vertical
-  min-height: 100px
-
-// ----------------------------------------------------
-// 3. ESTILOS DE CAMPOS ESPECIALES (CHECKBOX Y RADIO)
-// ----------------------------------------------------
-
-.dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label
-  display: flex
-  align-items: center
-  gap: 8px
-
-.dynamic-form-checkbox-group
-  input[type="checkbox"]
-    cursor: pointer
-    min-width: 16px
-    min-height: 16px
-    border-radius: 4px
-
-  .checkbox-label
-    color: $text-color
-    cursor: pointer
-    font-weight: 500
-
-.dynamic-form-radio-group
-  .radio-label
-    color: $text-color
-    cursor: pointer
-    font-weight: 500
-
-    input[type="radio"]
-      cursor: pointer
-      min-width: 16px
-      min-height: 16px
-
-// ----------------------------------------------------
-// 4. BOTONES DE ACCIÓN (RESPONSIVE)
-// ----------------------------------------------------
-
-.dynamic-form-actions-wrapper
-  display: flex
-  justify-content: space-between
-  gap: 10px
-  margin-top: $gap-size * 1.5
-
-  // Más margen superior
-  padding-top: $gap-size
-  border-top: 1px solid color.adjust($border-color, $lightness: 10%)
-
-  .dynamic-form-submit-group
     display: flex
-    justify-content: flex-end
-    gap: 10px
-    flex-grow: 1
-
-    // Permite que ocupe el espacio restante (para que justify-content: space-between funcione)
-
-    @media (max-width: 767px)
-      flex-direction: column
-      width: 100%
-
-      // Ocupa todo el ancho disponible en móvil
-      // Revertir el orden para que el botón primario esté abajo (más fácil de alcanzar)
-      .dynamic-form-submit-btn--primary
-        order: 2
-
-      .dynamic-form-submit-btn--secondary
-        order: 1
-
-  // ✅ RESPONSIVE: Apilamiento vertical en móvil
-  @media (max-width: 767px)
     flex-direction: column
 
-    // Revertir el orden para que el botón primario esté abajo (más fácil de alcanzar)
-    .dynamic-form-submit-btn--primary
-      order: 2
+    label
+        font-weight: 600
+        margin-bottom: 4px
+        color: $text-color
+        font-size: 0.9rem
 
-    .dynamic-form-submit-btn--secondary
-      order: 1
+.required-star
+    color: $error-color
+    margin-left: 4px
 
-/* 🛑 Estilo Base del Botón (Unificado: aplica a submit y acciones)
-.dynamic-form-submit-btn
-  padding: 12px 18px
-
-  // Más padding vertical para mejor target táctil
-  border-radius: 8px
-  cursor: pointer
-  font-size: 1rem
-
-  // Un poco más grande en móvil
-  font-weight: 600
-  transition: all 0.2s ease
-  white-space: nowrap
-  line-height: 1.2
-  border: none
-
-  // ✅ Ocupa todo el ancho en móvil
-  @media (max-width: 767px)
+.dynamic-form-input
+    padding: 8px 12px
+    border: 1px solid color.adjust($border-color, $lightness: 10%)
+    border-radius: 8px
+    font-size: 1rem
+    box-sizing: border-box
     width: 100%
-
-/* 🛑 Estilo Primario (Guardar/Submit)
-.dynamic-form-submit-btn--primary
-  background-color: $primary-color
-  color: #fff
-
-  &:hover:not(:disabled)
-    background-color: color.adjust($primary-color, $lightness: -8%)
-    transform: translateY(-1px)
-    box-shadow: 0 2px 4px rgba($primary-color, 0.3)
-
-/* 🛑 Estilo Secundario (Cancelar/Acciones)
-.dynamic-form-submit-btn--secondary
-  background-color: transparent
-  color: $text-color
-  border: 1px solid $border-color
-  font-weight: 500
-
-  &:hover:not(:disabled)
-    background-color: $light-gray
-    border-color: $light-gray
+    transition: all 0.2s ease
+    background-color: $card-bg
     color: $text-color
-    transform: none
-    box-shadow: none
 
-/* 🛑 Estilo Deshabilitado
-.dynamic-form-submit-btn:disabled
-  background-color: $light-gray !important
-  color: #999 !important
-  cursor: not-allowed
-  opacity: 0.8
-  transform: none
-  box-shadow: none
-
-
-
-/* tablas
-
-.dynamic-form-table-group
-  /* Clase añadida en dynamicfield.tsx */
-  margin-top: 15px
-
-.dynamic-table-wrapper
-  width: 100%
-  overflow-x: auto
-  /* Permite el scroll horizontal en móvil si la tabla es ancha */
-  margin: 10px 0
-  /* Reducimos margen superior para que no se separe del label */
-  border: 1px solid #d1d5db
-  border-radius: 8px
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03)
-  background-color: #ffffff
-  display: flex
-  flex-direction: column
-  /* Aseguramos que la tabla y el botón de añadir estén juntos */
-
-.dynamic-table
-  width: 100%
-  border-collapse: collapse
-  font-size: 0.95rem
-  min-width: 600px
-  /* Asegura que la tabla no se colapse demasiado en móvil antes de hacer scroll */
-
-  th, td
-    padding: 8px 15px
-    text-align: left
-    border-bottom: 1px solid #c8ccd2
-    white-space: nowrap
-    /* Evita que el contenido de las celdas salte de línea antes del scroll */
-
-  th
-    background-color: #f9faff
-    color: #1f2937
-    font-weight: 600
-    border-top: 2px solid #3b82f6
-    /* Línea superior destacada */
-    text-transform: uppercase
-    font-size: 0.8rem
-    letter-spacing: 0.05em
-
-  tr:nth-child(even)
-    background-color: #f9faff
-
-  tr:hover
-    background-color: #f6f7f8
-    transition: background-color 0.2s
-
-  tr:last-child td
-    border-bottom: none
-
-  .empty-table-message
-    text-align: center
-    font-style: italic
-    color: #6c737d
-
-  .table-row-actions
-    width: 60px
-    padding: 0
-    text-align: center
-
-  .dynamic-table-cell-input
-    /* 🛑 Sobrescribe el estilo general .dynamic-form-input */
-    padding: 6px 8px
-    border-radius: 6px
-    font-size: 0.9rem
-    height: auto
-    line-height: 1.2
-    /* Asegura que no tenga el mismo box-shadow del input principal */
-    box-shadow: none
+    &:hover
+        border-color: $border-color
 
     &:focus
-      box-shadow: 0 0 0 1px #3b82f6
-      /* Sombra más discreta */
+        border-color: $primary-color
+        outline: none
+        box-shadow: 0 1px 0 0 $primary-color
 
-  .dynamic-table-remove-btn
+textarea.dynamic-form-input
+    resize: vertical
+    min-height: 100px
+
+// Estilos de checkbox y radio (consolidados)
+.dynamic-form-checkbox-group, .dynamic-form-radio-group .radio-label
+    display: flex
+    align-items: center
+    gap: 8px
+
+    input[type="checkbox"], input[type="radio"]
+        cursor: pointer
+        min-width: 16px
+        min-height: 16px
+        flex-shrink: 0
+
+    .checkbox-label, .radio-label
+        color: $text-color
+        cursor: pointer
+        font-weight: 500
+
+//=====================================================
+// 5. BOTONES DE ACCIÓN (CONSOLIDADOS)
+//=====================================================
+.dynamic-form-actions-wrapper
+    display: flex
+    justify-content: space-between
+    gap: 10px
+    margin-top: $gap-size * 1.5
+    padding-top: $gap-size
+    border-top: 1px solid color.adjust($border-color, $lightness: 10%)
+
+    .dynamic-form-submit-group
+        display: flex
+        justify-content: flex-end
+        gap: 10px
+        flex-grow: 1
+    
+    .dynamic-form-submit-btn
+        padding: 12px 18px
+        border-radius: 8px
+        cursor: pointer
+        font-size: 1rem
+        font-weight: 600
+        transition: all 0.2s ease
+        white-space: nowrap
+        line-height: 1.2
+        border: none
+
+        @media (max-width: 767px)
+            width: 100%
+        
+        // Estilo Deshabilitado (Aplíca a todos los botones)
+        &:disabled
+            background-color: $light-gray !important
+            color: #999 !important
+            cursor: not-allowed
+            opacity: 0.8
+            transform: none
+            box-shadow: none
+        
+    /* Estilo Primario (Guardar/Submit/Siguiente) */
+    .dynamic-form-submit-btn--primary
+        background-color: $primary-color
+        color: #fff
+
+        &:hover:not(:disabled)
+            background-color: color.adjust($primary-color, $lightness: -8%)
+            transform: translateY(-1px)
+            box-shadow: 0 2px 4px rgba($primary-color, 0.3)
+
+    /* 🛑 Estilo Secundario (Anterior/Cancelar/Acciones) - CORREGIDO PARA SER MÁS CLARO */
+    .dynamic-form-submit-btn--secondary
+        background-color: $white // Fondo blanco para mayor contraste
+        color: $text-color // Color de texto estándar
+        border: 1px solid $border-color
+        font-weight: 500
+
+        &:hover:not(:disabled)
+            background-color: $light-gray // Gris claro en hover
+            border-color: $light-gray
+            color: $text-color
+            transform: none
+            box-shadow: none
+
+    // ✅ RESPONSIVE: Apilamiento vertical en móvil
+    @media (max-width: 767px)
+        flex-direction: column
+
+        // Revertir el orden para que el botón primario esté abajo
+        .dynamic-form-submit-btn--primary
+            order: 2
+
+        .dynamic-form-submit-btn--secondary
+            order: 1
+
+//=====================================================
+// 6. ESTILOS DE TABLA DINÁMICA
+//=====================================================
+
+.dynamic-form-table-group
+    margin-top: $gap-size
+
+.dynamic-table-wrapper
+    width: 100%
+    overflow-x: auto
+    margin: 10px 0
+    border: 1px solid #d1d5db
+    border-radius: 8px
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03)
+    background-color: #ffffff
+    display: flex
+    flex-direction: column
+
+.dynamic-table
+    width: 100%
+    border-collapse: collapse
+    font-size: 0.95rem
+    min-width: 600px
+
+    th, td
+        padding: 8px 15px
+        text-align: left
+        border-bottom: 1px solid $table-border-color
+        white-space: nowrap 
+
+    th
+        background-color: $table-header-bg
+        color: $header-color
+        font-weight: 600
+        border-top: 2px solid $table-action-color
+        text-transform: uppercase
+        font-size: 0.8rem
+        letter-spacing: 0.05em
+
+    tr:nth-child(even)
+        background-color: #f9faff
+
+    tr:hover
+        background-color: #f6f7f8
+        transition: background-color 0.2s
+
+    tr:last-child td
+        border-bottom: none
+
+// ✅ ESTILOS PARA INPUTS DENTRO DE CELDAS (CONSOLIDADOS)
+.dynamic-table-cell-input
+    // Sobrescribe el estilo general .dynamic-form-input
+    padding: 6px 8px !important
+    border-radius: 6px !important
+    font-size: 0.9rem !important
+    height: auto !important
+    line-height: 1.2 !important
+    box-shadow: none !important
+    background-color: #ffffff !important
+    color: #1f2937 !important
+    border: 1px solid $table-border-color !important
+    
+    &:focus
+        box-shadow: 0 0 0 1px $table-action-color !important
+        border-color: $table-action-color !important
+        outline: none
+
+// Estilo específico para Textarea en celda
+.cell-textarea .dynamic-table-cell-input
+    resize: vertical
+    min-height: 30px
+    font-family: inherit
+
+// Estilo específico para Select en celda
+.cell-select .dynamic-table-cell-input
+    appearance: none
+    cursor: pointer
+    padding-right: 24px
+
+// Estilo para Checkbox en celda
+.cell-checkbox input[type="checkbox"]
+    width: 20px
+    height: 20px
+    cursor: pointer
+    border: 1px solid $table-border-color
+    border-radius: 4px
+    background-color: #ffffff
+    display: inline-block
+    position: relative
+    transition: all 0.2s ease
+    
+    // Check más visible
+    &::after
+        content: ""
+        position: absolute
+        top: 50%
+        left: 50%
+        width: 10px
+        height: 6px
+        border-left: 2px solid #ffffff
+        border-bottom: 2px solid #ffffff
+        transform: translate(-50%, -50%) rotate(-45deg)
+        opacity: 0
+        transition: opacity 0.2s ease
+
+    &:checked
+        background-color: $table-action-color
+        border-color: $table-action-color
+
+        &::after
+            opacity: 1
+
+// Botones de acción de fila y tabla
+.dynamic-table-remove-btn
     background: none
     border: none
     cursor: pointer
@@ -582,157 +415,112 @@ textarea.dynamic-form-input
     transition: transform 0.1s ease
 
     &:hover
-      transform: scale(1.1)
+        transform: scale(1.1)
 
-  .dynamic-table-add-btn
-    /* Estilo similar al botón primario general, pero más compacto para el contexto de tabla. */
+.dynamic-table-add-btn
     align-self: flex-start
-    /* Empuja a la izquierda */
     margin: 10px
-    /* Margen después de la tabla */
     padding: 8px 12px
     border-radius: 8px
     cursor: pointer
     font-size: 0.9rem
     font-weight: 600
     transition: all 0.2s ease
-    background-color: #3b82f6
+    background-color: $table-action-color
     color: #ffffff
-    border: 1px solid #3b82f6
+    border: 1px solid $table-action-color
 
     &:hover
-      background-color: #216be5
-      transform: translateY(-1px)
-      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3)
+        background-color: color.adjust($table-action-color, $lightness: -8%)
+        transform: translateY(-1px)
+        box-shadow: 0 2px 4px rgba($table-action-color, 0.3)
 
-// Estilos generales de inputs y celdas dentro de la tabla
-.dynamic-table-cell-input
-  padding: 6px 8px
-  border-radius: 6px
-  font-size: 0.9rem
-  height: auto
-  line-height: 1.2
-  box-shadow: none
 
-  &:focus
-    box-shadow: 0 0 0 1px #3b82f6
+//=====================================================
+// 7. ESTILOS DE PAGINACIÓN (NUEVO)
+//=====================================================
+.dynamic-table-pagination-controls
+    display: flex
+    justify-content: flex-end
+    align-items: center
+    padding: 10px
+    gap: 10px
+    border-top: 1px solid $table-border-color
+    background-color: $table-header-bg
+    border-bottom-left-radius: 8px
+    border-bottom-right-radius: 8px
+    font-size: 0.9rem
+    color: $text-color
 
-// Inputs de texto y número
-.dynamic-table-cell-input
-  padding: 6px 8px
-  border-radius: 6px
-  font-size: 0.9rem
-  height: auto
-  line-height: 1.2
-  box-shadow: none
-  background-color: #ffffff
-  color: #1f2937
-
-  &:focus
-    box-shadow: 0 0 0 1px #3b82f6
-
-// Textarea
-// Textarea
-.cell-textarea
-  @extend .dynamic-table-cell-input
-  resize: vertical
-  min-height: 30px
-  font-family: inherit
-  background-color: #ffffff
-  color: #000000
-  border: 1px solid #c8ccd2
-  transition: all 0.2s ease
-
-  &:focus
-    border-color: #3b82f6
-    box-shadow: 0 0 0 1px #3b82f6
-    outline: none
-
-// Select / Combobox
-.cell-select
-  @extend .dynamic-table-cell-input
-  appearance: none
-  border: 1px solid #c8ccd2
-  cursor: pointer
-  background-color: #ffffff
-  color: #000000
-  padding-right: 24px
-  transition: all 0.2s ease
-
-  &:focus
-    border-color: #3b82f6
-    box-shadow: 0 0 0 1px #3b82f6
-    outline: none
-
-// Checkbox más bonito
-.cell-checkbox
-  width: 20px
-  height: 20px
-  cursor: pointer
-  border: 1px solid #c8ccd2
-  border-radius: 4px
-  background-color: #ffffff
-  display: inline-block
-  position: relative
-  transition: all 0.2s ease
-
-  // Check más visible
-  &::after
-    content: ""
-    position: absolute
-    top: 50%
-    left: 50%
-    width: 10px
-    height: 6px
-    border-left: 2px solid #ffffff
-    border-bottom: 2px solid #ffffff
-    transform: translate(-50%, -50%) rotate(-45deg)
-    opacity: 0
-    transition: opacity 0.2s ease
-
-  &:checked
-    background-color: #3b82f6
-    border-color: #3b82f6
-
-    &::after
-      opacity: 1
-// Botón eliminar fila
-.dynamic-table-remove-btn
-  background: none
-  border: none
-  cursor: pointer
-  font-size: 1.2rem
-  padding: 0
-  margin: 0
-  line-height: 1
-  transition: transform 0.1s ease
-
-  &:hover
-    transform: scale(1.1)
-
-// Botón agregar fila
-.dynamic-table-add-btn
-  align-self: flex-start
-  margin: 10px
-  padding: 8px 12px
-  border-radius: 8px
-  cursor: pointer
-  font-size: 0.9rem
-  font-weight: 600
-  transition: all 0.2s ease
-  background-color: #3b82f6
-  color: #ffffff
-  border: 1px solid #3b82f6
-
-  &:hover
-    background-color: #216be5
-    transform: translateY(-1px)
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3)
+    button
+        @extend .dynamic-form-submit-btn--secondary
+        padding: 6px 10px
+        font-size: 0.8rem
+        border-radius: 6px
+        min-width: auto
+    
+    select
+        @extend .dynamic-form-input
+        padding: 6px 10px
+        width: auto
+        font-size: 0.9rem
+        height: auto
+        margin-left: 10px
 
 
 @media (min-width: 768px)
-  .dynamic-table
-    th, td
-      white-space: normal
-      padding: 12px 15px
+    .dynamic-table
+        th, td
+            white-space: normal
+            padding: 12px 15px
 
+.dynamic-table-pagination-controls
+    display: flex
+    justify-content: flex-end
+    align-items: center
+    padding: 10px
+    gap: 10px
+    border-top: 1px solid $table-border-color
+    background-color: $table-header-bg
+    border-bottom-left-radius: 8px
+    border-bottom-right-radius: 8px
+    font-size: 0.9rem
+    color: $text-color
+    
+    // 🛑 CORRECCIÓN CLAVE AQUÍ PARA LOS BOTONES DE PAGINACIÓN
+    button
+        // Extiende el estilo secundario, pero forzamos el fondo para que no se vea oscuro
+        @extend .dynamic-form-submit-btn--secondary
+        
+        padding: 6px 10px
+        font-size: 0.8rem
+        border-radius: 6px
+        min-width: auto
+        
+        // 🔥 Sobrescribir el estilo para que sean CLAROS (fondo blanco con borde)
+        background-color: $white !important // Usar fondo blanco
+        color: $text-color !important     // Texto oscuro
+
+        &:hover:not(:disabled)
+            background-color: $light-gray !important
+        
+        // Estilo cuando están deshabilitados (si heredan estilos oscuros globales)
+        &:disabled
+            background-color: #f1f1f1 !important // Gris muy claro para deshabilitado
+            color: #999 !important
+
+    
+    select
+        @extend .dynamic-form-input
+        padding: 6px 10px
+        width: auto
+        font-size: 0.9rem
+        height: auto
+        margin-left: 10px
+
+
+@media (min-width: 768px)
+    .dynamic-table
+        th, td
+            white-space: normal
+            padding: 12px 15px

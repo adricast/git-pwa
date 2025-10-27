@@ -1,4 +1,4 @@
-// usedynamicform.tsx (FINAL CON SOPORTE PARA TABLA Y VISIBILIDAD CONDICIONAL)
+// 📁 usedynamicform.tsx (FINAL CON SOPORTE PARA TABLA Y VISIBILIDAD CONDICIONAL)
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { FormEvent } from 'react'; 
@@ -23,11 +23,47 @@ const validateField = (field: FormField, value: any): boolean => {
     if (value === null || value === undefined) {
         return false;
     }
-
-    // VALIDACIÓN ESPECÍFICA PARA TABLA: Debe ser un array con al menos 1 elemento.
+    if (typeof value === 'string' && value.trim() === '') {
+        return false; // Bloquea si es una cadena vacía o solo espacios
+    }
+    // VALIDACIÓN ESPECÍFICA PARA TABLA: 
     if (field.type === 'table') {
-        // Podrías añadir validación profunda aquí si fuera necesario
-        return Array.isArray(value) && value.length > 0;
+        const documents = value as Array<Record<string, any>>;
+
+        // 1. Validar que el array no esté vacío (si es requerido)
+        if (!Array.isArray(documents) || documents.length === 0) {
+            return false;
+        }
+
+        // 2. VALIDACIÓN PARAMETRIZADA DE DUPLICIDAD: 
+        // Leemos la propiedad que debe ser definida en employformconfig.tsx (asumida)
+        const uniqueByField = (field as any).uniqueByField; 
+
+        if (uniqueByField) {
+            // Mapeamos los valores del campo especificado y filtramos vacíos
+            const fieldValues = documents.map(doc => doc[uniqueByField]).filter(val => val); 
+            const uniqueValues = new Set(fieldValues);
+            
+            // Si la cantidad de valores mapeados no es igual a la cantidad de valores únicos, hay duplicados.
+            if (fieldValues.length !== uniqueValues.size) {
+                console.error(`Validación fallida: El campo '${uniqueByField}' no puede repetirse en la tabla '${field.name}'.`);
+                return false; 
+            }
+        }
+        const requiredColumns = (field as any).columnsDefinition?.filter((col: any) => col.required) || [];
+        
+        const isInternalTableValid = documents.every(row => {
+            // Para cada fila, verificamos que todos los campos requeridos tengan un valor no vacío.
+            return requiredColumns.every((col: any) => {
+                const cellValue = row[col.name];
+                // Chequeo estricto de vacío para la celda
+                return cellValue !== null && 
+                       cellValue !== undefined && 
+                       String(cellValue).trim() !== '';
+            });
+        });
+        
+        return isInternalTableValid;
     }
 
     // VALIDACIÓN ESTÁNDAR para strings

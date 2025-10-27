@@ -15,7 +15,8 @@ export type {
     DynamicFormProviderProps,
     DynamicButtonProps,
     FormField,
-    FormSection
+    FormSection,
+    
 } from './types/form';
 
 // ===== LAYOUTS =====
@@ -51,6 +52,6 @@ export type { CardContainerProps } from './components/cardcontainer/interface';
 export type { ReusableTableProps } from './components/reusabletable/interface';
 export type { ReusableTableFilterProps } from './components/reusabletablefilter/interface'
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'
-
+export  { type DynamicTableProps } from './components/multisectiondinamicform/dynamictable'
 // ===== UTILITIES =====
 export { default as ColumnFilter } from './components/reusabletablefilter/columfilter';

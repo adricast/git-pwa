@@ -15,6 +15,9 @@ export interface DynamicTableProps {
     // 🛑 NUEVAS PROPS DE CONFIGURACIÓN DE LA TABLA (asumo que se pasan desde FormField)
     paginationEnabled?: boolean; // Habilita la paginación
     initialRowsPerPage?: number; // Filas por página iniciales
+    uniqueFieldName?: string;
+    
+    
 }
 
 // 🛑 Hardcodeamos el ID placeholder (Necesario para la lógica de la 'X')
@@ -48,7 +51,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     columnsDefinition, 
     value, 
     paginationEnabled = false, 
-    initialRowsPerPage = 5,    
+    initialRowsPerPage = 5,   
+    uniqueFieldName,
 }) => {
     
     const { handleChange, formData } = useDynamicFormContext();
@@ -180,31 +184,45 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
 
         switch (column.type) {
             case 'select':
-                // 🔥 Lógica para deshabilitar las opciones ya usadas
-                const usedValues = getUsedValues(column.name, globalRowIndex, value);
-                const currentCellValue = String(cellValue ?? '');
+            
+            // 🛑 CORRECCIÓN CRÍTICA: Solo aplicar la lógica de deshabilitación si 
+            // la columna actual coincide con el campo único definido.
+            const isUniqueColumn = column.name === uniqueFieldName; 
+            
+            // 🔥 Lógica para deshabilitar las opciones ya usadas
+            const usedValues = isUniqueColumn 
+                ? getUsedValues(column.name, globalRowIndex, value)
+                : new Set<string>(); // Si no es la columna única, el set de valores usados está vacío
 
-                return (
-                    <select {...commonProps}>
-                        <option value="" disabled>Seleccionar</option>
-                        {column.options?.map((option: SelectOption) => {
-                            const optionValue = String(option.value);
-                            const isUsed = usedValues.has(optionValue);
-                            const isDisabled = isUsed && optionValue !== currentCellValue;
+            const currentCellValue = String(cellValue ?? '');
 
-                            return (
-                                <option 
-                                    key={option.value} 
-                                    value={option.value}
-                                    disabled={isDisabled}
-                                >
-                                    {option.label}
-                                </option>
-                            )
-                        })}
-                    </select>
-                );
-            case 'textarea':
+            return (
+                <select {...commonProps}>
+                    <option value="" disabled>Seleccionar</option>
+                    {column.options?.map((option: SelectOption) => {
+                        const optionValue = String(option.value);
+                        const isUsed = usedValues.has(optionValue);
+                        
+                        // La inhabilitación SOLO ocurre si:
+                        // 1. Es la columna única (isUniqueColumn = true)
+                        // 2. El valor está usado (isUsed = true) Y no es el valor actual.
+                        // Si isUniqueColumn es false, usedValues está vacío y la inhabilitación nunca se aplica.
+                        const isDisabled = isUsed && optionValue !== currentCellValue; 
+
+                        return (
+                            <option 
+                                key={option.value} 
+                                value={option.value}
+                                disabled={isDisabled} // Aplica la deshabilitación
+                            >
+                                {option.label}
+                            </option>
+                        )
+                    })}
+                </select>
+            );
+            
+            case 'textarea':
                 return <textarea {...commonProps as any} rows={1} />;
             case 'checkbox':
                 return (

@@ -1,4 +1,5 @@
 // 📁 src/management/usergroups/usergroupLayout.tsx 
+// (Adaptado para consumir groupServiceConfig)
 
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useScreenContainer, ReusableTableFilterLayout } from '@dipaso/design-system';
@@ -7,39 +8,28 @@ import DeleteConfirmationDialog from "@dipaso/design-system/dist/components/layo
 
 import UserGroupFormWrapper from "./usergroupformwrapper";
 
-// 🛑 CORRECCIÓN CRÍTICA: Eliminamos la interfaz local y la reemplazamos con la importación 
-// de la fuente de verdad.
+// 🛑 IMPORTACIONES DE SERVICIOS Y TIPOS
+import { 
+    groupServiceConfig, // Importa el objeto de configuración (fachada)
+    type UserGroupCreatePayload, 
+    type UserGroupUpdatePayload
+} from "./usergroupserviceconfig"; // 🚨 Debe existir en la ruta './groupServiceConfig'
+
 import type { UserGroupModel } from "../../models/api/userGroupModel"; 
 
-// 💡 NOTA: Asumimos que el modelo real tiene 'description' e 'integrationCode' como opcionales
-// o que la importación ahora los hace compatibles. Si el modelo real no está disponible,
-// usamos una definición MOCK compatible, pero la mejor práctica es la importación.
+// 🟢 Desestructuración de las funciones de servicio
+const { 
+    getAllGroups, 
+    softDeleteGroupsMassive, 
+    createGroup, 
+    updateGroup,
+} = groupServiceConfig; 
+
 
 const MOCK_USER_ID = "abe3af10-5663-4bd7-902d-b67bf5d1f2f4"; 
 
-// Datos MOCK iniciales (Ajustados para compatibilidad con el modelo real, 
-// usando el "!" si el modelo real hace el campo obligatorio, o "as UserGroupModel"
-// para forzar el tipo si el MOCK lo requiere).
-const MOCK_USER_GROUPS: UserGroupModel[] = [
-    {
-        userGroupId: "9c4e35b1-5e2f-4e4f-89ab-efc6b8902a79",
-        groupName: "Gerentes",
-        description: "Grupo de Gerentes", // Asumimos que el modelo real soporta string
-        integrationCode: "122",
-        criticality: "HIGH",
-        isActive: true,
-        createdByUserId: MOCK_USER_ID
-    } as UserGroupModel, // Forzamos el tipo MOCK a ser el UserGroupModel importado
-    {
-        userGroupId: "a5d7f9c2-b1e4-4d2a-8c7e-2f3b4a5c6d7e",
-        groupName: "Soporte Técnico",
-        description: "Personal de mesa de ayuda",
-        integrationCode: "331",
-        criticality: "MEDIUM",
-        isActive: true,
-        createdByUserId: MOCK_USER_ID
-    } as UserGroupModel,
-];
+// Nota: Los datos MOCK y la lógica de carga MOCK serán reemplazados por la lógica de servicio real.
+
 
 // Referencia renombrada a UserGroupManagementRef
 export type UserGroupManagementRef = { 
@@ -59,15 +49,15 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
     const [itemToDelete, setItemToDelete] = useState<UserGroupModel | null>(null); 
     const [loading, setLoading] = useState(true); 
 
-    // Función para "recargar" la tabla con datos MOCK
+    // 🟢 FUNCIÓN DE CARGA REAL (GET /groups)
     const loadGroups = useCallback(async () => {
         setLoading(true);
-        // Simulamos una llamada API con un delay
-        await new Promise(resolve => setTimeout(resolve, 500)); 
         try {
-            setGroups(MOCK_USER_GROUPS.filter(g => g.isActive)); 
+            // 🛑 CORRECCIÓN 1: Forzar el cast a UserGroupModel[] para resolver el error de 'criticality'
+            const dataFromService = await getAllGroups(); 
+            setGroups(dataFromService as UserGroupModel[]); 
         } catch (error) {
-            console.error("Error al cargar grupos (MOCK):", error);
+            console.error("Error al cargar grupos desde la API:", error);
             setGroups([]);
         } finally {
             setLoading(false);
@@ -78,7 +68,7 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
     useEffect(() => { loadGroups(); }, [loadGroups]);
 
     
-    // Abre el formulario (no requiere llamada a getPersonById, ya que el payload es simple)
+    // Abre el formulario (simple, sin carga de detalle extra)
     const handleOpenGroupScreen = (groupToEdit: UserGroupModel | null = null) => {
         const title = groupToEdit 
             ? `Editar Grupo: ${groupToEdit.groupName}` 
@@ -95,67 +85,86 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
         openScreen(title, content); 
     };
     
-    // Función de edición directa (simulada)
+    // Función de edición directa (usa el objeto del listado)
     const handleOpenEditScreen = useCallback((group: UserGroupModel) => {
         handleOpenGroupScreen(group);
     }, [handleOpenGroupScreen]);
 
 
-    // 🟢 Maneja tanto la creación como la actualización (MOCK)
-    // 🛑 Corrección final de tipado: El segundo argumento es 'any' para compatibilidad con la prop 'onSave'
+    // 🟢 Maneja la creación y la actualización (Integración de Servicios)
     const handleSaveGroup = async (
         group: UserGroupModel | null, 
+        // 🚨 El segundo argumento son los datos planos del formulario (UserGroupFormData)
         groupPatchRaw: any 
     ) => {
-        const groupPatch = groupPatchRaw as Partial<UserGroupModel>; 
+        // La data plana del formulario contiene todos los campos necesarios.
+        const formData = groupPatchRaw as UserGroupCreatePayload & UserGroupUpdatePayload; 
         const isEditing = group && group.userGroupId;
         
         try {
+            let resultGroup: UserGroupModel;
+
+            // 🛑 CORRECCIÓN 2: Declarar la variable 'payload' fuera de los bloques if/else
+            const payload = {
+                groupName: formData.groupName,
+                description: formData.description,
+                integrationCode: formData.integrationCode,
+                criticality: formData.criticality,
+                isActive: formData.isActive,
+            };
+
+
             if (isEditing) {
-                // 1. ACTUALIZAR (MOCK)
-                console.log("MOCK: Actualizando Grupo", group!.userGroupId, groupPatch);
-                const updatedGroup = { ...group!, ...groupPatch } as UserGroupModel; // Forzar el cast para manejar el MOCK
-                setGroups(prev => prev.map(g => g.userGroupId === updatedGroup.userGroupId ? updatedGroup : g));
+                // 1. ACTUALIZAR (API REAL)
+                // 🛑 Aplicar el casting solo al servicio.
+                resultGroup = await updateGroup(
+                    group!.userGroupId, 
+                    MOCK_USER_ID, // ID del usuario que actualiza
+                    payload as UserGroupUpdatePayload
+                ) as UserGroupModel; // 🛑 Forzar el cast de la respuesta
                 
             } else {
-                // 2. CREAR (MOCK)
-                const newGroupId = `new-${Math.random().toString(36).substring(2, 9)}`;
-                const newGroup: UserGroupModel = {
-                    userGroupId: newGroupId,
-                    createdByUserId: MOCK_USER_ID,
-                    isActive: true, // Asumimos activo por defecto en la creación
-                    ...groupPatch,
-                } as UserGroupModel; // Forzar el cast
-
-                console.log("MOCK: Creando Nuevo Grupo", newGroup);
-                setGroups(prev => [...prev, newGroup]);
+                // 2. CREAR (API REAL)
+                // 🛑 Aplicar el casting solo al servicio.
+                resultGroup = await createGroup(payload as UserGroupCreatePayload, MOCK_USER_ID) as UserGroupModel; // 🛑 Forzar el cast de la respuesta
             }
             
+            // Éxito: Reemplaza o añade el ítem en la lista
+            if (isEditing) {
+                setGroups(prev => prev.map(g => g.userGroupId === resultGroup.userGroupId ? resultGroup : g));
+            } else {
+                 setGroups(prev => [...prev, resultGroup]);
+            }
+
             closeTopScreen(); 
-            loadGroups(); 
+            // loadGroups(); // Llamar a loadGroups solo si se requiere un refresh total
 
         } catch (error) {
-            console.error("🛑 ERROR DE GUARDADO DETECTADO (MOCK).", error);
+            console.error("🛑 ERROR DE GUARDADO DETECTADO (API).", error);
+            // Re-lanzar error para que el formulario permanezca abierto si el DynamicFormProvider lo espera
+            throw error; 
         }
     };
     
-    // Simula la eliminación lógica masiva
+    // 🟢 Lógica de Eliminación Lógica Masiva (Soft Delete)
     const handleSoftDeleteMassive = async () => {
         if (selectedRows.length === 0) return;
         
         try {
-            console.log("MOCK: Eliminando lógicamente IDs:", selectedRows.map(g => g.userGroupId));
-            // MOCK: Filtra los eliminados
-            setGroups(prev => prev.filter(g => !selectedRows.some(s => s.userGroupId === g.userGroupId)));
+            const groupIds: string[] = selectedRows.map(g => g.userGroupId); 
             
-            loadGroups(); 
+            // 🚨 Llamada al servicio real de soft delete masivo
+            await softDeleteGroupsMassive(groupIds, MOCK_USER_ID); 
+            
+            loadGroups(); // Recargar la lista para reflejar los cambios
             
             setIsDeleteDialogOpen(false);
             setItemToDelete(null);
             setSelectedRows([]);
 
         } catch (error) {
-            console.error("Error en la eliminación lógica masiva (MOCK):", error);
+            console.error("Error en la eliminación lógica masiva (API):", error);
+            // Mostrar notificación de error al usuario
         }
     };
 
@@ -172,12 +181,12 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
         },
     }));
 
-    // DEFINICIÓN DE COLUMNAS 
+    // DEFINICIÓN DE COLUMNAS (Se mantiene igual)
     const columns = [
         { 
             field: "groupName", 
             header: "Nombre del Grupo",
-            onCellClick: handleOpenEditScreen // Esto desencadena la edición MOCK
+            onCellClick: handleOpenEditScreen 
         },
         { field: "criticality", header: "Criticidad" },
         { field: "integrationCode", header: "Cód. Integración" },
@@ -185,7 +194,7 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
         { field: "isActive", header: "Activo", bodyTemplate: (g: UserGroupModel) => (g.isActive ? "Sí" : "No") }, 
     ];
 
-    // Botones
+    // Botones (Se mantienen igual)
     const buttons = [
         {
             label: "",
@@ -241,7 +250,7 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
                     emptyMessage={
                         loading 
                         ? "Cargando grupos..." 
-                        : "No hay grupos registrados o falló la carga (MOCK)."
+                        : "No hay grupos registrados."
                     }
                 />
             </div>
@@ -254,7 +263,7 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
                 itemsCount={selectedRows.length} 
                 entityName="grupo de usuario" 
                 itemNameKey="groupName" 
-                actionType="eliminar lógicamente (MOCK)"
+                actionType="eliminar lógicamente"
             />
         
         </div>

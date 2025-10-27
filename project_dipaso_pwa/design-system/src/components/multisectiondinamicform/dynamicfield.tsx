@@ -21,12 +21,12 @@ interface DynamicFieldProps {
 const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
     
     // 1. Consumir el Contexto y obtener datos
-    const { formData, handleChange } = useDynamicFormContext();
-    const currentValue = formData[field.name];
-    
-    // [Avanzado] Lógica de visibilidad condicional
-    const isVisible = field.isVisible ? field.isVisible(formData) : true;
-    if (!isVisible) return null;
+         const { formData, handleChange } = useDynamicFormContext();
+         const currentValue = formData[field.name];
+         
+         // [Avanzado] Lógica de visibilidad condicional
+         const isVisible = field.isVisible ? field.isVisible(formData) : true;
+ if (!isVisible) return null;
 
     // 2. Handlers y Props Comunes
     
@@ -52,19 +52,19 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
     
     // Props comunes para la mayoría de los inputs
     const commonProps: Partial<InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>> = {
-        id: field.name,
-        name: field.name,
-        placeholder: field.placeholder || field.label,
-        required: field.required || false,
-        className: "dynamic-form-input", 
-        ...field.inputProps, 
+    id: field.name,
+    name: field.name,
+    placeholder: field.placeholder || field.label,
+    required: field.required || false,
+    className: "dynamic-form-input", 
+    ...field.inputProps, 
     };
 
-    // 3. Renderizado Condicional por Tipo de Campo
+ // 3. Renderizado Condicional por Tipo de Campo
     const renderInput = () => {
         switch (field.type) {
-            case 'select':
-                return (
+        case 'select':
+    return (
                     <select 
                         {...commonProps} 
                         value={currentValue ?? ''} 

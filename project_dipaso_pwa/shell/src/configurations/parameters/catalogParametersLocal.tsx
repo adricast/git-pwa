@@ -16,6 +16,7 @@ export const CATALOG_NAMES = {
     KEYBOARD_SHORTCUTS: 'keyboard_shortcuts',
     CURRENCIES: 'currencies',
     TAX_TYPES: 'tax_types',
+    ADDRESSES: 'address_types',
 } as const;
 
 // ----------------------------------------------------------------------
@@ -43,6 +44,7 @@ export const CATALOG_ID_MAP = Object.freeze({
     '28a6104b-92fa-4f5d-afdd-56bbf7b50fd5': CATALOG_NAMES.KEYBOARD_SHORTCUTS,
     'f5fb62bf-21a7-428e-95dd-093a0ef8ee4a': CATALOG_NAMES.CURRENCIES,
     '1af11df3-c24c-46c9-8c69-186c16b1c3ce': CATALOG_NAMES.TAX_TYPES,
+    'b1234567-89ab-cdef-0123-456789abcdef': CATALOG_NAMES.ADDRESSES,
 });
 
 /**

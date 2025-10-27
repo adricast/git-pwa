@@ -17,6 +17,8 @@ export const CATALOG_NAMES = {
     KEYBOARD_SHORTCUTS: 'keyboard_shortcuts',
     //CURRENCIES: 'currencies',
     TAX_TYPES: 'tax_types',
+
+    ADDRESSTYPE: 'address_types',
 } as const;
 
 // ----------------------------------------------------------------------

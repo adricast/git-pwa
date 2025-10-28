@@ -712,3 +712,28 @@ $selected-bg-soft: color.adjust($primary-color, $lightness: 45%) // Fondo suave 
 .tree-node input[type="checkbox"]:checked ~ .node-content label
   font-weight: $font-weight-semibold
   color: color.adjust($primary-color, $lightness: -10%)
+
+  //=====================================================
+// 🛑 NUEVO: 9. ESTILOS DE INPUT DE BÚSQUEDA DEL ÁRBOL
+//=====================================================
+
+.tree-search-input
+    // 🛑 Hereda propiedades base de tu input estándar
+    @extend .dynamic-form-input 
+    
+    // Anulación de margen y padding para compacidad en el contenedor del árbol
+    margin-bottom: $spacing-sm !important 
+    padding: 8px 12px !important
+    font-size: $font-size-base !important
+    height: auto !important
+    
+    
+    // Asegura que no haya fondos oscuros ni colores oscuros en focus
+    background-color: $white !important
+    color: $text-color !important
+    
+    // Estilo de foco (se mantiene el color primario de tu sistema)
+    &:focus
+        border-color: $primary-color !important
+        outline: none !important
+        box-shadow: 0 0 0 1px $primary-color !important

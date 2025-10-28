@@ -117,11 +117,7 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
             if (isEditing) {
                 // 1. ACTUALIZAR (API REAL)
                 // 🛑 Aplicar el casting solo al servicio.
-                resultGroup = await updateGroup(
-                    group!.userGroupId, 
-                    MOCK_USER_ID, // ID del usuario que actualiza
-                    payload as UserGroupUpdatePayload
-                ) as UserGroupModel; // 🛑 Forzar el cast de la respuesta
+                resultGroup = await updateGroup(group!.userGroupId, MOCK_USER_ID,payload as UserGroupUpdatePayload ) as UserGroupModel; // 🛑 Forzar el cast de la respuesta
                 
             } else {
                 // 2. CREAR (API REAL)
@@ -130,13 +126,17 @@ const UserGroupManagement = forwardRef<UserGroupManagementRef>((_, ref) => {
             }
             
             // Éxito: Reemplaza o añade el ítem en la lista
+           
+            //if (isEditing) {
+            //    setGroups(prev => prev.map(g => g.userGroupId === resultGroup.userGroupId ? resultGroup : g));
+            //} else {
+            //    setGroups(prev => [...prev, resultGroup]);
+            //}
             if (isEditing) {
-                setGroups(prev => prev.map(g => g.userGroupId === resultGroup.userGroupId ? resultGroup : g));
-            } else {
-                 setGroups(prev => [...prev, resultGroup]);
+                closeTopScreen(); 
             }
 
-            closeTopScreen(); 
+           return resultGroup;
             // loadGroups(); // Llamar a loadGroups solo si se requiere un refresh total
 
         } catch (error) {

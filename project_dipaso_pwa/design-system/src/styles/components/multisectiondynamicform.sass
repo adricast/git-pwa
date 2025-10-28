@@ -524,3 +524,191 @@ textarea.dynamic-form-input
         th, td
             white-space: normal
             padding: 12px 15px
+
+//=====================================================
+// 8. ESTILOS DE SELECTOR DE ÁRBOL (DynamicTreeSelect)
+//=====================================================
+
+// 🛑 Variable local para el hover sutil
+$tree-hover-bg: color.adjust($light-gray, $lightness: -2%);
+
+//=====================================================
+// 8. ESTILOS DE SELECTOR DE ÁRBOL (DynamicTreeSelect)
+//=====================================================
+
+// 🛑 Variable local para el hover sutil (usando $light-gray de tus variables)
+$tree-hover-bg: color.adjust($light-gray, $lightness: -2%)
+
+//=====================================================
+// 8. ESTILOS DE SELECTOR DE ÁRBOL (DynamicTreeSelect)
+//=====================================================
+
+// 🛑 NUEVAS VARIABLES DERIVADAS
+$tree-hover-bg: color.adjust($light-gray, $lightness: -2%)
+$selected-bg-soft: color.adjust($primary-color, $lightness: 45%) // Fondo suave del primario (ej: lila muy claro)
+
+//=====================================================
+// 8. ESTILOS DE SELECTOR DE ÁRBOL (DynamicTreeSelect)
+//=====================================================
+
+.dynamic-tree-select-wrapper
+  width: 100%
+  max-height: 400px
+  overflow-y: auto
+  padding: $spacing-sm
+  border: 1px solid $border-color
+  border-radius: $border-radius-md
+  background-color: $white
+  box-shadow: $shadow-base
+  box-sizing: border-box
+
+.tree-node
+  display: flex
+  flex-direction: column
+  margin-top: 2px
+
+  .node-content
+    display: flex
+    align-items: center
+    padding: 3px $spacing-sm 3px 0
+    cursor: pointer
+    user-select: none
+    transition: background-color 0.15s ease
+    min-height: $min-touch-target
+    border-radius: 4px
+
+    // 🛑 RESALTADO DE FILA SELECCIONADA
+    .tree-node input[type="checkbox"]:checked ~ &
+      background-color: $selected-bg-soft
+
+    .tree-toggle-placeholder
+      width: 25px
+      height: 1px
+
+    &:hover
+      background-color: $tree-hover-bg
+
+    label
+      margin-bottom: 0
+      font-weight: $font-weight-medium
+      color: $text-color
+      cursor: pointer
+      flex-grow: 1
+      line-height: $line-height-normal
+
+// -----------------------------------------------------
+// 🛑 ESTILOS DE LOS CHECKBOXES PERSONALIZADOS
+// -----------------------------------------------------
+.tree-node input[type="checkbox"]
+  min-width: 18px
+  min-height: 18px
+  width: 18px
+  height: 18px
+  margin-right: 4px
+  appearance: none
+  flex-shrink: 0
+  cursor: pointer
+  position: relative
+  
+  // Base: Borde gris claro, fondo blanco
+  border: 1px solid $border-color !important
+  background-color: $white !important
+  border-radius: 3px
+
+  // Estado CHECKED
+  &:checked
+    background-color: $primary-color !important
+    border-color: $primary-color !important
+
+    &::after
+      content: ''
+      position: absolute
+      top: 50%
+      left: 50%
+      opacity: 1
+      transform: translate(-50%, -50%) rotate(45deg)
+      border: 2px solid $white
+      border-top: none
+      border-left: none
+      width: 5px
+      height: 10px
+
+  // Estado INDETERMINADO (parcial)
+  &:indeterminate
+    background-color: $primary-color !important
+    border-color: $primary-color !important
+
+    &::before
+      content: ''
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+      width: 10px
+      height: 2px
+      background-color: $white
+      border: none
+      border-radius: 1px
+
+// -----------------------------------------------------
+// 🛑 ESTILOS ESPECÍFICOS PARA EL BOTÓN DE COLAPSO (Toggle)
+// -----------------------------------------------------
+
+.tree-toggle-button
+  // 🛑 Diseño Plano y Compacto
+  background: none !important
+  border: 1px solid transparent !important // Borde transparente para efecto hover
+  padding: 0 !important // Padding nulo para que sea solo el ícono
+  margin-right: 5px !important
+  width: 25px // Espacio fijo para el ícono y el hover
+  height: 25px
+  border-radius: $border-radius-sm // Bordes cuadrados suaves
+  cursor: pointer !important
+  font-size: $font-size-sm !important // El texto/ícono es más pequeño
+  color: $text-color-light !important
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-shrink: 0
+  transition: all 0.2s ease
+
+  &:hover
+    background-color: $tree-hover-bg // Fondo sutil en hover
+    border-color: color.adjust($border-color, $lightness: -5%) // Borde en hover
+    color: $primary-color // Ícono primario en hover
+
+// Rotación del ícono de expansión
+.tree-node.is-expanded > .node-content > .tree-toggle-button
+  transform: rotate(90deg) // Rotar 90 grados al expandirse
+
+// -----------------------------------------------------
+// 🛑 ESTILOS VISUALES POR NIVEL/TIPO (Jerarquía)
+// -----------------------------------------------------
+
+.tree-level-0
+  margin-left: 0 !important
+  & > .node-content
+    border-bottom: 1px solid color.adjust($border-color, $lightness: 5%)
+    padding-bottom: 4px
+    padding-top: 8px
+  & > .node-content label
+    font-weight: $font-weight-bold
+    font-size: $font-size-md
+    color: $header-color
+
+.tree-level-1
+  & > .node-content label
+    font-weight: $font-weight-semibold
+    font-size: $font-size-base
+    color: $header-color
+
+.tree-level-2, .tree-level-3
+  & > .node-content label
+    font-weight: $font-weight-normal
+    font-size: $font-size-sm
+    color: $text-color
+
+// Resaltado del texto del nodo seleccionado
+.tree-node input[type="checkbox"]:checked ~ .node-content label
+  font-weight: $font-weight-semibold
+  color: color.adjust($primary-color, $lightness: -10%)

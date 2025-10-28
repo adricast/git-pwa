@@ -9,6 +9,7 @@ import type { FormField } from './interface'; // Ajusta la ruta
 import { useDynamicFormContext } from './dynamicformContext'; // Ajusta la ruta
 // 🛑 IMPORTAR EL NUEVO COMPONENTE DE TABLA
 import DynamicTable from './dynamictable'; // Asumimos esta ruta para el componente de tabla
+import DynamicTreeSelect from './dynamictreeselect'; // <--- 🛑 NUEVO IMPORT
 
 interface DynamicFieldProps {
     field: FormField;
@@ -150,7 +151,17 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
                         initialRowsPerPage={field.initialRowsPerPage}
                     />
                 );
+            case 'tree': // 🛑 NUEVO CASO 'tree'
+                if (!field.treeNodes) return null;
 
+                return (
+                    <DynamicTreeSelect
+                        fieldName={field.name}
+                        treeNodes={field.treeNodes}
+                        // Aseguramos que el valor sea un array de strings (el tipo de dato esperado)
+                        value={currentValue as string[] || []} 
+                    />
+                );
             default: // text, email, password, number, date
                 return (
                     <input 

@@ -17,7 +17,11 @@ import {
 
 import type { UserGroupModel } from "../../models/api/userGroupModel"; 
 
-// 🟢 Desestructuración de las funciones de servicio
+
+//*************************** */
+//**   LLAMA DEL SERVICIO    */
+//***************************/
+
 const { 
     getAllGroups, 
     softDeleteGroupsMassive, 

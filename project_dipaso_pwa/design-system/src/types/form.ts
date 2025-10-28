@@ -125,5 +125,12 @@ export interface DynamicFormContextData {
     isCurrentStepValid?: boolean;
     isFormValid: boolean;
 }
+export interface TreeNode {
+    id: string; // UUID o ID único del elemento
+    label: string; // Texto a mostrar
+    children?: TreeNode[]; // Sub-elementos anidados
+    type: 'module' | 'option' | 'action'; // Tipo de nodo (para estilos/lógica)
+    // Otros metadatos necesarios...
+}
 
 export {};

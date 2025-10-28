@@ -33,6 +33,7 @@ export type FieldType =
         | "custom"
         | "table"
         | "action"
+        | "tree"
         
         ;        // Para inyectar componentes React
 
@@ -83,6 +84,8 @@ export interface FormField {
         helperText?: string; 
         errorText?: string; 
 
+        treeNodes?: TreeNode[];
+
     // 🔥 PROPIEDADES DE PAGINACIÓN AGREGADAS/CONFIRMADAS
         paginationEnabled?: boolean; // Habilita/Deshabilita la paginación (Default: false)
         initialRowsPerPage?: number; // Número de filas por defecto (Default: 5)
@@ -95,6 +98,15 @@ export interface FormSection {
         columns: 1 | 2 | 3 | 4; // Define el layout: 1, 2, 3 o 4 columnas
         fields: FormField[]; // Los campos que van en esta sección
         hideTitleInSteps?: boolean; 
+}
+
+
+export interface TreeNode {
+    id: string; // UUID o ID único del elemento (Ej: 'module-iam-uuid', 'action-create-uuid')
+    label: string; // Texto a mostrar (Ej: 'IAM (Módulo)', 'Crear (Acción)')
+    children?: TreeNode[]; // Sub-elementos anidados
+    type: 'module' | 'option' | 'action'; // Tipo de nodo para estilos/lógica (Opcional)
+    // Otros metadatos necesarios...
 }
 
 // ----------------------------------------------

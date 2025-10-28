@@ -14,6 +14,8 @@ interface UseDynamicFormHookProps {
     onSubmit: (data: Record<string, any>) => void;
 }
 
+
+
 // 🛑 Función auxiliar para validar cualquier tipo de campo requerido
 const validateField = (field: FormField, value: any): boolean => {
     // Si no es requerido, es válido.
@@ -26,6 +28,7 @@ const validateField = (field: FormField, value: any): boolean => {
     if (typeof value === 'string' && value.trim() === '') {
         return false; // Bloquea si es una cadena vacía o solo espacios
     }
+    
     // VALIDACIÓN ESPECÍFICA PARA TABLA: 
     if (field.type === 'table') {
         const documents = value as Array<Record<string, any>>;
@@ -65,7 +68,11 @@ const validateField = (field: FormField, value: any): boolean => {
         
         return isInternalTableValid;
     }
-
+    if (field.type === 'tree') {
+        const selectedIds = value as string[];
+        // Si es requerido, debe tener al menos un ID seleccionado
+        return Array.isArray(selectedIds) && selectedIds.length > 0;
+    }
     // VALIDACIÓN ESTÁNDAR para strings
     if (typeof value === 'string' && value.trim() === '') {
         return false;
@@ -73,6 +80,7 @@ const validateField = (field: FormField, value: any): boolean => {
     
     return true;
 };
+
 
 
 /**
@@ -89,9 +97,10 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
                 if (field.type === 'checkbox') {
                     initialState[field.name] = initialData[field.name] ?? false;
                 } 
-                else if (field.type === 'table') { 
+              
+                else if (field.type === 'table' || field.type === 'tree') { // <--- 🛑 AÑADIR 'tree'
                     initialState[field.name] = initialData[field.name] ?? [];
-                } 
+                }
                 else {
                     initialState[field.name] = initialData[field.name] ?? '';
                 }
@@ -119,7 +128,7 @@ export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDyna
                     updatedState[field.name] = initialData[field.name];
                 } else if (field.type === 'checkbox') {
                     updatedState[field.name] = false;
-                } else if (field.type === 'table') { 
+                } else if (field.type === 'table' || field.type === 'tree') { 
                     updatedState[field.name] = []; 
                 } else {
                     updatedState[field.name] = '';

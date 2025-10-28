@@ -51,7 +51,9 @@ const AddEditEmployContent: React.FC<{
     employ, 
     onSave, 
     onClose,
-    isSinglePageMode }) => {
+    isSinglePageMode 
+
+}) => {
             
         // 1. Preparamos los datos iniciales para el formulario dinamico
         const initialData: Partial<EmployFormData> = useMemo(() => {

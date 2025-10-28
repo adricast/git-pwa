@@ -16,6 +16,7 @@ export const networkState = {
 };
 
 const BACKEND_URL = "http://127.0.0.1:5000/api";
+//const BACKEND_URL = "https://az3c9e55ka.execute-api.us-east-1.amazonaws.com/dev";
 const PING_URL = `${BACKEND_URL}/ping`;
 
 /**

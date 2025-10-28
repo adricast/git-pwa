@@ -24,17 +24,14 @@ interface UserGroupFormData {
  */
 const AddEditUserGroupContent: React.FC<{
     userGroup: UserGroupModel | null; 
-    // Usamos 'any' para simular el guardado ya que los servicios no están definidos
-    onSave: (group: UserGroupModel | null, data: Partial<UserGroupModel>) => Promise<void>; 
+    onSave: (group: UserGroupModel | null, data: Partial<UserGroupModel> ) => Promise<void>;
     onClose: () => void;
-    // 🔥 CORRECCIÓN 1: Añadir la propiedad a las props
-    isSinglePageMode?: boolean;
+    isSinglePageMode: boolean;
 }> = ({ 
     userGroup, 
     onSave, 
     onClose,
-    // 🔥 CORRECCIÓN 2: Desestructurar la propiedad y darle un valor por defecto
-    isSinglePageMode = false,
+    isSinglePageMode,
 }) => {
             
     // 1. Preparamos los datos iniciales para el formulario dinamico
@@ -89,7 +86,13 @@ const AddEditUserGroupContent: React.FC<{
         }
     ]), [onClose]);
 
-
+    // 🛑 CORRECCIÓN: Definición del texto del botón principal
+    const buttonText = userGroup 
+        ? "Actualizar Grupo" 
+        : isSinglePageMode 
+            ? "Crear Grupo" // Si el Wrapper lo pasa como true (ej: si se salta el Paso 2)
+            : "Siguiente Paso"; // Modo Stepper (Creación)
+ 
     return (
         <div className="usergroup-form-wrapper">
             <DynamicFormProviderSections
@@ -97,11 +100,11 @@ const AddEditUserGroupContent: React.FC<{
                 sections={userGroupFormSections as FormSection[]} 
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
-                buttonText={userGroup ? "Actualizar Grupo" : "Crear Grupo"}
+                // 🛑 USAMOS LA LÓGICA DE buttonText CORREGIDA
+                buttonText={buttonText} 
+                singlePage={isSinglePageMode}
                 className="usergroup-form" 
-                actions={formActions} 
-                // 🔥 CORRECCIÓN 3: Pasamos la variable desestructurada (ahora definida)
-                singlePage={isSinglePageMode} 
+                actions={formActions}            
             />
         </div>
     );

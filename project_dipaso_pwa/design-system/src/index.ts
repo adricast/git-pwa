@@ -16,7 +16,7 @@ export type {
     DynamicButtonProps,
     FormField,
     FormSection,
-    
+    TreeNode
 } from './types/form';
 
 // ===== LAYOUTS =====
@@ -53,5 +53,6 @@ export type { ReusableTableProps } from './components/reusabletable/interface';
 export type { ReusableTableFilterProps } from './components/reusabletablefilter/interface'
 export type { ScreenContainerContextProps } from './components/screencontainer/interface'
 export  { type DynamicTableProps } from './components/multisectiondinamicform/dynamictable'
+export { type DynamicTreeSelectProps } from './components/multisectiondinamicform/dynamictreeselect'
 // ===== UTILITIES =====
 export { default as ColumnFilter } from './components/reusabletablefilter/columfilter';

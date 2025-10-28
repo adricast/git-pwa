@@ -45,7 +45,11 @@ const AddEditEmployContent: React.FC<{
         employ: PersonModel | null; 
         onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
         onClose: () => void;
-}> = ({ employ, onSave, onClose }) => {
+}> = (
+    { 
+        employ, 
+        onSave, 
+        onClose }) => {
             
         // 1. Preparamos los datos iniciales para el formulario dinamico
         const initialData: Partial<EmployFormData> = useMemo(() => {

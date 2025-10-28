@@ -22,7 +22,7 @@ export const countryOptions: FormOption[] = [];
 export const identificationOptions: FormOption[] = [];
 export const provinceOptions: FormOption[] = []; 
 export const cityOptions: FormOption[] = [];
-
+export const addressTypeOptions: FormOption[] = [];
 const employeeStatusOptions: FormOption[] = [
     { value: 'A', label: 'Activo' }, 
     { value: 'I', label: 'Inactivo' }, 
@@ -107,6 +107,8 @@ export const employFormSections: FormSection[] = [
         { name: "countryId", label: "País", type: "select", required: true, options: countryOptions, placeholder: "Selecciona el País" },
         { name: "provinceId", label: "Provincia", type: "select", required: true, options: provinceOptions, placeholder: "Selecciona la Provincia" },
         { name: "cityId", label: "Ciudad", type: "select", required: true, options: cityOptions, placeholder: "Selecciona la Ciudad" },
+      // 🟢 NUEVO CAMPO: Tipo de Dirección
+        { name: "typeAddressId", label: "Tipo de Dirección", type: "select", required: true, options: addressTypeOptions, placeholder: "Selecciona el Tipo de Dirección" },
         { 
             name: "street", 
             label: "Calle Principal y Secundaria", 

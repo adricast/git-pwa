@@ -7,6 +7,7 @@ import { useCountryOptionsLoader }  from "./../../datacomponents/countryData";
 import { useDocumentTypeOptionsLoader } from "./../../datacomponents/documenttypeData"; 
 import { useProvinceOptionsLoader } from "./../../datacomponents/provinceData"; 
 import { useCityOptionsLoader } from "./../../datacomponents/cityData"; 
+import { useAdressOptionsLoader } from "./../../datacomponents/addresstypeData"; 
 // ✅ REINCORPORACIÓN CRÍTICA: Hook para verificar si el Shell inicializó los IDs.
 // ASUME: La ruta es correcta.
 import { useCatalogMapInitializationStatus } from "./../../hooks/useCatalogMapInitializationStatus"; 
@@ -18,7 +19,9 @@ import {
     countryOptions, 
     identificationOptions,
     provinceOptions, 
-    cityOptions 
+    cityOptions,
+    addressTypeOptions
+
 } from "./employformconfig"; 
 import AddEditEmployContent from "./addeditemployLocal"; 
 import type { PersonModel } from "../../models/api/personModel";
@@ -48,13 +51,15 @@ export const EmployFormWrapper: React.FC<{
     const documentTypeResult = useDocumentTypeOptionsLoader(isMapInitialized); 
     const provinceResult = useProvinceOptionsLoader(isMapInitialized); 
     const cityResult = useCityOptionsLoader(isMapInitialized);
+    const addresstypeResult = useAdressOptionsLoader(isMapInitialized);
     // Consolidación de estados de carga de catálogos
     const hasComponentDataLoaded = (
         !genderResult.isLoading && 
         !countryResult.isLoading && 
         !documentTypeResult.isLoading &&
         !provinceResult.isLoading && 
-        !cityResult.isLoading
+        !cityResult.isLoading && 
+        !addresstypeResult.isLoading
     );
     
     // 💡 LA CLAVE: Esperar a que el mapa de IDs esté lleno (!isMapInitialized)
@@ -67,7 +72,8 @@ export const EmployFormWrapper: React.FC<{
         countryResult.error || 
         documentTypeResult.error ||
         provinceResult.error || 
-        cityResult.error
+        cityResult.error ||
+        addresstypeResult.error
     );
     
     const [isDataInjected, setIsDataInjected] = useState(false); 
@@ -86,6 +92,7 @@ export const EmployFormWrapper: React.FC<{
                 { source: documentTypeResult.documentTypeOptions, target: identificationOptions },
                 { source: provinceResult.provinceOptions, target: provinceOptions },
                 { source: cityResult.cityOptions, target: cityOptions },
+                { source: addresstypeResult.AddressOptions, target: addressTypeOptions },
             ];
 
             injectionLogic.forEach(({ source, target }) => {
@@ -104,24 +111,26 @@ export const EmployFormWrapper: React.FC<{
     // Añadimos todas las dependencias necesarias.
     }, [isLoading, error, isDataInjected, isMapInitialized, hasComponentDataLoaded, 
         genderResult, countryResult, documentTypeResult, provinceResult, cityResult, 
+        addresstypeResult
         // No es necesario añadir los arrays mutables a las dependencias.
     ]); 
     
     // 3. Manejo de Estados de Carga
     if (isLoading || !isDataInjected) {
         // El componente espera el mapa de IDs Y los 5 catálogos.
-        return <div>Cargando datos esenciales de catálogos (Esperando mapa de IDs y 5 catálogos)...</div>;
+        return <div>Cargando datos esenciales de catálogos (Esperando mapa de IDs y 6 catálogos)...</div>;
     }
     if (error) {
         return <div>Error crítico al cargar catálogos: {error.message}. No se puede mostrar el formulario.</div>;
     }
-
+    const isEditingMode = !!employ;
     // 4. Renderiza el formulario de contenido. 
     return (
         <AddEditEmployContent 
             employ={employ} 
             onSave={onSave} 
             onClose={onClose} 
+            isSinglePageMode={isEditingMode}
         />
     );
 };

@@ -19,6 +19,8 @@ export const CATALOG_NAMES = {
     TAX_TYPES: 'tax_types',
 
     ADDRESSTYPE: 'address_types',
+
+    AUTHMETHOD: 'auth_methods',
 } as const;
 
 // ----------------------------------------------------------------------

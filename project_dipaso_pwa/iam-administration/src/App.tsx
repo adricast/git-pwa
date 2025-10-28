@@ -8,7 +8,7 @@ import { ErrorBoundary } from './hooks/ErrorBoundary';
 
 import './input.css';
 import './output.css';
-import GroupManagement from './features/usersgroup/usergroupformLayout';
+import GroupManagement from './features/usersgroup/usergroupformLayoutLocal';
 //import UserManagement from './features/users/userLayout';
 
 import EmployManagement from './features/employ/employLayoutLocal';

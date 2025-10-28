@@ -31,7 +31,7 @@ interface EmployFormData {
         postalCode?: string;
         countryId: string; 
         provinceId: string; 
-
+        typeAddressId: string; // 🟢 NUEVO CAMPO AGREGADO AL TIPO DEL FORMULARIO
         employeeStatus: string; 
             
         employExists: boolean;
@@ -46,7 +46,12 @@ const AddEditEmployContent: React.FC<{
         employ: PersonModel | null; 
         onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
         onClose: () => void;
-}> = ({ employ, onSave, onClose }) => {
+        isSinglePageMode: boolean;
+}> = ({ 
+    employ, 
+    onSave, 
+    onClose,
+    isSinglePageMode }) => {
             
         // 1. Preparamos los datos iniciales para el formulario dinamico
         const initialData: Partial<EmployFormData> = useMemo(() => {
@@ -74,6 +79,7 @@ const AddEditEmployContent: React.FC<{
                     postalCode: primaryAddress?.postalCode || "",
                     countryId: (primaryAddress as AddressModel)?.countryId || "", 
                     provinceId: (primaryAddress as AddressModel)?.stateId || "", 
+                    typeAddressId: primaryAddress?.typeAddressId || "", // 🟢 Mapeo del valor de la API
                     employExists: !!employ,
             };
             return baseData;
@@ -98,7 +104,7 @@ const AddEditEmployContent: React.FC<{
         
             const { 
                     employeeCode, employeeStatus, documents, 
-                    street, cityId, postalCode, countryId, provinceId,
+                    street, cityId, postalCode, countryId, provinceId,typeAddressId,
                     employExists, ...personFields 
             } = formData;
                     
@@ -131,6 +137,7 @@ const AddEditEmployContent: React.FC<{
                     employeeId: generateId(employ?.employee?.employeeId || DEFAULT_ID_PLACEHOLDER), 
                     employeeCode: employeeCode,
                     personId: finalPersonId, // 🛑 USAR EL ID REAL
+
                     isActive: true,
                     employeeStatus: finalEmployeeStatus, 
                     } as EmployeeModel,
@@ -195,15 +202,15 @@ const AddEditEmployContent: React.FC<{
                                 
                     // 4. Arrays anidados (Addresses): Generar ID si es necesario
                     addresses: [{
-                    addressId: generateId(defaultAddressId), // Genera ID si es nuevo
-                    street: street,
-                    cityId: cityId,
-                    postalCode: postalCode,
-                    countryId: countryId,     
-                    stateId: provinceId, 
-                    personId: finalPersonId, // 🛑 USAR EL ID REAL DE LA PERSONA
-                    typeAddressId: '8f2b1d3c-5e4a-4d45-98f1-a160240bdecd', 
-                    isActive: true,
+                        addressId: generateId(defaultAddressId), // Genera ID si es nuevo
+                        street: street,
+                        cityId: cityId,
+                        postalCode: postalCode,
+                        countryId: countryId,     
+                        stateId: provinceId, 
+                        personId: finalPersonId, // 🛑 USAR EL ID REAL DE LA PERSONA
+                        typeAddressId: typeAddressId,
+                        isActive: true,
                     }] as AddressModel[],
             };
                     
@@ -231,6 +238,7 @@ const AddEditEmployContent: React.FC<{
                 initialData={initialData}
                 onSubmit={handleDynamicSubmit}
                 buttonText={employ ? "Actualizar Empleado" : "Crear Empleado"}
+                singlePage={isSinglePageMode}
                 className="person-form" 
                 actions={formActions} 
             />

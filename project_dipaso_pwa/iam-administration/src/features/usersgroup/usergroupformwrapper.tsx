@@ -1,7 +1,7 @@
 // 📁 src/components/forms/usergroupformwrapper.tsx (AJUSTADO PARA SINGLEPAGE)
 
 import React from "react"; 
-import AddEditUserGroupContent from "./addeditusergroup"; 
+import AddEditUserGroupContent from "./addeditusergroupLocal"; 
 
 // 💡 Dejamos la definición del tipo aquí para que el Wrapper sepa qué está pasando.
 // NOTA: En un caso real, el tipo UserGroupModel se importaría desde la misma fuente en todos los archivos.

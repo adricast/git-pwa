@@ -1,31 +1,31 @@
-// src/datacomponents/AddrestypeData.tsx
+// src/datacomponents/authmethodData.tsx
 
 import { useState, useEffect } from 'react';
 // 🚨 Importamos el servicio adaptador de Ciudades
-import { getLocalAdressList } from "./../services/idb/addresscatalogServices"; 
-// 🚨 Importamos el modelo Address
-import { type AddressType } from "./../models/idbencrypt/adresstypeModel"; 
+import { getLocalAuthMethodList } from "../services/idb/authmethodcatalogServices"; 
+// 🚨 Importamos el modelo AuthMethod
+import { type AuthMethodModel  } from "../models/idbencrypt/authmethodModel"; 
 
 /**
  * Define la interfaz de las opciones de formulario { value: id, label: name }.
  */
-export interface AddressFormOption {
+export interface AuthMethodFormOption {
     value: string;
     label: string;
 }
 
 /**
- * Transforma la lista de objetos Address[] descifrada al formato de opciones de formulario.
+ * Transforma la lista de objetos AuthMethodModel[] descifrada al formato de opciones de formulario.
  */
-const transformAddressesToOptions = (addresses: AddressType[]): AddressFormOption[] => {
-    if (!addresses || addresses.length === 0) {
+const transformAddressesToOptions = (authmethod: AuthMethodModel[]): AuthMethodFormOption[] => {
+    if (!authmethod || authmethod.length === 0) {
         return [];
     }
 
-    // Mapeo: Address.id -> value, Address.name -> label
-    return addresses.map(address => ({
-        value: address.id,
-        label: address.name,
+    // Mapeo: authmethod.id -> value, authmethod.name -> label
+    return authmethod.map(authmethod => ({
+        value: authmethod.id,
+        label: authmethod.name,
     }));
 };
 
@@ -35,7 +35,7 @@ const transformAddressesToOptions = (addresses: AddressType[]): AddressFormOptio
  * * ✅ CORRECCIÓN: Acepta 'isMapInitialized' para sincronizar la ejecución.
  */
 export function useAdressOptionsLoader(isMapInitialized: boolean) {
-    const [AddressOptions, setAddressOptions] = useState<AddressFormOption[]>([]);
+    const [AuthMethodOptions, setAuthMethodOptions] = useState<AuthMethodFormOption[]>([]);
     // ✅ Empezamos en 'false' si el mapa no está listo, reflejando que estamos esperando.
     const [isLoading, setIsLoading] = useState(!isMapInitialized); 
     const [error, setError] = useState<Error | null>(null);
@@ -53,7 +53,7 @@ export function useAdressOptionsLoader(isMapInitialized: boolean) {
              return;
         }
 
-        async function fetchAndTransformAddress() {
+        async function fetchAndTransformAuthMetods() {
             // Restablecer estados de carga y error antes de intentar la llamada
             setIsLoading(true);
             setError(null);
@@ -61,26 +61,26 @@ export function useAdressOptionsLoader(isMapInitialized: boolean) {
             try {
                 // 1. Llama al servicio adaptador de Ciudades
                 // Esta llamada ahora es SEGURA porque el GLOBAL_CATALOG_ID_MAP está lleno.
-                const addresses: AddressType[] = await getLocalAdressList();
+                const authmethod: AuthMethodModel[] = await getLocalAuthMethodList();
                 
                 // 2. Transforma el resultado.
-                const options = transformAddressesToOptions(addresses);
+                const options = transformAddressesToOptions(authmethod);
                 
-                setAddressOptions(options);
+                setAuthMethodOptions(options);
             } catch (err: any) {
-                console.error("Error al cargar y descifrar opciones de Direcciones de Personas:", err);
+                console.error("Error al cargar y descifrar opciones de Metodos de Authenticacion:", err);
                 setError(err);
-                setAddressOptions([]); 
+                setAuthMethodOptions([]); 
             } finally {
                 setIsLoading(false);
             }
         }
 
         // Se ejecuta la carga asíncrona SOLAMENTE cuando isMapInitialized es true.
-        fetchAndTransformAddress();
+        fetchAndTransformAuthMetods();
     // ✅ Dependencia crítica: Se ejecuta solo cuando isMapInitialized cambia a true.
     }, [isMapInitialized]); 
 
     // Exporta el estado completo.
-    return { AddressOptions, isLoading, error };
+    return { AuthMethodOptions, isLoading, error };
 }

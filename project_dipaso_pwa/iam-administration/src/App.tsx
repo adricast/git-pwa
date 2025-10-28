@@ -9,7 +9,7 @@ import { ErrorBoundary } from './hooks/ErrorBoundary';
 import './input.css';
 import './output.css';
 import GroupManagement from './features/usersgroup/usergroupformLayout';
-//import UserManagement from './features/users/userLayout';
+import UserManagement from './features/users/userLayout';
 
 import EmployManagement from './features/employ/employLayoutLocal';
 
@@ -32,7 +32,7 @@ export const App: React.FC<AppProps> = ({ standalone = false }) => {
       <Route path="/" element={<AdminPage />}>
         {/* ⬅️ ESTE ERA EL USO DIRECTO DEL COMPONENTE */}
          <Route path="usergroup" element={<GroupManagement />} />
-        {/* <Route path="user" element={<UserManagement />} />*/}
+  <Route path="user" element={<UserManagement />} />
         <Route path="employ" element={<EmployManagement/>} />
         {/* Otras subrutas irían aquí */}
       </Route>

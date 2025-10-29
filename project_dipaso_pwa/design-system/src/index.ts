@@ -29,6 +29,14 @@ export { default as ReusableTableLayout } from './components/layout/reusabletabl
 export { default as ReusableTableFilterLayout } from './components/layout/reusabletablefilterLayout';
 export { default as ScreenContainerLayout } from './components/layout/screencontainerLayout';
 export { default as ScreenUsableLayout } from './components/layout/screenusableLayout';
+export { default as UserSelectorLayout } from './components/layout/userSelectorLayout';
+export { default as FormSectionLayout } from './components/layout/formSectionLayout';
+
+// ===== DATA COMPONENTS =====
+export { DataSelector } from './components/data/DataSelector';
+export type { DataSelectorProps, DataSelectorColumn } from './components/data/DataSelector';
+export { DataTableWithActions } from './components/data/DataTableWithActions';
+export type { DataTableWithActionsProps, DataTableColumn } from './components/data/DataTableWithActions';
 
 // ===== PROVIDERS =====
 export { default as CardProvider } from './components/cardcontainer/cardprovider';

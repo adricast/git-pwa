@@ -1,0 +1,165 @@
+// Estilos para AddUserModal con PrimeReact - Diseño profesional
+.user-modal-container
+  padding: 2rem
+  background-color: #fff
+  border-radius: 12px
+  max-width: 1200px
+  margin: 0 auto
+
+  .modal-header
+    text-align: center
+    margin-bottom: 2rem
+
+    h2
+      font-size: 1.5rem
+      font-weight: 600
+      color: #1f2937
+      margin: 0
+
+  // Estilos para el Stepper horizontal
+  .user-stepper
+    .p-stepper-nav
+      display: flex
+      justify-content: center
+      margin-bottom: 2rem
+      padding: 0 2rem
+
+    .p-stepper-header
+      .p-stepper-number
+        width: 40px
+        height: 40px
+        font-size: 1.125rem
+        font-weight: 600
+
+      .p-stepper-title
+        font-size: 0.875rem
+        font-weight: 500
+        margin-top: 0.5rem
+        white-space: nowrap
+
+    // Paso activo (verde)
+    .p-stepper-header.p-highlight
+      .p-stepper-number
+        background-color: #22c55e
+        border-color: #22c55e
+        color: white
+
+    // Pasos completados
+    .p-stepper-header.p-completed
+      .p-stepper-number
+        background-color: #e5e7eb
+        border-color: #e5e7eb
+        color: #6b7280
+
+    // Pasos inactivos
+    .p-stepper-header:not(.p-highlight):not(.p-completed)
+      .p-stepper-number
+        background-color: white
+        border: 2px solid #d1d5db
+        color: #9ca3af
+
+    .p-stepper-panels
+      background-color: transparent
+      padding: 0
+
+  // Contenido de cada paso
+  .stepper-content
+    display: flex
+    flex-direction: column
+    gap: 1.5rem
+    padding: 1rem 0
+
+  // Estilos para el Fieldset
+  .user-fieldset
+    border: 2px solid #1f2937
+    border-radius: 8px
+    margin-bottom: 0
+
+    .p-fieldset-legend
+      background-color: white
+      border: none
+      padding: 0 0.75rem
+      font-weight: 600
+      font-size: 0.95rem
+      color: #1f2937
+
+    .p-fieldset-content
+      padding: 1.5rem
+
+    .fieldset-label
+      margin-bottom: 1rem
+
+      label
+        font-weight: 600
+        font-size: 0.95rem
+        color: #1f2937
+
+  // Acciones del stepper (botones)
+  .stepper-actions
+    display: flex
+    justify-content: flex-end
+    gap: 1rem
+    padding-top: 1.5rem
+    margin-top: 1rem
+
+    .p-button
+      padding: 0.75rem 2rem
+      font-size: 0.95rem
+      font-weight: 500
+      border-radius: 6px
+      min-width: 140px
+
+      &.p-button-outlined
+        background-color: white
+        border: 1px solid #d1d5db
+        color: #6b7280
+
+        &:hover
+          background-color: #f9fafb
+          border-color: #9ca3af
+
+      &.p-button-primary
+        background-color: #806EAF
+        border-color: #806EAF
+        color: white
+
+        &:hover
+          background-color: #6b5a94
+          border-color: #6b5a94
+
+        &:disabled
+          background-color: #e5e7eb
+          border-color: #e5e7eb
+          color: #9ca3af
+          cursor: not-allowed
+          opacity: 0.6
+
+      &.p-button-success
+        background-color: #22c55e
+        border-color: #22c55e
+
+        &:hover
+          background-color: #16a34a
+
+  // Responsive
+  @media (max-width: 768px)
+    padding: 1rem
+
+    .user-stepper
+      .p-stepper-nav
+        padding: 0
+
+      .p-stepper-header
+        .p-stepper-number
+          width: 32px
+          height: 32px
+          font-size: 0.9rem
+
+        .p-stepper-title
+          font-size: 0.75rem
+
+    .stepper-actions
+      flex-direction: column-reverse
+
+      .p-button
+        width: 100%

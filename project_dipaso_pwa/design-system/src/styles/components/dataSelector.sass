@@ -1,0 +1,134 @@
+@use 'sass:color'
+@use '../_variables' as *
+
+// Variables locales para el DataSelector
+$search-border-radius: 24px
+$table-border-radius: 8px
+$border-color: #d1d5db
+$header-bg: rgb(214.36, 208.6, 229.4)
+$header-text: #1f2937
+$hover-bg: #f9fafb
+$selected-bg: #f3e8ff
+$selected-border: #9333ea
+$icon-color: #6b7280
+
+.data-selector-container
+  width: 100%
+
+  // Barra de búsqueda
+  .data-selector-search
+    display: flex
+    align-items: center
+    gap: 1rem
+    margin-bottom: 1rem
+
+    .data-selector-label
+      font-weight: 600
+      font-size: 0.95rem
+      color: $text-color
+      white-space: nowrap
+      margin: 0
+
+    .data-selector-input-wrapper
+      flex: 1
+
+      .p-inputtext
+        width: 100%
+        border-radius: $search-border-radius
+        padding: 0.75rem 1rem 0.75rem 2.5rem
+        border: 2px solid $border-color
+        font-size: 0.95rem
+        transition: all 0.2s ease
+
+        &:focus
+          border-color: $primary-color
+          box-shadow: 0 0 0 3px color.adjust($primary-color, $alpha: -0.9)
+          outline: none
+
+        &::placeholder
+          color: color.adjust($text-color, $lightness: 40%)
+
+      .p-icon
+        left: 1rem
+        color: $icon-color
+        font-size: 1rem
+
+  // Tabla de datos
+  .data-selector-table.p-datatable
+    border: 2px solid $border-color
+    border-radius: $table-border-radius
+    overflow: hidden
+
+    // Cabecera de la tabla
+    .p-datatable-thead > tr > th
+      background-color: $header-bg
+      border: 1px solid $border-color
+      border-width: 0 1px 2px 0
+      font-weight: 600
+      padding: 0.75rem 1rem
+      color: $header-text
+      font-size: 0.9rem
+      text-align: left
+
+      &:last-child
+        border-right: 0
+
+    // Celdas del cuerpo
+    .p-datatable-tbody > tr > td
+      border: 1px solid $border-color
+      border-width: 0 2px 2px 0
+      padding: 0.75rem 1rem
+      font-size: 0.9rem
+      color: $text-color
+
+      &:last-child
+        border-right: 0
+
+    // Filas del cuerpo
+    .p-datatable-tbody > tr
+      border-bottom: 2px solid $border-color
+      transition: background-color 0.2s ease
+      cursor: pointer
+
+      &:last-child
+        border-bottom: 0
+
+      // Hover effect
+      &:hover
+        background-color: $hover-bg
+
+      // Fila seleccionada
+      &.p-highlight
+        background-color: $selected-bg
+        border-left: 4px solid $selected-border
+
+        td:first-child
+          padding-left: calc(1rem - 4px)
+
+    // Mensaje vacío
+    .p-datatable-emptymessage > td
+      text-align: center
+      padding: 2rem
+      font-style: italic
+      color: $secondary-color
+      font-size: 1rem
+
+// Responsive
+@media (max-width: 768px)
+  .data-selector-container
+    .data-selector-search
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.5rem
+
+      .data-selector-label
+        font-size: 0.875rem
+
+      .data-selector-input-wrapper
+        width: 100%
+
+    .data-selector-table.p-datatable
+      .p-datatable-thead > tr > th,
+      .p-datatable-tbody > tr > td
+        padding: 0.5rem 0.75rem
+        font-size: 0.85rem

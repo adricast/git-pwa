@@ -13,9 +13,13 @@
     "dev:clean": "rmdir /s /q node_modules\\.vite && vite"
   },
   "dependencies": {
+    "@dipaso/design-system": "file:../design-system",
     "axios": "^1.12.2",
     "crypto-js": "^4.2.0",
     "idb": "^8.0.3",
+    "lucide-react": "^0.548.0",
+    "primeicons": "^7.0.0",
+    "primereact": "^10.9.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
@@ -23,8 +27,7 @@
     "react-router-dom": "6.28",
     "reconnecting-websocket": "^4.4.0",
     "uuid": "^13.0.0",
-    "ws": "^8.18.3",
-    "@dipaso/design-system": "file:../design-system"
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

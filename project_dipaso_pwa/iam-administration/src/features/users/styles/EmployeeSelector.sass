@@ -1,0 +1,66 @@
+.employee-selector-container
+  .search-wrapper
+    .p-inputtext
+      border-radius: 24px
+      padding: 0.75rem 1rem 0.75rem 2.5rem
+      border: 2px solid #d1d5db
+      font-size: 0.95rem
+
+      &:focus
+        border-color: #9333ea
+        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1)
+
+    .p-icon-field
+      .p-icon
+        left: 1rem
+        color: #6b7280
+
+  .p-datatable
+    border: 2px solid #d1d5db
+    border-radius: 8px
+    overflow: hidden
+
+    .p-datatable-thead > tr > th
+      background-color: rgb(214.36, 208.6, 229.4)
+      border: 1px solid #d1d5db
+      border-width: 0 1px 2px 0
+      font-weight: 600
+      padding: 0.75rem 1rem
+      color: #1f2937
+      font-size: 0.9rem
+
+      &:last-child
+        border-right: 0
+
+    .p-datatable-tbody > tr > td
+      border: 1px solid #d1d5db
+      border-width: 0 2px 2px 0
+      padding: 0.75rem 1rem
+      font-size: 0.9rem
+
+      &:last-child
+        border-right: 0
+
+    .p-datatable-tbody > tr
+      border-bottom: 2px solid #d1d5db
+      transition: background-color 0.2s
+
+      &:last-child
+        border-bottom: 0
+
+      &:hover
+        background-color: #f9fafb
+        cursor: pointer
+
+      &.p-highlight
+        background-color: #f3e8ff
+        border-left: 4px solid #9333ea
+
+        td:first-child
+          padding-left: calc(1rem - 4px)
+
+    .p-datatable-emptymessage > td
+      text-align: center
+      padding: 2rem
+      font-style: italic
+      color: #6b7280

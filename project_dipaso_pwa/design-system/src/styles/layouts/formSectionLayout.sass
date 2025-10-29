@@ -1,0 +1,23 @@
+@use 'sass:color'
+@use '../_variables' as *
+
+.form-section-container
+  border: 2px solid $border-color
+  border-radius: 8px
+  background-color: $card-bg
+  overflow: hidden
+  margin-bottom: 1.5rem
+
+  .form-section-header
+    border-bottom: 2px solid $border-color
+    padding: 0.75rem 1.25rem
+    background-color: color.adjust($background-color, $lightness: 2%)
+
+    .form-section-title
+      margin: 0
+      font-size: 1rem
+      font-weight: 600
+      color: $text-color
+
+  .form-section-content
+    padding: 1.25rem

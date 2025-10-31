@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
+ "scripts": {
     "dev": "vite --port 3005 --strictPort",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -12,11 +12,14 @@
     "start": "npm run build && npm run serve",
     "dev:clean": "rmdir /s /q node_modules\\.vite && vite"
   },
+
+
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.3",
+    "tsc": "^2.0.4",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

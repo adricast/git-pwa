@@ -17,22 +17,40 @@ export class CatalogRepository {
      * Incluye las claves no cifradas necesarias para los índices.
      */
     private encryptCatalog(catalog: Catalog): { record: any, key: string } {
-    // Si no tiene catalogId, generar uno nuevo para evitar fallos
-        const safeId = catalog.catalogId || crypto.randomUUID();
-
-        const jsonString = JSON.stringify({ ...catalog, catalogId: safeId });
-        const encryptedData: EncryptedFragment = encryptAndSignData(jsonString);
-
-        const recordToStore = {
-            catalog_id: safeId, // ← garantizado
-            catalog_name: catalog.catalogName || "unknown",
-            is_active: catalog.isActive ?? true,
-            updated_at: catalog.updatedAt || new Date().toISOString(),
-            encrypted_data: encryptedData,
+    if (!catalog) {
+        console.warn("⚠️ Se intentó cifrar un catálogo undefined o null");
+        return { 
+            record: {
+                catalog_id: crypto.randomUUID(),
+                catalog_name: "unknown",
+                is_active: true,
+                updated_at: new Date().toISOString(),
+                encrypted_data: null, // marcamos como null
+            },
+            key: crypto.randomUUID(),
         };
-
-        return { record: recordToStore, key: safeId };
     }
+
+    const safeId = catalog.catalogId || crypto.randomUUID();
+    const jsonString = JSON.stringify({ ...catalog, catalogId: safeId });
+    
+    let encryptedData: EncryptedFragment | null = null;
+    try {
+        encryptedData = encryptAndSignData(jsonString);
+    } catch (e) {
+        console.error("⚠️ Error cifrando catálogo:", catalog, e);
+    }
+
+    const recordToStore = {
+        catalog_id: safeId,
+        catalog_name: catalog.catalogName || "unknown",
+        is_active: catalog.isActive ?? true,
+        updated_at: catalog.updatedAt || new Date().toISOString(),
+        encrypted_data: encryptedData,
+    };
+
+    return { record: recordToStore, key: safeId };
+}
 
     /**
      * Descifra el registro completo de la base de datos a un objeto Catalog en texto plano.
@@ -100,11 +118,11 @@ export class CatalogRepository {
     try {
         await store.clear(); 
         
-        const encryptionResults = catalogs.map(c => this.encryptCatalog(c));
+       const encryptionResults = catalogs.map(c => this.encryptCatalog(c));
 
         for (const { record } of encryptionResults) {
-            if (!record.catalog_id || typeof record.catalog_id !== 'string') {
-                console.warn("⚠️ Catálogo ignorado por ID inválido:", record);
+            if (!record.encrypted_data) {
+                console.warn("⚠️ Catálogo ignorado por fallo en cifrado:", record);
                 continue;
             }
             await store.put(record);

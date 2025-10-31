@@ -4,73 +4,70 @@ import { authSensor, initAuthService } from "authorizer/authExports";
 import { syncAndCacheAllCatalogs } from "./services/catalogServicesLocal";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isDataReady, setIsDataReady] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Iniciando aplicación...");
+       const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+       const [isDataReady, setIsDataReady] = useState(false);
+       // El mensaje de carga debe ser mínimo o invisible si deseas una transición rápida.
+       const [loadingMessage, setLoadingMessage] = useState("Iniciando aplicación...");
 
-  useEffect(() => {
-    // Función que se ejecuta tras una autenticación exitosa
-    const handleAuthSuccess = async () => {
-      try {
-        setLoadingMessage("✅ Autenticación exitosa. Cargando catálogos...");
-        console.log("Autenticación exitosa.");
-        setIsAuthenticated(true);
+       useEffect(() => {
+              // Función que se ejecuta tras una autenticación exitosa
+              const handleAuthSuccess = async () => {
+                     try {
+                            // Mensaje de estado: Autenticación OK, iniciando carga de datos
+                            setLoadingMessage("Cargando datos esenciales..."); 
+                            setIsAuthenticated(true);
 
-        await syncAndCacheAllCatalogs();
-        console.log("Catálogos sincronizados y listos.");
-      } catch (error) {
-        console.error("Error al cargar catálogos tras autenticación:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsDataReady(true);
-      }
-    };
+                            await syncAndCacheAllCatalogs();
+                            setLoadingMessage("Listo."); // Mensaje final antes de la transición
+                     } catch (error) {
+                            setIsAuthenticated(false);
+                            setLoadingMessage("Error: no se pudo cargar la configuración inicial.");
+                     } finally {
+                            setIsDataReady(true);
+                     }
+              };
 
-    // Función que se ejecuta si la autenticación falla
-    const handleAuthFailure = () => {
-      console.log("Autenticación fallida o sesión eliminada.");
-      setIsAuthenticated(false);
-      setLoadingMessage("❌ Autenticación fallida.");
-      setIsDataReady(true);
-    };
+              // Función que se ejecuta si la autenticación falla
+              const handleAuthFailure = () => {
+                     setIsAuthenticated(false);
+                     setLoadingMessage("Autenticación fallida. Redirigiendo a inicio de sesión.");
+                     setIsDataReady(true);
+              };
 
-    // Suscribimos a eventos de autenticación
-    authSensor.on("item-synced", handleAuthSuccess);
-    authSensor.on("item-failed", handleAuthFailure);
-    authSensor.on("sync-failure", handleAuthFailure);
-    authSensor.on("itemDeleted", handleAuthFailure);
+              // Suscribimos a eventos de autenticación
+              authSensor.on("item-synced", handleAuthSuccess);
+              authSensor.on("item-failed", handleAuthFailure);
+              authSensor.on("sync-failure", handleAuthFailure);
+              authSensor.on("itemDeleted", handleAuthFailure);
 
-    // Iniciamos autenticación
-    setLoadingMessage("🔑 Autenticando...");
-    initAuthService();
+              // Iniciamos autenticación
+              setLoadingMessage("Autenticando...");
+              initAuthService();
 
-    // Cleanup
-    return () => {
-      authSensor.off("item-synced", handleAuthSuccess);
-      authSensor.off("item-failed", handleAuthFailure);
-      authSensor.off("sync-failure", handleAuthFailure);
-      authSensor.off("itemDeleted", handleAuthFailure);
-    };
-  }, []);
+              // Cleanup
+              return () => {
+                     authSensor.off("item-synced", handleAuthSuccess);
+                     authSensor.off("item-failed", handleAuthFailure);
+                     authSensor.off("sync-failure", handleAuthFailure);
+                     authSensor.off("itemDeleted", handleAuthFailure);
+              };
+       }, []);
 
-  // -----------------------------------------------------------
-  // Pantalla de carga mientras autenticación + catálogos
-  // -----------------------------------------------------------
-  if (!isDataReady) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-gray-700 font-semibold">
-        <div className="mb-4 text-xl">{loadingMessage}</div>
-        {isAuthenticated === true && (
-          <div className="p-4 bg-green-100 text-green-800 rounded-lg shadow-md">
-            Autenticación exitosa 🎉
-          </div>
-        )}
-      </div>
-    );
-  }
+       // -----------------------------------------------------------
+       // Pantalla de carga (Mínima)
+       // -----------------------------------------------------------
+       if (!isDataReady) {
+              return (
+                     // Estilos eliminados para el entorno de producción
+                     <div className="app-loading-screen">
+                            <p>{loadingMessage}</p>
+                            {/* 🛑 ELIMINAMOS el bloque condicional de "Autenticación exitosa" */}
+                     </div>
+              );
+       }
 
-  // Renderizamos rutas solo cuando autenticación + catálogos están listos
-  return <AppRoutes isAuthenticated={isAuthenticated!} />;
+       // Renderizamos rutas solo cuando autenticación + catálogos están listos
+       return <AppRoutes isAuthenticated={isAuthenticated!} />;
 }
 
 export default App;

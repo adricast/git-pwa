@@ -15,7 +15,7 @@ dist/
 *.egg-info/
 *.egg
 *.whl
-
+project_dipaso_pwa/shell/release/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

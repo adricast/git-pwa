@@ -37,6 +37,7 @@ export interface AddressTableProps<T = Record<string, unknown>> {
 /**
  * Componente de tabla de direcciones con selección múltiple y botones de acción
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const AddressTable = <T extends Record<string, any>>({
   title = 'Listado de Direcciones',
   data,
@@ -77,28 +78,29 @@ export const AddressTable = <T extends Record<string, any>>({
       </div>
 
       {/* Tabla de datos */}
-      <DataTable
-        value={data}
-        selection={selectedItems}
-        onSelectionChange={(e) => onSelectionChange(e.value as T[])}
-        selectionMode="multiple"
-        dataKey={dataKey}
-        stripedRows
-        showGridlines
-        responsiveLayout="scroll"
-        emptyMessage={emptyMessage}
-        className="address-datatable"
-      >
-        <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false} />
-        {columns.map((col, idx) => (
-          <Column
-            key={idx}
-            field={col.field}
-            header={col.header}
-            body={col.bodyTemplate ? (rowData: T) => col.bodyTemplate!(rowData) : undefined}
-          />
-        ))}
-      </DataTable>
+      <div className="datatable-responsive-wrapper">
+        <DataTable
+          value={data}
+          selection={selectedItems}
+          onSelectionChange={(e) => onSelectionChange(e.value as T[])}
+          selectionMode="multiple"
+          dataKey={dataKey}
+          stripedRows
+          showGridlines
+          emptyMessage={emptyMessage}
+          className="address-datatable"
+        >
+          <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false} />
+          {columns.map((col, idx) => (
+            <Column
+              key={idx}
+              field={col.field}
+              header={col.header}
+              body={col.bodyTemplate ? (rowData: T) => col.bodyTemplate!(rowData) : undefined}
+            />
+          ))}
+        </DataTable>
+      </div>
     </div>
   );
 };

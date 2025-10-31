@@ -3,7 +3,7 @@
 // ============================================================================
 
 import React, { useState } from 'react';
-import { Dropdown } from 'primereact/dropdown';
+import { MultiSelect } from 'primereact/multiselect';
 import { Tree } from 'primereact/tree';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
@@ -16,8 +16,8 @@ import '../styles/UserConfiguration.sass';
  */
 export interface UserConfigurationProps {
   userGroups: Array<{ id: string; name: string }>;
-  selectedGroup: { id: string; name: string } | null;
-  onGroupChange: (group: { id: string; name: string } | null) => void;
+  selectedGroup: Array<{ id: string; name: string }> | null;
+  onGroupChange: (groups: Array<{ id: string; name: string }> | null) => void;
   policiesTree: TreeNode[];
   selectedPolicies: Record<string, boolean>;
   onPoliciesChange: (policies: Record<string, boolean>) => void;
@@ -48,21 +48,24 @@ export const UserConfiguration: React.FC<UserConfigurationProps> = ({
 
   return (
     <div className="user-configuration-container">
-      {/* Selector de Grupo de Usuario */}
+      {/* Selector de Grupos de Usuario (Múltiple) */}
       <div className="config-section">
-        <label htmlFor="user-group" className="config-label">
-          Grupo de usuario:
+        <label htmlFor="user-groups" className="config-label">
+          Grupos de usuario:
         </label>
-        <Dropdown
-          id="user-group"
-          value={selectedGroup}
-          onChange={(e) => onGroupChange(e.value)}
-          options={userGroups}
-          optionLabel="name"
-          placeholder="Seleccione un grupo"
-          className="w-full config-dropdown"
-          showClear
-        />
+        <div className="config-dropdown-wrapper">
+          <MultiSelect
+            id="user-groups"
+            value={selectedGroup}
+            onChange={(e) => onGroupChange(e.value)}
+            options={userGroups}
+            optionLabel="name"
+            placeholder="Seleccione uno o más grupos"
+            className="w-full config-dropdown"
+            display="chip"
+            maxSelectedLabels={3}
+          />
+        </div>
       </div>
 
       {/* Selector de Políticas con Tree */}
@@ -70,7 +73,7 @@ export const UserConfiguration: React.FC<UserConfigurationProps> = ({
         <label className="config-label">Políticas:</label>
 
         {/* Buscador de políticas */}
-        <div className="mb-3">
+        <div className="mb-3 policy-search-wrapper">
           <IconField iconPosition="left" className="w-full">
             <InputIcon className="pi pi-search" />
             <InputText

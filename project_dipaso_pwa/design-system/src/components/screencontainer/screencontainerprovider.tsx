@@ -14,13 +14,14 @@ export const ScreenContainerProvider: React.FC<{ children: React.ReactNode }> = 
   }, []);
 
   // 1. ABRIR PANTALLA
-  const openScreen = useCallback<ScreenContainerContextProps["openScreen"]>((newTitle, newContent) => {
+  const openScreen = useCallback<ScreenContainerContextProps["openScreen"]>((newTitle, newContent, options) => {
+  // Por defecto abrimos como ventana 'restaurada' (no maximizada) para que actúe como diálogo
   const newScreen: ScreenStackItem = {
     id: uuidv4(),
     title: newTitle,
-    content: newContent, 
+    content: newContent,
     isMinimized: false,
-    isMaximized: true,
+    isMaximized: !!(options && options.maximized), // respetar opción si se pasa
   };
 
   setStack(prevStack => {
@@ -28,6 +29,8 @@ export const ScreenContainerProvider: React.FC<{ children: React.ReactNode }> = 
     const nonMinimized = prevStack.filter(s => !s.isMinimized);
     return [...nonMinimized, newScreen, ...minimized];
   });
+
+  return newScreen.id;
 }, []);
 // 2. CERRAR PANTALLA
 const closeScreen = useCallback<ScreenContainerContextProps["closeScreen"]>((id) => {

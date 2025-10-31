@@ -29,8 +29,8 @@ export interface ScreenStackItem {
 export interface ScreenContainerContextProps {
  stack: ScreenStackItem[]; // 🟢 ÚNICO ESTADO PRINCIPAL: La pila de pantallas activas
 
- // 🟢 openScreen ahora requiere el contenido React.ReactNode
- openScreen: (title: string, content: React.ReactNode) => void; 
+ // 🟢 openScreen ahora acepta una opción para abrir maximizado y devuelve el id de la pantalla
+ openScreen: (title: string, content: React.ReactNode, options?: { maximized?: boolean }) => string; 
 
  // ❌ ELIMINADAS: isOpen, title, isMinimized (Ahora están dentro de `stack`)
 
@@ -40,6 +40,6 @@ export interface ScreenContainerContextProps {
  restoreScreen: (id: string) => void;
 
  // 🟢 closeTopScreen: Cierra el último elemento de la pila (la pantalla visible)
- closeTopScreen: () => void;
+closeTopScreen: () => void;
 toggleMaximizeScreen: (id: string) => void;
 }

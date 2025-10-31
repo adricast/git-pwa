@@ -8,13 +8,18 @@
     .config-label
       display: block
       font-weight: 600
-      font-size: 0.95rem
-      margin-bottom: 0.75rem
+      font-size: 0.875rem
+      margin-bottom: 0.5rem
       color: #1f2937
+      text-align: left
+
+    .config-dropdown-wrapper
+      max-width: 500px
 
     .config-dropdown
-      border: 2px solid #d1d5db
+      border: 1px solid #d1d5db
       border-radius: 6px
+      font-size: 0.875rem
 
       &:hover
         border-color: #9ca3af
@@ -23,11 +28,53 @@
         border-color: #9333ea
         box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1)
 
+    // Estilos para MultiSelect
+    .p-multiselect
+      border: 1px solid #d1d5db
+      border-radius: 6px
+      font-size: 0.875rem
+
+      &:hover
+        border-color: #9ca3af
+
+      &.p-focus
+        border-color: #9333ea
+        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1)
+
+      .p-multiselect-label
+        padding: 0.5rem 0.75rem
+
+      .p-multiselect-trigger
+        width: 2.5rem
+
+      .p-multiselect-token
+        background: #806EAF
+        color: white
+        border-radius: 4px
+        padding: 0.25rem 0.5rem
+        margin-right: 0.25rem
+
+        .p-multiselect-token-icon
+          margin-left: 0.25rem
+
+    .policy-search-wrapper
+      max-width: 500px
+      position: relative
+
+      .p-icon-field
+        width: 100%
+
+        .p-input-icon
+          left: 0.75rem
+          color: #6b7280
+          font-size: 0.875rem
+
     .policy-search
-      border-radius: 24px
-      padding: 0.75rem 1rem 0.75rem 2.5rem
-      border: 2px solid #d1d5db
-      font-size: 0.95rem
+      border-radius: 6px
+      padding: 0.5rem 1rem 0.5rem 2.25rem
+      border: 1px solid #d1d5db
+      font-size: 0.875rem
+      width: 100%
 
       &:focus
         border-color: #9333ea
@@ -40,6 +87,7 @@
     max-height: 400px
     overflow-y: auto
     background-color: #ffffff
+    margin-top: 12px
 
     &::-webkit-scrollbar
       width: 8px
@@ -59,6 +107,15 @@
       border: none
       padding: 0
 
+      .p-tree-toggler
+        color: #374151 !important
+
+        svg
+          color: #374151 !important
+
+        path
+          fill: #374151 !important
+
       .p-tree-container
         .p-treenode
           padding: 0.25rem 0
@@ -72,8 +129,35 @@
               background-color: #f9fafb
 
             .p-tree-toggler
-              color: #6b7280
+              color: #4b5563
               margin-right: 0.5rem
+              width: 1.5rem
+              height: 1.5rem
+              min-width: 1.5rem
+              display: inline-flex
+              align-items: center
+              justify-content: center
+              border-radius: 3px
+              background: transparent
+              border: none
+              padding: 0
+
+              &:hover
+                background-color: #e5e7eb
+                color: #1f2937
+
+              &:focus
+                outline: none
+
+              svg, .p-tree-toggler-icon
+                width: 0.875rem
+                height: 0.875rem
+                color: currentColor
+                fill: currentColor
+                display: block
+
+                path
+                  fill: currentColor
 
             .p-checkbox
               margin-right: 0.75rem
@@ -102,9 +186,78 @@
               margin-right: 0.5rem
               font-size: 1rem
 
+        // Nodos principales (nivel 0) - Cabeceras en negrita
+        > .p-treenode
+          > .p-treenode-content
+            .p-treenode-label
+              font-weight: 700
+              font-size: 0.95rem
+              color: #1f2937
+
 // Responsive
 @media (max-width: 768px)
   .user-configuration-container
+    padding: 0.25rem 0
+
+    .config-section
+      margin-bottom: 1rem
+
+      .config-label
+        font-size: 0.8rem
+
+      .config-dropdown-wrapper,
+      .policy-search-wrapper
+        max-width: 100%
+
+      .config-dropdown,
+      .policy-search,
+      .p-multiselect
+        font-size: 0.8rem
+
+      .p-multiselect .p-multiselect-token
+        font-size: 0.75rem
+        padding: 0.2rem 0.4rem
+
     .policies-tree-container
       max-height: 300px
       padding: 0.75rem
+
+      .policies-tree.p-tree
+        .p-tree-container .p-treenode
+          .p-treenode-content
+            padding: 0.375rem
+
+            .p-treenode-label
+              font-size: 0.85rem
+
+@media (max-width: 480px)
+  .user-configuration-container
+    .config-section
+      .config-label
+        font-size: 0.75rem
+
+      .config-dropdown,
+      .policy-search,
+      .p-multiselect
+        font-size: 0.75rem
+        padding: 0.4rem 0.75rem
+
+      .p-multiselect .p-multiselect-token
+        font-size: 0.7rem
+        padding: 0.15rem 0.3rem
+
+    .policies-tree-container
+      max-height: 250px
+      padding: 0.5rem
+
+      .policies-tree.p-tree
+        .p-tree-container .p-treenode
+          .p-treenode-content
+            padding: 0.25rem
+
+            .p-checkbox .p-checkbox-box
+              width: 1.1rem
+              height: 1.1rem
+
+            .p-treenode-label
+              font-size: 0.8rem

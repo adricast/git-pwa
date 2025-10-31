@@ -1,41 +1,59 @@
 // Estilos para AddUserModal con PrimeReact - Diseño profesional
 .user-modal-container
-  padding: 2rem
+  padding: 1rem
   background-color: #fff
   border-radius: 12px
+  width: 100%
   max-width: 1200px
   margin: 0 auto
+  box-sizing: border-box
+  overflow-x: hidden
 
   .modal-header
     text-align: center
-    margin-bottom: 2rem
+    margin-bottom: 1.5rem
+    padding: 0 0.5rem
 
     h2
-      font-size: 1.5rem
+      font-size: 1.25rem
       font-weight: 600
       color: #1f2937
       margin: 0
+      word-wrap: break-word
+
+    p
+      word-wrap: break-word
+      overflow-wrap: break-word
 
   // Estilos para el Stepper horizontal
   .user-stepper
     .p-stepper-nav
       display: flex
       justify-content: center
-      margin-bottom: 2rem
-      padding: 0 2rem
+      margin-bottom: 1.5rem
+      padding: 0 0.5rem
+      overflow-x: auto
+      -webkit-overflow-scrolling: touch
 
     .p-stepper-header
+      flex-shrink: 0
+
       .p-stepper-number
-        width: 40px
-        height: 40px
-        font-size: 1.125rem
+        width: 36px
+        height: 36px
+        font-size: 1rem
         font-weight: 600
 
       .p-stepper-title
-        font-size: 0.875rem
+        font-size: 0.75rem
         font-weight: 500
         margin-top: 0.5rem
-        white-space: nowrap
+        max-width: 100px
+        overflow: hidden
+        text-overflow: ellipsis
+        white-space: normal
+        text-align: center
+        line-height: 1.2
 
     // Paso activo (verde)
     .p-stepper-header.p-highlight
@@ -66,48 +84,56 @@
   .stepper-content
     display: flex
     flex-direction: column
-    gap: 1.5rem
-    padding: 1rem 0
+    gap: 1rem
+    padding: 0.5rem
+    width: 100%
+    box-sizing: border-box
 
   // Estilos para el Fieldset
   .user-fieldset
     border: 2px solid #1f2937
     border-radius: 8px
     margin-bottom: 0
+    width: 100%
+    box-sizing: border-box
 
     .p-fieldset-legend
       background-color: white
       border: none
-      padding: 0 0.75rem
+      padding: 0 0.5rem
       font-weight: 600
-      font-size: 0.95rem
+      font-size: 0.875rem
       color: #1f2937
 
     .p-fieldset-content
-      padding: 1.5rem
+      padding: 1rem
+      overflow-x: hidden
+      width: 100%
+      box-sizing: border-box
 
     .fieldset-label
-      margin-bottom: 1rem
+      margin-bottom: 0.75rem
 
       label
         font-weight: 600
-        font-size: 0.95rem
+        font-size: 0.875rem
         color: #1f2937
 
   // Acciones del stepper (botones)
   .stepper-actions
     display: flex
     justify-content: flex-end
-    gap: 1rem
-    padding-top: 1.5rem
-    margin-top: 1rem
+    gap: 0.75rem
+    padding-top: 1rem
+    margin-top: 0.75rem
+    flex-wrap: wrap
 
     .p-button
-      padding: 0.75rem 2rem
-      font-size: 0.95rem
+      padding: 0.625rem 1.5rem
+      font-size: 0.875rem
       font-weight: 500
       border-radius: 6px
-      min-width: 140px
+      min-width: 120px
 
       &.p-button-outlined
         background-color: white
@@ -143,23 +169,81 @@
 
   // Responsive
   @media (max-width: 768px)
-    padding: 1rem
+    padding: 0.75rem
+    border-radius: 0
+
+    .modal-header
+      margin-bottom: 1rem
+      padding: 0 0.25rem
+
+      h2
+        font-size: 1.125rem
+
+    .user-stepper
+      .p-stepper-nav
+        padding: 0 0.25rem
+        justify-content: flex-start
+        gap: 0.5rem
+
+      .p-stepper-header
+        min-width: 80px
+
+        .p-stepper-number
+          width: 32px
+          height: 32px
+          font-size: 0.875rem
+
+        .p-stepper-title
+          font-size: 0.7rem
+          max-width: 80px
+
+    .stepper-content
+      padding: 0.25rem
+      gap: 0.75rem
+
+    .user-fieldset
+      .p-fieldset-content
+        padding: 0.75rem
+
+    .stepper-actions
+      flex-direction: column-reverse
+      gap: 0.5rem
+
+      .p-button
+        width: 100%
+        min-width: unset
+
+  @media (max-width: 480px)
+    padding: 0.5rem
+
+    .modal-header
+      h2
+        font-size: 1rem
+
+      p
+        font-size: 0.75rem
 
     .user-stepper
       .p-stepper-nav
         padding: 0
 
       .p-stepper-header
-        .p-stepper-number
-          width: 32px
-          height: 32px
-          font-size: 0.9rem
+        min-width: 70px
 
-        .p-stepper-title
+        .p-stepper-number
+          width: 28px
+          height: 28px
           font-size: 0.75rem
 
-    .stepper-actions
-      flex-direction: column-reverse
+        .p-stepper-title
+          font-size: 0.65rem
+          max-width: 70px
 
-      .p-button
-        width: 100%
+    .user-fieldset
+      border-width: 1px
+
+      .p-fieldset-legend
+        font-size: 0.8rem
+
+      .p-fieldset-content
+        padding: 0.5rem

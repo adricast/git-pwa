@@ -2,9 +2,9 @@
 
 import axios from "axios";
 // Importamos ambas URLs desde el archivo de configuración
-import { 
-  
-    API_BASE_URL_BUILD_IAM
+import {
+    API_BASE_URL_DEV,
+    //API_BASE_URL_BUILD_IAM
 } from "./../../configurations/routes/apiroutes"; // Asumo que la ruta es correcta
 const API_KEY = import.meta.env.VITE_APIKEY;
 // ----------------------------------------------------------------------
@@ -15,7 +15,8 @@ const API_KEY = import.meta.env.VITE_APIKEY;
 // Esto será 'true' solo al ejecutar 'npm run build'.
 
 // 2. SELECCIÓN DINÁMICA DE LA URL BASE
-const BASE_URL = API_BASE_URL_BUILD_IAM;
+// TODO: Cambiar a API_BASE_URL_BUILD_IAM cuando el servidor de producción esté disponible
+const BASE_URL = API_BASE_URL_DEV; // Usando servidor local de desarrollo
 // ----------------------------------------------------------------------
 // 3. CREACIÓN DE LA INSTANCIA DE AXIOS
 // ----------------------------------------------------------------------

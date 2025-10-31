@@ -7,9 +7,10 @@ import CryptoJS from "crypto-js";
 const HMAC_KEY = import.meta.env.VITE_SECRET_KEY || "MiClaveSecreta"; 
 
 // 🔑 CLAVE AES (FERNET_KEY de Python - Usada para el cifrado/descifrado)
-const AES_KEY_STRING = import.meta.env.VITE_FERNET_KEY || "ClaveDe32BytesAES"; 
-// CryptoJS necesita la clave como WordArray para descifrar
-const AES_KEY_WORD_ARRAY = CryptoJS.enc.Utf8.parse(AES_KEY_STRING);
+// La clave viene en formato Base64, no UTF-8
+const AES_KEY_STRING = import.meta.env.VITE_FERNET_KEY || "ClaveDe32BytesAES";
+// CryptoJS necesita la clave como WordArray para descifrar - parsear desde Base64
+const AES_KEY_WORD_ARRAY = CryptoJS.enc.Base64.parse(AES_KEY_STRING);
 
 interface EncryptedResponse {
     payload: string;

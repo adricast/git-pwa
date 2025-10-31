@@ -4,7 +4,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { personServiceConfig } from "../employ/employserviceconfig";
+import { userServiceConfig } from "./userserviceconfig";
 import type { PersonModel } from "../../models/api/personModel";
+import type { UserModel } from "../../models/api/userModel";
 import { EmployeeSelector } from "./content/EmployeeSelector";
 import { AddressTable } from "./content/AddressTable";
 import { UserConfiguration } from "./content/UserConfiguration";
@@ -34,22 +36,64 @@ import 'primeicons/primeicons.css';
 // Local styles
 import "./styles/AddUserModal.sass";
 
-interface AddUserModalProps {
-  onClose: () => void;
+interface User {
+  userId: string;
+  userName: string;
+  email: string;
+  integrationCode?: string;
+  isActive: boolean;
 }
 
-const AddUserModal: React.FC<AddUserModalProps> = ({ onClose }) => {
+interface AddUserModalProps {
+  userData?: User | null;
+  onClose: () => void;
+  onSaved?: () => void;
+}
+
+const AddUserModal: React.FC<AddUserModalProps> = ({ userData, onClose, onSaved }) => {
   const stepperRef = useRef<any>(null);
   const [people, setPeople] = useState<PersonModel[]>([]);
   const [selectedPerson, setSelectedPerson] = useState<PersonModel | null>(null);
+  const [fullUserData, setFullUserData] = useState<UserModel | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Estado para configuración (grupos y políticas)
-  const [selectedGroup, setSelectedGroup] = useState<UserGroup | null>(null);
+  // Estado para configuración (grupos y políticas) - Ahora soporta múltiples grupos
+  const [selectedGroups, setSelectedGroups] = useState<UserGroup[] | null>(null);
   const [selectedPolicies, setSelectedPolicies] = useState<Record<string, boolean>>({});
 
   // Estado para direcciones
   const [direcciones, setDirecciones] = useState<Direccion[]>(MOCK_DIRECCIONES);
   const [selectedDirecciones, setSelectedDirecciones] = useState<Direccion[]>([]);
+
+  // Cargar datos completos del usuario cuando se está editando
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (userData?.userId) {
+        setLoading(true);
+        try {
+          const fullUser = await userServiceConfig.getUserByUuid(userData.userId);
+          setFullUserData(fullUser);
+
+          // Pre-cargar datos en el formulario (múltiples grupos)
+          if (fullUser.groups && fullUser.groups.length > 0) {
+            const groups = fullUser.groups.map(group => ({
+              id: group.userGroupId || '',
+              name: group.groupName || ''
+            }));
+            setSelectedGroups(groups);
+          }
+
+          // TODO: Cargar políticas y direcciones del usuario
+          console.log('Usuario completo cargado:', fullUser);
+        } catch (error) {
+          console.error('Error al cargar datos del usuario:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    loadUserData();
+  }, [userData]);
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -103,12 +147,12 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onClose }) => {
         documentType: selectedPerson.documents?.[0]?.docTypeId || ''
       } : null,
 
-      // Paso 2: Configuración (grupo y políticas)
+      // Paso 2: Configuración (grupos múltiples y políticas)
       configuration: {
-        userGroup: selectedGroup ? {
-          id: selectedGroup.id,
-          name: selectedGroup.name
-        } : null,
+        userGroups: (selectedGroups || []).map(group => ({
+          id: group.id,
+          name: group.name
+        })),
         policies: selectedPolicyKeys
       },
 
@@ -142,14 +186,35 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onClose }) => {
     // Aquí puedes hacer la llamada al API
     // await userService.createUser(payload);
 
-    alert('Usuario creado exitosamente!\nRevisa la consola para ver el payload.');
-    onClose();
+    if (onSaved) {
+      onSaved();
+    } else {
+      onClose();
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="user-modal-container">
+        <div className="modal-header">
+          <h2>Cargando datos del usuario...</h2>
+        </div>
+        <div className="stepper-content" style={{ textAlign: 'center', padding: '2rem' }}>
+          <i className="pi pi-spin pi-spinner" style={{ fontSize: '2rem' }}></i>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="user-modal-container">
       <div className="modal-header">
-        <h2>Nuevo Usuario</h2>
+        <h2>{userData ? `Editando: ${userData.userName}` : 'Nuevo Usuario'}</h2>
+        {fullUserData && (
+          <p style={{ fontSize: '0.875rem', color: '#6c757d', marginTop: '0.5rem' }}>
+            Email: {fullUserData.email} | Código: {fullUserData.integrationCode || 'N/A'}
+          </p>
+        )}
       </div>
 
       <Stepper ref={stepperRef} linear className="user-stepper">
@@ -185,11 +250,11 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onClose }) => {
         {/* Paso 2: Configuración */}
         <StepperPanel header="Configuración">
           <div className="stepper-content">
-            <Fieldset legend="Grupo de usuarios" className="user-fieldset">
+            <Fieldset legend="Grupos de usuarios" className="user-fieldset">
               <UserConfiguration
                 userGroups={MOCK_USER_GROUPS}
-                selectedGroup={selectedGroup}
-                onGroupChange={setSelectedGroup}
+                selectedGroup={selectedGroups}
+                onGroupChange={setSelectedGroups}
                 policiesTree={MOCK_POLICIES_TREE}
                 selectedPolicies={selectedPolicies}
                 onPoliciesChange={setSelectedPolicies}

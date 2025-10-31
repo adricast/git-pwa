@@ -3,8 +3,11 @@
 import type { UserModel} from "../../models/api/userModel";
 import type { UserCreationPayload} from "../../models/payload/UserCreationPayload";
 import type { UserUpdatePayload} from "../../models/payload/UserUpdatePayload";
-import { api } from "./../api/api"; // Usamos 'api' genérico, ajusta si tienes 'apiUsuarios'
+import { api } from "./../api/api2"; // Usamos 'api2' que apunta al servidor local
 import { usersRouteApi } from "../../configurations/routes/apiroutes"; // Asume { user: '/user' }
+
+// Reexportamos los tipos para usarlos en otros módulos
+export type { UserCreationPayload, UserUpdatePayload };
 
 // ----------------------------------------------------------------
 // AUXILIARES DE MAPPING (Backend -> Frontend)
@@ -15,12 +18,15 @@ import { usersRouteApi } from "../../configurations/routes/apiroutes"; // Asume 
  * corrigiendo errores tipográficos y extrayendo detalles anidados.
  */
 function mapUserFromApi(apiUser: any): UserModel {
-    
-    // Extraer y mapear el objeto 'people'
-    const apiPeople = apiUser.people || {};
-    
-    // Mapeo del objeto principal y corrección de 'people' anidado
-    return {
+
+    // Leer el objeto 'people' si vino en la respuesta (no forzamos un objeto vacío)
+    const apiPeople = apiUser.people;
+
+    // Determinar employeeId robustamente (variantes camelCase / snake_case / nested)
+    const employeeIdFromUser = apiUser.employeeId || apiUser.employee?.employeeId || apiUser.employee?.personId || apiUser.employee_id || apiUser.employee?.employee_id || apiUser.people?.personId || apiUser.people?.person_id || null;
+
+    // Mapeo del objeto principal
+    const mapped: UserModel = {
         // --- CAMPOS DE NIVEL SUPERIOR (USER) ---
         userId: apiUser.userId,
         userName: apiUser.userName,
@@ -34,81 +40,82 @@ function mapUserFromApi(apiUser: any): UserModel {
         branchs: apiUser.branchs || [],
         authMethods: apiUser.authMethods || [],
         userPolicies: apiUser.userPolicies || [],
-        
-        // --- DETALLES DE LA PERSONA ASOCIADA (PEOPLE) ---
-        people: {
+    } as UserModel;
+
+    // Agregar employeeId si fue encontrado
+    if (employeeIdFromUser) {
+        (mapped as any).employeeId = employeeIdFromUser;
+    }
+
+    // Mapear 'people' solo si existe en la respuesta
+    if (apiPeople) {
+        mapped.people = {
             personId: apiPeople.personId,
 
-            // 🛑 CORRECCIÓN: Lee 'givenName' (si existe) o 'giveName' (el error tipográfico)
-            givenName: apiPeople.givenName || apiPeople.giveName || '', 
+            // Robusto ante errores tipográficos
+            givenName: apiPeople.givenName || apiPeople.giveName || '',
             surName: apiPeople.surName || '',
 
-            // 🛑 CRÍTICO: Normalizar el nombre del campo 'birth' a dateOfBirth
-            dateOfBirth: apiPeople.birth || '', 
-            
-            // CRÍTICO: Normalizar isCustomer (API usa 'isCustomes')
+            // Normalizaciones
+            dateOfBirth: apiPeople.birth || apiPeople.dateOfBirth || '',
             isCustomer: apiPeople.isCustomer || apiPeople.isCustomes || false,
             isSupplier: apiPeople.isSupplier || false,
             isEmployee: apiPeople.isEmployee || false,
             isActive: apiPeople.isActive || false,
-
-            // 🛑 CRÍTICO: Extraer el ID del objeto 'gender'
-            genderId: apiPeople.gender?.genderId || '', 
-            
+            genderId: apiPeople.gender?.genderId || apiPeople.genderId || '',
             integrationCode: apiPeople.integrationCode,
-            // Otros campos de people (phoneNumber, addresses, documents, etc.) se perderán 
-        },
+        } as any;
+    }
 
-        // createdByUserId, etc.
-    } as UserModel;
+    return mapped;
 }
 
 // ----------------------------------------------------------------
 // Funciones de Acceso a Datos (CRUD)
 // ----------------------------------------------------------------
 
-/** Obtiene todos los usuarios activos (GET /user) */
+/** Obtiene todos los usuarios (GET /user) - SIN CIFRADO (como employee) */
 export async function getAllUsers(activeOnly: boolean = false): Promise<UserModel[]> {
     try {
         const query = activeOnly ? '?active=true' : '';
         const url = `${usersRouteApi.user}${query}`;
-        
-        const response = await api.get<any>(url); 
-        
-        const usersArray = response.data.item; 
 
-        if (!Array.isArray(usersArray)) {
-            console.error("Estructura de respuesta inesperada:", response.data);
+        // Obtener respuesta directa del backend (sin cifrado)
+        const response = await api.get<unknown[]>(url);
+        const rawData = response.data;
+
+        // El backend devuelve un array directamente
+        if (!Array.isArray(rawData)) {
+            console.error("Estructura de respuesta inesperada:", rawData);
             throw new Error("Respuesta de lista de usuarios inválida: Array de usuarios no encontrado.");
         }
-        return usersArray.map(mapUserFromApi);
+
+        // Mapear los datos
+        return rawData.map(mapUserFromApi);
     } catch (error) {
         console.error("Error al obtener la lista de usuarios:", error);
         throw error;
     }
 }
 
-/** Consulta los detalles de un usuario por UUID (GET /user/{uuid}). */
+/** Consulta los detalles de un usuario por UUID (GET /user/{uuid}) - SIN CIFRADO */
 export async function getUserByUuid(userId: string): Promise<UserModel> {
     try {
-        const url = `${usersRouteApi.user}${userId}`; 
-        
-        const response = await api.get<any>(url);
-        
-        let itemData = response.data.data || response.data; 
+        const url = `${usersRouteApi.user}${userId}`;
 
-        if (Array.isArray(itemData) && itemData.length > 0) {
-            itemData = itemData[0];
-        }
+        // Obtener respuesta directa del backend
+        const response = await api.get<unknown>(url);
+        const rawData = response.data;
 
-        if (!itemData || Array.isArray(itemData)) {
+        if (!rawData || Array.isArray(rawData)) {
             throw new Error("Respuesta de detalle de usuario inválida o vacía.");
         }
-        // Usar el mapeo corregido
-        return mapUserFromApi(itemData);
+
+        // Mapear los datos
+        return mapUserFromApi(rawData);
     } catch (error) {
         console.error(`Error al obtener el usuario ${userId} por UUID:`, error);
-        throw error; 
+        throw error;
     }
 }
 
@@ -154,18 +161,19 @@ export async function updateUser(
 }
 
 
-/** Eliminación lógica masiva de Usuarios (PATCH /user/massive-soft) */
+/** Eliminación lógica masiva de Usuarios (PATCH /user/massive-soft) - SIN CIFRADO */
 export async function softDeleteUserMassive(
-    userIds: string[], 
+    userIds: string[],
     updatedByUserId: string
 ): Promise<{ message: string; count: number; }> {
     try {
-        // En tu caso de empleado, se usaba massive-soft. Adaptamos la ruta.
-        const response = await api.patch<any>(
+        // Enviar payload directo
+        const response = await api.patch<{ message: string; count: number }>(
             `${usersRouteApi.user}massive-soft`,
-            { user_ids: userIds, updated_by_user_id: updatedByUserId }, 
+            { user_ids: userIds, updated_by_user_id: updatedByUserId },
             { headers: { "X-Updater-User-Id": updatedByUserId, "Content-Type": "application/json" }}
         );
+
         return response.data;
     } catch (error) {
         console.error("Error en la eliminación lógica masiva de usuarios:", error);

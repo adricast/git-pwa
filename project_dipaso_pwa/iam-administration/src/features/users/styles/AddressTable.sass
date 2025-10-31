@@ -1,5 +1,8 @@
 .address-table-container
   width: 100%
+  max-width: 100%
+  box-sizing: border-box
+  overflow-x: hidden
 
   .address-table-header
     display: flex
@@ -7,15 +10,24 @@
     align-items: center
     margin-bottom: 1rem
     gap: 1rem
+    flex-wrap: wrap
 
     .address-table-title
       font-size: 1rem
       font-weight: 600
       margin: 0
+      flex-shrink: 0
 
     .address-table-actions
       display: flex
       gap: 0.5rem
+      flex-wrap: wrap
+
+  .datatable-responsive-wrapper
+    width: 100%
+    overflow-x: auto
+    -webkit-overflow-scrolling: touch
+    box-sizing: border-box
 
 .address-datatable
   .p-datatable-thead > tr > th
@@ -40,3 +52,46 @@
   // Hover state
   .p-datatable-tbody > tr:hover
     background-color: #f8f9fa
+
+// Responsive
+@media (max-width: 768px)
+  .address-table-container
+    .address-table-header
+      flex-direction: column
+      align-items: flex-start
+      gap: 0.75rem
+
+      .address-table-actions
+        width: 100%
+        justify-content: stretch
+
+        .p-button
+          flex: 1
+          font-size: 0.875rem
+
+    .address-datatable
+      .p-datatable-thead > tr > th
+        padding: 0.625rem 0.5rem
+        font-size: 0.8rem
+
+      .p-datatable-tbody > tr > td
+        padding: 0.625rem 0.5rem
+        font-size: 0.8rem
+
+@media (max-width: 480px)
+  .address-table-container
+    .address-table-header
+      .address-table-title
+        font-size: 0.9rem
+
+      .address-table-actions .p-button
+        padding: 0.5rem 0.75rem
+
+    .address-datatable
+      .p-datatable-thead > tr > th
+        padding: 0.5rem 0.25rem
+        font-size: 0.75rem
+
+      .p-datatable-tbody > tr > td
+        padding: 0.5rem 0.25rem
+        font-size: 0.75rem

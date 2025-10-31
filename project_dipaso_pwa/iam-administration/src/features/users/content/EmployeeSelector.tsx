@@ -13,7 +13,7 @@ import '../styles/EmployeeSelector.sass';
 /**
  * Interfaz para definir columnas del selector
  */
-export interface EmployeeSelectorColumn<T = unknown> {
+export interface EmployeeSelectorColumn<T = Record<string, never>> {
   field: string;
   header: string;
   bodyTemplate?: (item: T) => React.ReactNode;
@@ -22,7 +22,7 @@ export interface EmployeeSelectorColumn<T = unknown> {
 /**
  * Props del componente EmployeeSelector
  */
-export interface EmployeeSelectorProps<T = Record<string, unknown>> {
+export interface EmployeeSelectorProps<T = Record<string, never>> {
   data: T[];
   columns: EmployeeSelectorColumn<T>[];
   rowKey: string;
@@ -49,6 +49,7 @@ const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => 
 /**
  * Componente de selección de empleados con búsqueda y tabla
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const EmployeeSelector = <T extends Record<string, any>>({
   data,
   columns,
@@ -102,25 +103,31 @@ export const EmployeeSelector = <T extends Record<string, any>>({
         </IconField>
       </div>
 
-      <DataTable
-        value={filteredData}
-        selectionMode="single"
-        selection={selectedItem}
-        onSelectionChange={(e) => onSelect(e.value as T)}
-        dataKey={rowKey}
-        emptyMessage={emptyMessage}
-        stripedRows
-        showGridlines
-      >
-        {columns.map((col, idx) => (
-          <Column
-            key={idx}
-            field={col.field}
-            header={col.header}
-            body={col.bodyTemplate ? (rowData: T) => col.bodyTemplate!(rowData) : undefined}
-          />
-        ))}
-      </DataTable>
+      <div className="datatable-responsive-wrapper">
+        <DataTable
+          value={filteredData}
+          selectionMode="single"
+          selection={selectedItem}
+          onSelectionChange={(e) => onSelect(e.value as T)}
+          dataKey={rowKey}
+          emptyMessage={emptyMessage}
+          stripedRows
+          showGridlines
+          paginator
+          rows={10}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          className="employee-datatable"
+        >
+          {columns.map((col, idx) => (
+            <Column
+              key={idx}
+              field={col.field}
+              header={col.header}
+              body={col.bodyTemplate ? (rowData: T) => col.bodyTemplate!(rowData) : undefined}
+            />
+          ))}
+        </DataTable>
+      </div>
     </div>
   );
 };

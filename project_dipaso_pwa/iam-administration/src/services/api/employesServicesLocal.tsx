@@ -271,20 +271,57 @@ export async function getPersonById(personId: string): Promise<PersonModel> {
 /** Consulta los detalles de una persona especifica por UUID (GET /people/{uuid}). */
 export async function getPersonByUuid(personId: string): Promise<PersonModel> {
     try {
-    const apiRoute = employeesRouteApi.employ;
-    
-    const response = await api.get<any>(`${apiRoute}${personId}`);
-    
-    let itemData = response.data.data || response.data; 
+    // Intentar primero la ruta /employee/{id} (algunas implementaciones devuelven employee por id)
+    const tryRoutes = [employeesRouteApi.employ, employeesRouteApi.employ2];
 
-    if (Array.isArray(itemData) && itemData.length > 0) {
-        itemData = itemData[0];
+    let lastError: any = null;
+
+    for (const route of tryRoutes) {
+        try {
+            const response = await api.get<any>(`${route}${personId}`);
+
+            let itemData = response.data.data || response.data;
+
+            if (Array.isArray(itemData) && itemData.length > 0) {
+                itemData = itemData[0];
+            }
+
+            if (!itemData || Array.isArray(itemData)) {
+                throw new Error("Respuesta de detalle de persona invalida o vacia.");
+            }
+
+            return mapPersonFromApi(itemData);
+        } catch (err) {
+            lastError = err;
+            // Si es 404, intentamos la siguiente ruta; en otro caso, registramos y seguimos intentando
+            // (la excepción final se lanzará si ninguna ruta funciona)
+            const errMsg = (err && (err as any).message) ? (err as any).message : err;
+            console.warn(`Ruta ${route}${personId} falló:`, errMsg);
+            continue;
+        }
     }
 
-    if (!itemData || Array.isArray(itemData)) {
-        throw new Error("Respuesta de detalle de persona invalida o vacia.");
+    // Si llegamos aquí, todas las rutas fallaron — intentamos un fallback: listar todos y buscar coincidencia
+    try {
+        const all = await getAllEmployees(false);
+        const match = all.find(p => {
+            // p puede contener p.employee con employeeId o personId, o p.personId directamente
+            const emp = (p as any).employee;
+            if (emp) {
+                if (emp.employeeId === personId || emp.personId === personId || emp.employee_id === personId || emp.person_id === personId) return true;
+            }
+            if ((p as any).personId === personId) return true;
+            return false;
+        });
+        if (match) {
+            return match;
+        }
+    } catch (fallbackErr) {
+        console.warn('Fallback getAllEmployees falló:', fallbackErr instanceof Error ? fallbackErr.message : fallbackErr);
     }
-    return mapPersonFromApi(itemData);
+
+    // Ninguna estrategia funcionó: lanzar el último error
+    throw lastError || new Error(`No se pudo obtener persona por UUID: ${personId}`);
     } catch (error) {
     console.error(`Error al obtener la persona ${personId} por UUID:`, error);
     throw error; 

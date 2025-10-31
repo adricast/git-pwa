@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import OptionCard from "./../../components/layout/optioncardLayout";
 // Importamos FaUserEdit o FaUserCircle para Personas
 import { FaUsers, FaUserFriends, FaUserPlus, FaBell, FaTags, FaUserCircle } from "react-icons/fa"; 
 //import { ScreenContainerProvider } from "./../../components/screencontainer/screencontainerprovider"; 
@@ -11,6 +10,7 @@ import "./adminPage.sass";
 import { ScreenContainerProvider } from '@dipaso/design-system'; 
 import { ScreenContainerLayout } from '@dipaso/design-system';
 import '@dipaso/design-system/dist/styles/index.css'; // O .sass, dependiendo de cómo compile Vite
+import OptionCard from "@dipaso/design-system/dist/components/layout/optioncardLayout";
 
 const AdminPage: React.FC = () => {
     const location = useLocation();

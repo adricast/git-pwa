@@ -1,192 +1,239 @@
-// usedynamicform.tsx (CORREGIDO)
+// 📁 usedynamicform.tsx (FINAL CON SOPORTE PARA TABLA Y VISIBILIDAD CONDICIONAL)
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { FormEvent } from 'react'; // Importar FormEvent
-// Importar la interfaz DynamicFormContextData, que ahora incluye las propiedades de paso
+import type { FormEvent } from 'react'; 
 import type { 
- DynamicFormContextData, 
- FormSection,
-} from './interface'; // Ajusta la ruta si es necesario
+    DynamicFormContextData, 
+    FormSection,
+    FormField 
+} from './interface'; 
 
 interface UseDynamicFormHookProps {
- sections: FormSection[];
- initialData?: Record<string, any>;
- onSubmit: (data: Record<string, any>) => void;
+    sections: FormSection[];
+    initialData?: Record<string, any>;
+    onSubmit: (data: Record<string, any>) => void;
 }
 
+// 🛑 Función auxiliar para validar cualquier tipo de campo requerido
+const validateField = (field: FormField, value: any): boolean => {
+    // Si no es requerido, es válido.
+    if (!field.required) return true;
+
+    // Si el valor es null o undefined, es inválido.
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if (typeof value === 'string' && value.trim() === '') {
+        return false; // Bloquea si es una cadena vacía o solo espacios
+    }
+    // VALIDACIÓN ESPECÍFICA PARA TABLA: 
+    if (field.type === 'table') {
+        const documents = value as Array<Record<string, any>>;
+
+        // 1. Validar que el array no esté vacío (si es requerido)
+        if (!Array.isArray(documents) || documents.length === 0) {
+            return false;
+        }
+
+        // 2. VALIDACIÓN PARAMETRIZADA DE DUPLICIDAD: 
+        // Leemos la propiedad que debe ser definida en employformconfig.tsx (asumida)
+        const uniqueByField = (field as any).uniqueByField; 
+
+        if (uniqueByField) {
+            // Mapeamos los valores del campo especificado y filtramos vacíos
+            const fieldValues = documents.map(doc => doc[uniqueByField]).filter(val => val); 
+            const uniqueValues = new Set(fieldValues);
+            
+            // Si la cantidad de valores mapeados no es igual a la cantidad de valores únicos, hay duplicados.
+            if (fieldValues.length !== uniqueValues.size) {
+                console.error(`Validación fallida: El campo '${uniqueByField}' no puede repetirse en la tabla '${field.name}'.`);
+                return false; 
+            }
+        }
+        const requiredColumns = (field as any).columnsDefinition?.filter((col: any) => col.required) || [];
+        
+        const isInternalTableValid = documents.every(row => {
+            // Para cada fila, verificamos que todos los campos requeridos tengan un valor no vacío.
+            return requiredColumns.every((col: any) => {
+                const cellValue = row[col.name];
+                // Chequeo estricto de vacío para la celda
+                return cellValue !== null && 
+                       cellValue !== undefined && 
+                       String(cellValue).trim() !== '';
+            });
+        });
+        
+        return isInternalTableValid;
+    }
+
+    // VALIDACIÓN ESTÁNDAR para strings
+    if (typeof value === 'string' && value.trim() === '') {
+        return false;
+    }
+    
+    return true;
+};
+
+
 /**
-* Hook personalizado que gestiona el estado, la lógica central del formulario dinámico,
-* y el manejo de los pasos (multi-sección).
-*/
+ * Hook personalizado que gestiona el estado y la lógica central del formulario dinámico.
+ */
 export const useDynamicForm = ({ sections, initialData = {}, onSubmit }: UseDynamicFormHookProps): DynamicFormContextData => {
  
- // 1. Estado de los datos del formulario (sin cambios)
- const [formData, setFormData] = useState<Record<string, any>>(() => {
- const initialState: Record<string, any> = {};
+    // 1. Estado de los datos del formulario
+    const [formData, setFormData] = useState<Record<string, any>>(() => {
+        const initialState: Record<string, any> = {};
 
- sections.forEach(section => {
- section.fields.forEach(field => {
- if (field.type === 'checkbox') {
- initialState[field.name] = initialData[field.name] ?? false;
- } else {
- initialState[field.name] = initialData[field.name] ?? '';
- }
- });
- });
- return initialState;
- });
+        sections.forEach(section => {
+            section.fields.forEach(field => {
+                if (field.type === 'checkbox') {
+                    initialState[field.name] = initialData[field.name] ?? false;
+                } 
+                else if (field.type === 'table') { 
+                    initialState[field.name] = initialData[field.name] ?? [];
+                } 
+                else {
+                    initialState[field.name] = initialData[field.name] ?? '';
+                }
+            });
+        });
+        return initialState;
+    });
 
- // 2. ESTADO DE LA PAGINACIÓN/PASOS (NUEVO)
- const [currentStep, setCurrentStep] = useState(0); 
- const totalSteps = useMemo(() => sections.length, [sections]);
+    // 2. ESTADO DE LA PAGINACIÓN/PASOS
+    const [currentStep, setCurrentStep] = useState(0); 
+    const totalSteps = useMemo(() => sections.length, [sections]);
 
- // 3. Sincronización de estado (sin cambios)
- useEffect(() => {
- const updatedState: Record<string, any> = {};
+    // 3. Sincronización de estado (Asegura que el formulario recoja nuevos campos de initialData/sections)
+    useEffect(() => {
+        const updatedState: Record<string, any> = {};
 
- sections.forEach(section => {
- section.fields.forEach(field => {
- if (Object.prototype.hasOwnProperty.call(formData, field.name)) {
- updatedState[field.name] = formData[field.name];
- } else if (Object.prototype.hasOwnProperty.call(initialData, field.name)) {
- updatedState[field.name] = initialData[field.name];
- } else if (field.type === 'checkbox') {
- updatedState[field.name] = false;
- } else {
- updatedState[field.name] = '';
- }
- });
- });
+        sections.forEach(section => {
+            section.fields.forEach(field => {
+                const isExisting = Object.prototype.hasOwnProperty.call(formData, field.name);
+                const isInitial = Object.prototype.hasOwnProperty.call(initialData, field.name);
 
- setFormData(updatedState);
- }, [initialData, sections]); 
+                if (isExisting) {
+                    updatedState[field.name] = formData[field.name];
+                } else if (isInitial) {
+                    updatedState[field.name] = initialData[field.name];
+                } else if (field.type === 'checkbox') {
+                    updatedState[field.name] = false;
+                } else if (field.type === 'table') { 
+                    updatedState[field.name] = []; 
+                } else {
+                    updatedState[field.name] = '';
+                }
+            });
+        });
 
- // 4. NAVEGACIÓN ENTRE PASOS (NUEVO)
- const nextStep = useCallback(() => {
- // Solo avanzar si no estamos en el último paso
- if (currentStep < totalSteps - 1) {
- setCurrentStep(currentStep + 1);
- }
- }, [currentStep, totalSteps]);
+        setFormData(prevData => {
+            const hasChanged = Object.keys(updatedState).some(key => prevData[key] !== updatedState[key]);
+            return hasChanged ? updatedState : prevData;
+        });
 
- const prevStep = useCallback(() => {
- // Solo retroceder si no estamos en el primer paso (paso 0)
- if (currentStep > 0) {
- setCurrentStep(currentStep - 1);
- }
-}, [currentStep]);
+    }, [initialData, sections]); 
 
- // 5. Manejador de cambios (CORREGIDO)
- const handleChange = useCallback((name: string, value: any) => {
- setFormData(prevData => {
- const field = sections
-.flatMap(s => s.fields)
-.find(f => f.name === name);
+    // 4. NAVEGACIÓN ENTRE PASOS
+    const nextStep = useCallback(() => {
+        if (currentStep < totalSteps - 1) {
+            setCurrentStep(currentStep + 1);
+        }
+    }, [currentStep, totalSteps]);
 
- let finalValue = value; 
- 
- if (field) {
-  if (field.type === 'number') {
-                    // ✅ CORRECCIÓN: Si es cadena vacía, mantenemos la cadena vacía (''). 
-                    // Esto permite al input de tipo 'number' o 'date' funcionar correctamente
-                    // cuando el usuario lo borra, evitando que se convierta a null y se resetea.
- if (value === '') {
-                       finalValue = ''; 
+    const prevStep = useCallback(() => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
+    }, [currentStep]);
+
+    // 5. Manejador de cambios
+    const handleChange = useCallback((name: string, value: any) => {
+        setFormData(prevData => {
+            const field = sections
+                .flatMap(s => s.fields)
+                .find(f => f.name === name);
+
+            let finalValue = value; 
+            
+            if (field) {
+                if (field.type === 'number') {
+                    if (value === '') {
+                        finalValue = ''; 
                     } else {
-                        // Intentamos parsear a número, pero mantenemos el valor original
-                        // si es una entrada incompleta o no numérica (ej: '1.')
                         const numValue = parseFloat(value);
                         finalValue = isNaN(numValue) ? value : numValue;
                     }
- } else if (field.type === 'checkbox') {
- finalValue = !!value; 
- }
-                // Los campos 'text', 'date', 'email', etc. (que son cadenas) simplemente usan finalValue = value.
- }
+                } else if (field.type === 'checkbox') {
+                    finalValue = !!value; 
+                } 
+            }
 
- return {
- ...prevData,
- [name]: finalValue,
- };
- });
- }, [sections]);
+            return {
+                ...prevData,
+                [name]: finalValue,
+            };
+        });
+    }, [sections]);
 
- // 6. LÓGICA DE VALIDACIÓN DEL PASO ACTUAL (isCurrentStepValid) (NUEVO)
- const isCurrentStepValid = useMemo(() => {
- // Validación básica para evitar errores si no hay secciones
- if (totalSteps === 0 || currentStep >= totalSteps) {
- return false;
- }
+    // 6. LÓGICA DE VALIDACIÓN DEL PASO ACTUAL (isCurrentStepValid)
+    const isCurrentStepValid = useMemo(() => {
+        if (totalSteps === 0 || currentStep >= totalSteps) {
+            return false;
+        }
 
- const currentSection = sections[currentStep];
+        const currentSection = sections[currentStep];
+        
+        // 🛑 APLICACIÓN DE LA CORRECCIÓN: Filtrar por requerido Y por visibilidad
+        const visibleRequiredFields = currentSection.fields.filter(f => 
+            f.required && (f.isVisible ? f.isVisible(formData) : true)
+        );
 
-// Solo validamos los campos REQUERIDOS de la SECCIÓN ACTUAL
- const requiredFields = currentSection.fields.filter(f => f.required);
+        if (visibleRequiredFields.length === 0) {
+            return true;
+        }
 
- // Si no hay campos requeridos, el paso es válido
- if (requiredFields.length === 0) {
-return true;
- }
+        return visibleRequiredFields.every(field => validateField(field, formData[field.name]));
+        
+    }, [formData, sections, currentStep, totalSteps]);
 
-// Verificamos que todos los campos requeridos de este paso tengan un valor
-return requiredFields.every(field => {
- const value = formData[field.name];
+    // 7. LÓGICA DE VALIDACIÓN DEL FORMULARIO COMPLETO (isFormValid)
+    const isFormValid = useMemo(() => {
+        
+        // 🛑 APLICACIÓN DE LA CORRECCIÓN: Filtrar por requerido Y por visibilidad en todo el formulario
+        const visibleRequiredFields = sections
+            .flatMap(s => s.fields)
+            .filter(f => 
+                f.required && (f.isVisible ? f.isVisible(formData) : true)
+            );
 
- // Es inválido si es null, undefined, o una cadena vacía (después de trim)
-if (value === null || value === undefined) {
- return false;
- }
- if (typeof value === 'string' && value.trim() === '') {
- return false;
- }
- return true;
- });
- }, [formData, sections, currentStep, totalSteps]);
+        return visibleRequiredFields.every(field => validateField(field, formData[field.name]));
+        
+    }, [formData, sections]);
 
- // 7. LÓGICA DE VALIDACIÓN DEL FORMULARIO COMPLETO (isFormValid) (ACTUALIZADO)
- // Se usa para habilitar el botón final de submit, asegurando que TODO esté lleno.
- const isFormValid = useMemo(() => {
- const requiredFields = sections
- .flatMap(s => s.fields)
- .filter(f => f.required);
+    // 8. Manejador de envío
+    const handleSubmit = useCallback((e: FormEvent) => {
+        e.preventDefault();
+        if (isFormValid) {
+            onSubmit(formData);
+        } else {
+            console.error("No se puede enviar. Faltan campos requeridos en el formulario.");
+        }
+    }, [formData, onSubmit, isFormValid]);
 
- return requiredFields.every(field => {
- const value = formData[field.name];
-
- if (value === null || value === undefined) {
- return false;
- }
-if (typeof value === 'string' && value.trim() === '') {
- return false;
- }
- return true;
- });
- }, [formData, sections]);
-
- // 8. Manejador de envío (con tipado explícito para FormEvent)
- const handleSubmit = useCallback((e: FormEvent) => {
- e.preventDefault();
- // Solo permitir el submit final si el formulario completo es válido
- if (isFormValid) {
- onSubmit(formData);
- } else {
- console.error("No se puede enviar. Faltan campos requeridos en el formulario.");
- }
- }, [formData, onSubmit, isFormValid]);
-
- 
- return {
- formData,
- handleChange,
- sections,
- handleSubmit,
- isFormValid, // Validez total del formulario
-
- // Propiedades de Multi-Step
- currentStep, 
- totalSteps, 
- nextStep, 
- prevStep, 
- isCurrentStepValid, // Validez del paso actual
+    
+    return {
+        formData,
+        handleChange,
+        sections,
+        handleSubmit,
+        isFormValid, 
+        currentStep, 
+        totalSteps, 
+        nextStep, 
+        prevStep, 
+        isCurrentStepValid, 
+    };
 };
-};
+    
+export default useDynamicForm;

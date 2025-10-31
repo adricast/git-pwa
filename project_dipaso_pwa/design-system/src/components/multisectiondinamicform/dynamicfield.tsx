@@ -1,13 +1,14 @@
-// src/components/forms/DynamicField.tsx
+// src/components/forms/DynamicField.tsx (FINAL CON SOPORTE PARA TABLA)
 
 import React, { 
     type InputHTMLAttributes, 
     type TextareaHTMLAttributes, 
     type ReactElement
-    // 🛑 SE ELIMINA 'type FormEvent' para corregir el error de ESLint/TS6133
 } from 'react';
 import type { FormField } from './interface'; // Ajusta la ruta
 import { useDynamicFormContext } from './dynamicformContext'; // Ajusta la ruta
+// 🛑 IMPORTAR EL NUEVO COMPONENTE DE TABLA
+import DynamicTable from './dynamictable'; // Asumimos esta ruta para el componente de tabla
 
 interface DynamicFieldProps {
     field: FormField;
@@ -41,7 +42,6 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
 
     // Handler específico para files
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // En lugar del valor, enviamos el objeto 'File' o 'FileList'
         const files = e.target.files;
         if (files && files.length > 0) {
             handleChange(field.name, files[0]);
@@ -136,6 +136,20 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
                         onChange={onFileChange}
                     />
                 );
+            
+            case 'table': // 🛑 PASAR PROPIEDADES DE PAGINACIÓN
+                if (!field.columnsDefinition) return null;
+
+                return (
+                    <DynamicTable
+                        fieldName={field.name}
+                        columnsDefinition={field.columnsDefinition}
+                        value={currentValue as any[] || []} 
+                        // 🔥 CORRECCIÓN: Pasar las propiedades de paginación
+                        paginationEnabled={field.paginationEnabled}
+                        initialRowsPerPage={field.initialRowsPerPage}
+                    />
+                );
 
             default: // text, email, password, number, date
                 return (
@@ -149,16 +163,16 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
         }
     };
 
-    // 4. Estructura de Campo
-   if (field.type === 'checkbox') {
+    // 4. Estructura de Campo (Ajuste para ocultar la etiqueta para la tabla)
+    if (field.type === 'checkbox') {
         return (
             <div className="dynamic-form-group checkbox-wrapper">
-              
+            
                 {/* 2. Contenedor del Input (Va a la derecha) */}
                 <div className="dynamic-form-checkbox-group">
                     {renderInput()} 
                 </div>
-                  {/* 1. Etiqueta de texto (Va a la izquierda, clase 'label' por defecto) */}
+                {/* 1. Etiqueta de texto (Va a la izquierda, clase 'label' por defecto) */}
                 <label htmlFor={field.name}>
                     {field.label}{field.required && <span className="required-star">*</span>}
                 </label>
@@ -166,6 +180,21 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field }) => {
             </div>
         );
     }
+
+    // Renderizado especial para 'table': El componente de tabla maneja su propio diseño y label.
+    if (field.type === 'table') {
+        return (
+            <div className="dynamic-form-group dynamic-form-table-group">
+                {/* Mostrar el label/título de la tabla aquí */}
+                <label>
+                    {field.label}{field.required && <span className="required-star">*</span>}
+                </label>
+                {renderInput()}
+                {field.helperText && <small className="dynamic-form-helper-text">{field.helperText}</small>}
+            </div>
+        );
+    }
+    
     // Renderizado estándar
     return (
         <div className="dynamic-form-group">

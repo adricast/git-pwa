@@ -34,21 +34,25 @@ const transformGendersToOptions = (genders: Gender[]): GenderFormOption[] => {
  * transformarlas y gestionar su estado.
  * * @returns Un objeto que contiene las opciones, el estado de carga y cualquier error.
  */
-export function useGenderOptionsLoader() {
+export function useGenderOptionsLoader(isMapInitialized: boolean) { // <-- ACEPTA EL ESTADO
     const [genderOptions, setGenderOptions] = useState<GenderFormOption[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
+        // 🛑 CONDICIÓN CLAVE: Si el mapa de IDs no está listo, sal del efecto.
+        if (!isMapInitialized) {
+            setIsLoading(true); // Mantén el estado de carga activo mientras esperas
+            return;
+        }
+
         async function fetchAndTransformGenders() {
             try {
-                // 1. Llama al servicio que accede y descifra los datos de IndexedDB.
+                // ... (Lógica de fetchAndTransformGenders idéntica a la tuya) ...
                 const genders: Gender[] = await getLocalGendersList();
-                
-                // 2. Transforma el resultado al formato de opciones del formulario.
                 const options = transformGendersToOptions(genders);
-                
                 setGenderOptions(options);
+                setError(null);
             } catch (err: any) {
                 console.error("Error al cargar y descifrar opciones de género:", err);
                 setError(err);
@@ -58,10 +62,10 @@ export function useGenderOptionsLoader() {
             }
         }
 
+        // Si isMapInitialized es TRUE, se ejecuta la carga.
         fetchAndTransformGenders();
-    }, []);
+    // ✅ Dependencia crítica: Ejecuta solo cuando isMapInitialized pasa de false a true
+    }, [isMapInitialized]); 
 
-    // Exporta el estado completo para que el componente de formulario (Wrapper) 
-    // pueda manejar la carga y el error.
     return { genderOptions, isLoading, error };
 }

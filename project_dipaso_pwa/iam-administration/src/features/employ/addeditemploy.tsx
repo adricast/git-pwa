@@ -1,173 +1,208 @@
 // 📁 src/management/people/addeditemploy.tsx
 
 import React, { useCallback, useMemo } from "react";
-// 🎯 Importamos los modelos complejos
+// Importamos los modelos complejos
 import type { PersonModel } from "./../../models/api/personModel"; 
 import type { AddressModel } from "../../models/api/addressModel"; 
 import type { DocumentModel } from "./../../models/api/documentModel";
-// ✅ NUEVO: Importamos el modelo de detalles de empleado
-import type { EmployeeDetailsModel } from "./../../models/api/employdetailsModel"; 
+import type { EmployeeModel } from "../../models/api/employeeModel"; 
 
-// ✅ Ahora:
-import { DynamicFormProviderSections } from '@dipaso/design-system'; 
-// Y asegúrate de usar la importación separada para los types:
+// Ahora:
+import { DynamicFormProviderSections } from '@dipaso/design-system';
+// Use the FormSection type from the same path as DynamicFormProviderSections expects:
 import type { DynamicButtonProps } from '@dipaso/design-system';
+import type { FormSection } from '@dipaso/design-system/dist/components/multisectiondinamicform/interface';
 import { employFormSections } from "./employformconfig";
-//import DynamicForm from "./../../components/multisectiondinamicform/dynamicformProvider"; 
-//import type { DynamicButtonProps } from './../../components/multisectiondinamicform/interface'; 
 
-//import "./../../components/styles/multisectiondynamicform.sass"; 
-
-
-// 💡 Tipo de datos PLANA del formulario
+// Tipo de datos PLANA del formulario (CORREGIDO)
 interface EmployFormData {
-    // Campos de PersonModel (Nivel Superior)
-    givenName: string;
-    surName: string;
-    phoneNumber?: string;
-    genderId?: string;
-    dateOfBirth?: string;
-    
-    // Campos de EmployeeDetailsModel (Nivel Superior Plano)
-    employeeCode: string; 
-    
-    // 🛑 CAMPO DE TABLA: Ahora es un array de objetos (DocumentModel)
-    documents: DocumentModel[]; 
-    
-    // Campos de AddressModel (Simplificación)
-    street: string;
-    cityId: string;
-    postalCode?: string;
+        // ... (Campos de PersonModel y EmployeeDetailsModel)
+        givenName: string;
+        surName: string;
+        phoneNumber?: string;
+        genderId?: string;
+        dateOfBirth?: string;
+        employeeCode: string; 
+        documents: DocumentModel[]; 
+
+        // CORRECCION DE TIPO: Campos planos para direccion
+        street: string;
+        cityId: string;
+        postalCode?: string;
+        countryId: string; 
+        provinceId: string; 
+
+        // CORRECCION CRITICA: Agregar employeeStatus al tipo de data plana
+        employeeStatus: string; 
+            
+        employExists: boolean;
 }
 
 /**
- * Formulario de creación / edición de Empleados (Persona con rol de Empleado).
- */
+    * Formulario de creacion / edicion de Empleados (Persona con rol de Empleado).
+    */
 const AddEditEmployContent: React.FC<{
-    employ: PersonModel | null; 
-    onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
-    onClose: () => void;
+        employ: PersonModel | null; 
+        onSave: (employ: PersonModel | null, data: Partial<PersonModel> & EmployFormData) => Promise<void>;
+        onClose: () => void;
 }> = ({ employ, onSave, onClose }) => {
-    console.log("DEBUG: DynamicFormProviderSections is", DynamicFormProviderSections);
-    // 1. Preparamos los datos iniciales para el formulario dinámico
-    const initialData: Partial<EmployFormData> = useMemo(() => {
-        if (!employ) {
-            return { dateOfBirth: "", genderId: "", employeeCode: "", documents: [] };
-        }
-        
-        // --- 🟢 Mapeo de PersonModel a Formulario Plano (Edición) ---
-        const baseData: Partial<EmployFormData> = {
-            // Campos de Persona
-            givenName: employ.givenName || "",
-            surName: employ.surName || "",
-            phoneNumber: employ.phoneNumber || "",
-            dateOfBirth: employ.dateOfBirth ? employ.dateOfBirth.substring(0, 10) : "", 
-            genderId: employ.genderId || "",
-            
-            // ✅ Mapeo de Detalle de Empleado
-            employeeCode: employ.employee?.employeeCode || "", 
-            
-            // 🛑 Mapeo de Documentos (Pasamos el array completo)
-            // Esto prepara el array de documentos existente para ser editable en la tabla.
-            documents: employ.documents || [],
-        };
+            
+        // 1. Preparamos los datos iniciales para el formulario dinamico
+        const initialData: Partial<EmployFormData> = useMemo(() => {
+                    
+            const primaryAddress = employ?.addresses?.[0]; // Direccion principal, si existe
 
-        // Mapeo de Dirección Principal (addresses[0])
-        if (employ.addresses && employ.addresses.length > 0) {
-            const primaryAddress = employ.addresses[0];
-            baseData.street = primaryAddress.street;
-            baseData.cityId = primaryAddress.cityId;
-            baseData.postalCode = primaryAddress.postalCode;
-        }
+            // --- BASE DE DATOS INICIAL (Edicion y Creacion) ---
+            const baseData: Partial<EmployFormData> = {
+                    // Campos de Persona
+                    givenName: employ?.givenName || "",
+                    surName: employ?.surName || "",
+                    phoneNumber: employ?.phoneNumber || "",
+                    
+                    // 🛑 CRÍTICO: Normalizar fecha a formato YYYY-MM-DD
+                    dateOfBirth: employ?.dateOfBirth ? employ.dateOfBirth.substring(0, 10) : "", 
+                    
+                    // CRITICO: Cargar ID de genero
+                    genderId: employ?.genderId || "",
+                                
+                    // Detalle de Empleado
+                    employeeCode: employ?.employee?.employeeCode || "", 
+                    // CRITICO: Inicializar employeeStatus para que se muestre en edicion
+                    employeeStatus: employ?.employee?.employeeStatus || 'A',
+                                
+                    // 🛑 CRÍTICO: Cargar datos y IDs de Documentos
+                    documents: employ?.documents?.map(doc => ({
+                            ...doc,
+                            docTypeId: doc.docTypeId, 
+                            issuingCountry: doc.issuingCountry,
+                            // 🛑 CRÍTICO: Normalizar fecha de expiración para la comparación y el input
+                            expirationDate: doc.expirationDate ? doc.expirationDate.substring(0, 10) : undefined,
+                    })) || [],
+                                
+                    // CRITICO: Cargar IDs de Direccion
+                    street: primaryAddress?.street || "",
+                    cityId: primaryAddress?.cityId || "",
+                    postalCode: primaryAddress?.postalCode || "",
+                    countryId: (primaryAddress as AddressModel)?.countryId || "", 
+                    provinceId: (primaryAddress as AddressModel)?.stateId || "", 
+                                
+                    // Contexto de Edicion
+                    employExists: !!employ,
+            };
 
-        return baseData;
-    }, [employ]);
-    
-    // 2. Definimos el handler onSubmit que será ejecutado por DynamicForm
-    const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
-        const formData = data as unknown as EmployFormData;
-        
-        // 💡 Separamos los campos de Person/Document/Address de los campos de Employee
-        const { employeeCode, documents, street, cityId, postalCode, ...personFields } = formData;
-        
-        // 💡 Lógica de mapeo para crear el PATCH de PersonModel
-        const patchPayload: Partial<PersonModel> = {
-            // 1. Campos de PersonModel (Nivel Superior)
-            ...personFields, 
-            
-            // ✅ 2. Sub-objeto Empleado
-            employee: {
-                employeeId: employ?.employee?.employeeId || '00000000-0000-0000-0000-000000000000', 
-                employeeCode: employeeCode,
-                personId: employ?.personId || '00000000-0000-0000-0000-000000000000',
-                isActive: true,
-                employeeStatus: employ?.employee?.employeeStatus || 'A',
-            } as EmployeeDetailsModel,
-            
-            // 🛑 3. Arrays anidados (Documents): CORRECCIÓN DEL MAPEO PARA EVITAR LA SOBRESCRITURA
-            documents: documents.map((doc, index) => {
-                
-                // 1. Obtener el ID existente del documento original, si aplica.
-                const existingDocumentId = employ?.documents?.[index]?.personDocumentId || '00000000-0000-0000-0000-000000000000';
-                
-                // 2. Mapear la data de la tabla, asegurando que los IDs y valores fijos se apliquen al final.
-                return {
-                    // Cargar todos los campos editables desde la tabla (docTypeId, docNumber, etc.)
-                    ...doc,
-                    
-                    // Sobrescribir/Asegurar las claves de estructura al final:
-                    personDocumentId: existingDocumentId, // Usamos el ID recuperado/por defecto
-                    personId: employ?.personId || '00000000-0000-0000-0000-000000000000', 
-                    // Asegurar valores por defecto/fijos que podrían no estar en la tabla
-                    issuingCountry: (doc as DocumentModel).issuingCountry || 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
-                    isActive: (doc as DocumentModel).isActive ?? true,
-                }
-            }) as DocumentModel[],
-            
-            // 4. Arrays anidados (Addresses) - Se mantiene simplificado a 1
-            addresses: [{
-                addressId: employ?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000', 
-                street: street,
-                cityId: cityId,
-                postalCode: postalCode,
-                personId: employ?.personId || '00000000-0000-0000-0000-000000000000',
-                stateId: '105fb4c5-0ae8-40e4-b315-2f6671b368ac', 
-                countryId: 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
-                typeAddressId: '8f2b1d3c-5e4a-7b0f-9d6c-1e8a9f0b2c3d', 
-                isActive: true,
-            }] as AddressModel[],
-        };
-        
-        // Ejecutamos la lógica de guardado
-        await onSave(employ, patchPayload as Partial<PersonModel> & EmployFormData);
-    }, [employ, onSave]);
+            return baseData;
+        }, [employ]);
+            
+        // 2. Definimos el handler onSubmit que sera ejecutado por DynamicForm
+        const handleDynamicSubmit = useCallback(async (data: Record<string, any>) => {
+            const formData = data as unknown as EmployFormData;
+                
+        // 🛑 LÓGICA DE DETECCIÓN DE CAMBIOS (Solo para Actualizar)
+        if (employ) {
+                // Excluimos la clave 'employExists' (campo de control) de la comparacion
+                const { employExists: initExists, ...initialCompareData } = initialData;
+                const { employExists: currentExists, ...currentCompareData } = formData;
+                
+                // CRÍTICO: Usamos JSON.stringify para una comparacion profunda y rapida
+                const initialString = JSON.stringify(initialCompareData);
+                const currentString = JSON.stringify(currentCompareData);
+                
+                if (initialString === currentString) {
+                        console.log("Modificar: No se detectaron cambios en los datos. Cerrando formulario.");
+                        return onClose(); 
+                }
+        }
+        
+            // CRITICO: Desestructurar employeeStatus para obtener el valor del formulario
+            const { 
+                    employeeCode, 
+                    employeeStatus,
+                    documents, 
+                    street, cityId, postalCode, countryId, provinceId,
+                    employExists, 
+                    ...personFields 
+            } = formData;
+                    
+            // Usamos valores por defecto si no existen
+            const personId = employ?.personId || '00000000-0000-0000-0000-000000000000'; 
+            const defaultAddressId = employ?.addresses?.[0]?.addressId || '00000000-0000-0000-0000-000000000000';
 
-    // 3. Definimos el botón "Cancelar"
-    const formActions: DynamicButtonProps[] = useMemo(() => ([
-        {
-            label: 'Cancelar',
-            color: '#6c757d', 
-            textColor: '#fff',
-            type: 'button',
-            onClick: onClose,
-        }
-    ]), [onClose]);
+            // LOGICA DE ESTADO: Usar el valor del formulario (si existe/se modifico) o el valor por defecto 'A'
+            const finalEmployeeStatus = employeeStatus || 'A';
+                    
+            const patchPayload: Partial<PersonModel> = {
+                    // 1. Campos de PersonModel (Nivel Superior)
+                    ...personFields, 
+                                
+                    // 2. Sub-objeto Empleado
+                    employee: {
+                    employeeId: employ?.employee?.employeeId || '00000000-0000-0000-0000-000000000000', 
+                    employeeCode: employeeCode,
+                    personId: personId,
+                    isActive: true,
+                    employeeStatus: finalEmployeeStatus, // Usar el valor capturado del formulario
+                    } as EmployeeModel,
+                                
+                    // 3. Arrays anidados (Documents): Mapeo de la Tabla
+                    documents: documents.map((doc, index) => {
+                    const existingDocumentId = employ?.documents?.[index]?.personDocumentId || '00000000-0000-0000-0000-000000000000';
+                                        
+                    return {
+                            ...doc,
+                            personDocumentId: existingDocumentId,
+                            personId: personId, 
+                            // Asegura que los campos de seleccion se pasen
+                            issuingCountry: (doc as DocumentModel).issuingCountry || 'ba79cc4d-756b-4c01-98a3-fcb9434a3dfc', 
+                            isActive: (doc as DocumentModel).isActive ?? true,
+                    }
+                    }) as DocumentModel[],
+                                
+                    // 4. Arrays anidados (Addresses)
+                    addresses: [{
+                    addressId: defaultAddressId, 
+                    street: street,
+                    cityId: cityId,
+                    postalCode: postalCode,
+                    countryId: countryId,     // Usamos el valor del formulario
+                    stateId: provinceId, // Usamos el valor del formulario
+                                        
+                    // Valores Fijos/Backend
+                    personId: personId,
+                                        
+                    typeAddressId: '8f2b1d3c-5e4a-4d45-98f1-a160240bdecd', // ID de tipo de direccion (mock)
+                    isActive: true,
+                    }] as AddressModel[],
+            };
+                    
+            await onSave(employ, patchPayload as Partial<PersonModel> & EmployFormData);
+        }, [employ, onSave, onClose, initialData]);
 
 
-    return (
-        <div className="person-form-wrapper">
-            
-            <DynamicFormProviderSections
-                sections={employFormSections} 
-                initialData={initialData}
-                onSubmit={handleDynamicSubmit}
-                buttonText={employ ? "Actualizar Empleado" : "Crear Empleado"}
-                className="person-form" 
-                actions={formActions} 
-            />
-        </div>
-    );
+    // 3. Definimos el boton "Cancelar"
+    const formActions: DynamicButtonProps[] = useMemo(() => ([
+        {
+            label: 'Cancelar',
+            color: '#6c757d', 
+            textColor: '#fff',
+            type: 'button',
+            onClick: onClose,
+        }
+    ]), [onClose]);
+
+
+    return (
+        <div className="person-form-wrapper">
+                        
+            <DynamicFormProviderSections
+                sections={employFormSections as FormSection[]} 
+                initialData={initialData}
+                onSubmit={handleDynamicSubmit}
+                buttonText={employ ? "Actualizar Empleado" : "Crear Empleado"}
+                className="person-form" 
+                actions={formActions} 
+            />
+        </div>
+    );
 };
 
-// ✅ Exportamos el componente
 export default AddEditEmployContent;

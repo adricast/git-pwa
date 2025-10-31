@@ -1,94 +1,75 @@
 import { useEffect, useState } from "react";
 import { AppRoutes } from "./configurations/routes/appRoutes";
 import { authSensor, initAuthService } from "authorizer/authExports"; 
-
-// 🚨 CLAVE: Importamos la función UNIFICADA y CORRECTA de sincronización.
-import { syncAndCacheAllCatalogs } from "./services/catalogServices"; 
+import { syncAndCacheAllCatalogs } from "./services/catalogServicesLocal";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  // isDataReady: Indica que tanto los catálogos como la autenticación han concluido su proceso.
-  const [isDataReady, setIsDataReady] = useState(false); 
+  const [isDataReady, setIsDataReady] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Iniciando aplicación...");
 
   useEffect(() => {
-    // Definimos una función asíncrona para iniciar el proceso de carga
-    const initializeApplication = async () => {
-        try {
-            // -----------------------------------------------------
-            // 1. CARGA DE CATÁLOGOS (PREREQUISITO)
-            // -----------------------------------------------------
-            console.log("🔥 1. Iniciando sincronización de catálogos (PREREQUISITO)...");
-            // Bloquea aquí hasta que los catálogos estén en IndexedDB.
-            await syncAndCacheAllCatalogs();
-            console.log("✅ Catálogos sincronizados y listos.");
-
-            // -----------------------------------------------------
-            // 2. INICIALIZACIÓN DE AUTENTICACIÓN
-            // -----------------------------------------------------
-            console.log("🔥 2. Inicializando servicio de autenticación...");
-            // initAuthService ahora puede usar los datos del catálogo desde IDB.
-            await initAuthService(); 
-            
-        } catch (error) {
-            console.error("❌ Fallo crítico al iniciar la aplicación (Catálogos o Auth):", error);
-            // Si falla la carga de catálogos o la inicialización de Auth:
-            // 1. Forzamos a la app a no estar autenticada (para redirigir a login o pantalla de error).
-            setIsAuthenticated(false); 
-            // 2. Liberamos el bloqueo de carga.
-            setIsDataReady(true); 
-        }
-    };
-    
     // Función que se ejecuta tras una autenticación exitosa
-    const handleSynced = () => {
-        console.log("✅ 3. Autenticación finalizada con éxito.");
+    const handleAuthSuccess = async () => {
+      try {
+        setLoadingMessage("✅ Autenticación exitosa. Cargando catálogos...");
+        console.log("Autenticación exitosa.");
         setIsAuthenticated(true);
-        setIsDataReady(true); // Se libera el bloqueo de carga
-    };
 
-    // Función que se ejecuta si la autenticación falla o la sesión se elimina
-    const handleAuthFailure = () => {
-        console.log("❌ 3. Autenticación fallida o sesión eliminada.");
+        await syncAndCacheAllCatalogs();
+        console.log("Catálogos sincronizados y listos.");
+      } catch (error) {
+        console.error("Error al cargar catálogos tras autenticación:", error);
         setIsAuthenticated(false);
-        setIsDataReady(true); // Se libera el bloqueo de carga
+      } finally {
+        setIsDataReady(true);
+      }
     };
 
-    // 3. Suscripción a Eventos (Observan el proceso de autenticación)
-    authSensor.on("item-synced", handleSynced);
+    // Función que se ejecuta si la autenticación falla
+    const handleAuthFailure = () => {
+      console.log("Autenticación fallida o sesión eliminada.");
+      setIsAuthenticated(false);
+      setLoadingMessage("❌ Autenticación fallida.");
+      setIsDataReady(true);
+    };
+
+    // Suscribimos a eventos de autenticación
+    authSensor.on("item-synced", handleAuthSuccess);
     authSensor.on("item-failed", handleAuthFailure);
     authSensor.on("sync-failure", handleAuthFailure);
     authSensor.on("itemDeleted", handleAuthFailure);
 
-    // Inicia el proceso
-    initializeApplication();
+    // Iniciamos autenticación
+    setLoadingMessage("🔑 Autenticando...");
+    initAuthService();
 
-    // 4. Limpieza
+    // Cleanup
     return () => {
-        authSensor.off("item-synced", handleSynced);
-        authSensor.off("item-failed", handleAuthFailure);
-        authSensor.off("sync-failure", handleAuthFailure);
-        authSensor.off("itemDeleted", handleAuthFailure);
+      authSensor.off("item-synced", handleAuthSuccess);
+      authSensor.off("item-failed", handleAuthFailure);
+      authSensor.off("sync-failure", handleAuthFailure);
+      authSensor.off("itemDeleted", handleAuthFailure);
     };
-  }, []); // Se ejecuta solo al montar
+  }, []);
 
   // -----------------------------------------------------------
-  // Lógica de Bloqueo y Mensaje de Carga
+  // Pantalla de carga mientras autenticación + catálogos
   // -----------------------------------------------------------
-
   if (!isDataReady) {
-    
-    let loadingMessage = "Sincronizando datos iniciales (Catálogos)...";
-    
     return (
-      <div className="flex items-center justify-center h-screen text-gray-700 font-semibold">
-        {loadingMessage}
+      <div className="flex flex-col items-center justify-center h-screen text-gray-700 font-semibold">
+        <div className="mb-4 text-xl">{loadingMessage}</div>
+        {isAuthenticated === true && (
+          <div className="p-4 bg-green-100 text-green-800 rounded-lg shadow-md">
+            Autenticación exitosa 🎉
+          </div>
+        )}
       </div>
     );
   }
-  
-  // Una vez que la data (catálogos) y la autenticación están listas.
-  // 🚨 SOLUCIÓN: Usamos el operador de aserción no-nulo (!) para indicar a TypeScript
-  // que en este punto (isDataReady === true), isAuthenticated NUNCA es null.
+
+  // Renderizamos rutas solo cuando autenticación + catálogos están listos
   return <AppRoutes isAuthenticated={isAuthenticated!} />;
 }
 

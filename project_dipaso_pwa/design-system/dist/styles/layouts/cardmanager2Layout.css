@@ -1,0 +1,121 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+.card-manager-container {
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.card-actions {
+  display: flex;
+  gap: 15px;
+  padding: 20px 0 10px 0;
+}
+
+.add-ficha-primary,
+.add-ficha-secondary {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.add-ficha-primary:hover,
+.add-ficha-secondary:hover {
+  transform: translateY(-1px);
+}
+
+.add-ficha-primary {
+  background-color: #806EAF;
+  color: #ffffff;
+}
+.add-ficha-primary:hover {
+  background-color: rgb(156.7866666667, 142.8666666667, 193.1333333333);
+}
+
+.add-ficha-secondary {
+  background-color: #8578B4;
+  color: #ffffff;
+}
+.add-ficha-secondary:hover {
+  background-color: rgb(118.1857142857, 103.6071428571, 170.8928571429);
+}
+
+.card-grid {
+  display: none;
+}
+
+/* ==================================== */
+/* 5. ESTRUCTURA DE PESTAÑAS (TABS) */
+/* ==================================== */
+.tab-list-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0 1rem;
+  border-bottom: 2px solid #d1d5db;
+  gap: 2px;
+  min-height: 45px;
+  background-color: rgb(251.7428571429, 252.0142857143, 252.5571428571);
+}
+
+.ficha-tab {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px 8px 15px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  color: #1f2937;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: 1px solid #d1d5db;
+  border-bottom: none;
+}
+.ficha-tab.active {
+  background-color: #ffffff;
+  color: #806EAF;
+  border: 1px solid #d1d5db;
+  border-bottom: 2px solid #ffffff;
+  font-weight: 700;
+  z-index: 10;
+}
+.ficha-tab:hover:not(.active) {
+  background-color: hsl(0, 0%, 101.0784313725%);
+}
+.ficha-tab .ficha-title {
+  margin-right: 10px;
+  font-size: 0.95rem;
+}
+.ficha-tab .ficha-close-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+.ficha-tab .ficha-close-btn:hover {
+  color: #E24A4A;
+}
+
+.tab-content-panel {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-top: none;
+}
+.tab-content-panel > .card-container {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  box-shadow: none;
+}

@@ -1,0 +1,154 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+.screen-container {
+  position: absolute;
+  top: 0;
+  /* ANCLAJE CORREGIDO: Arriba */
+  left: 0;
+  /* ANCLAJE CORREGIDO: Izquierda */
+  transform: none;
+  /* ANULACIÓN CRUCIAL: Desactiva el centrado en el estado base */
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  /* Sin bordes */
+  box-shadow: none;
+  /* Sin sombra */
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.screen-container.is-maximized {
+  /* Mantiene las propiedades de la BASE */
+}
+.screen-container.is-maximized .screen-actions .screen-maximize-btn {
+  color: #8578B4;
+}
+
+.screen-container:not(.is-minimized):not(.is-maximized) {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Aplica el centrado aquí */
+  width: 85vw;
+  height: 85vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.screen-container.is-active {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.screen-container.is-minimized {
+  top: auto;
+  left: 0 !important;
+  /* Ancla el punto de inicio a la izquierda */
+  right: auto;
+  bottom: 0;
+  width: 250px;
+  height: 50px;
+  border-radius: 5px 5px 0 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+}
+.screen-container.is-minimized .screen-body {
+  display: none;
+}
+.screen-container.is-minimized .screen-header {
+  height: 50px;
+  padding: 0 1rem;
+  background: #f5f5f5;
+  color: #1f2937;
+  cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: none;
+  border-bottom: 2px solid #806EAF;
+}
+.screen-container.is-minimized .screen-header .screen-title {
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+.screen-container.is-minimized .screen-header .screen-minimize-btn, .screen-container.is-minimized .screen-header .screen-close-btn {
+  color: #1f2937;
+  font-size: 1rem;
+}
+.screen-container.is-minimized .screen-header .screen-minimize-btn:hover, .screen-container.is-minimized .screen-header .screen-close-btn:hover {
+  color: #E24A4A;
+}
+.screen-container.is-minimized .screen-header .screen-minimize-btn {
+  font-size: 1.1rem;
+}
+.screen-container.is-minimized .screen-header .screen-minimize-btn:hover {
+  color: #806EAF;
+}
+
+.screen-header {
+  height: 60px;
+  background: #806EAF;
+  color: #fff;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+.screen-header .screen-minimize-btn, .screen-header .screen-close-btn, .screen-header .screen-maximize-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.screen-header .screen-minimize-btn:hover, .screen-header .screen-close-btn:hover, .screen-header .screen-maximize-btn:hover {
+  transform: scale(1.2);
+  color: #8578B4;
+}
+.screen-header .screen-close-btn {
+  font-size: 1rem;
+}
+
+.screen-title {
+  margin: 0;
+}
+
+.screen-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.screen-minimize-btn, .screen-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.screen-minimize-btn:hover, .screen-close-btn:hover {
+  transform: scale(1.2);
+  color: #8578B4;
+}
+
+.screen-body {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #1f2937;
+}

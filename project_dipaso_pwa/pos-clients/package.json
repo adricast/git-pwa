@@ -3,17 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
- "scripts": {
+  "scripts": {
     "dev": "vite --port 3005 --strictPort",
-    "build": "tsc -b && vite build",
+    "build": "node node_modules/typescript/bin/tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "serve": "vite preview --port 3005 --strictPort",
     "start": "npm run build && npm run serve",
     "dev:clean": "rmdir /s /q node_modules\\.vite && vite"
   },
-
-
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+.card-manager-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0px;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 15px;
+  padding-bottom: 10px;
+}
+
+.add-ficha-primary,
+.add-ficha-secondary {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.add-ficha-primary:hover,
+.add-ficha-secondary:hover {
+  transform: translateY(-1px);
+}
+
+.add-ficha-primary {
+  background-color: #806EAF;
+  color: #ffffff;
+}
+.add-ficha-primary:hover {
+  background-color: hsl(0, 0%, 101.0784313725%);
+}
+
+.add-ficha-secondary {
+  background-color: #8578B4;
+  color: #ffffff;
+}
+.add-ficha-secondary:hover {
+  background-color: hsl(0, 0%, 101.0784313725%);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  flex-grow: 1;
+}

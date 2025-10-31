@@ -1,0 +1,123 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+.table-container {
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.table-container .table-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #806EAF;
+  margin-bottom: 1rem;
+}
+.table-container .table-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.table-container .table-actions .table-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+.table-container .table-actions .table-btn.btn-default {
+  background: #806EAF;
+}
+.table-container .table-actions .table-btn.btn-default:hover:not(:disabled) {
+  background: rgb(142.3933333333, 126.4333333333, 184.0666666667);
+}
+.table-container .table-actions .table-btn.btn-delete {
+  background: #E24A4A;
+}
+.table-container .table-actions .table-btn.btn-delete:hover:not(:disabled) {
+  background: rgb(229.5214285714, 95.9785714286, 95.9785714286);
+}
+.table-container .table-actions .table-btn.btn-edit {
+  background: #4AE24A;
+}
+.table-container .table-actions .table-btn.btn-edit:hover:not(:disabled) {
+  background: rgb(95.9785714286, 229.5214285714, 95.9785714286);
+}
+.table-container .table-actions .table-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.table-container .table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+.table-container .table-wrapper .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-container .table-wrapper .data-table .table-head {
+  background: rgb(214.36, 208.6, 229.4);
+  text-align: left;
+}
+.table-container .table-wrapper .data-table .table-head .table-header-cell {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: uppercase;
+}
+.table-container .table-wrapper .data-table .table-head .checkbox-col {
+  width: 3rem;
+  padding: 0.75rem 0.5rem;
+}
+.table-container .table-wrapper .data-table .table-body {
+  background: #ffffff;
+}
+.table-container .table-wrapper .data-table .table-body .table-row {
+  transition: background 0.3s ease;
+  border-bottom: 1px solid #d1d5db;
+}
+.table-container .table-wrapper .data-table .table-body .table-row.row-clickable {
+  cursor: pointer;
+}
+.table-container .table-wrapper .data-table .table-body .table-row.row-hover:hover {
+  background: rgb(248.8285714286, 249.3428571429, 250.3714285714);
+}
+.table-container .table-wrapper .data-table .table-body .table-row.row-selected {
+  background: hsl(256.6153846154, 28.8888888889%, 100.8823529412%);
+  border-left: 4px solid #806EAF;
+  padding-left: calc(1rem - 4px);
+}
+.table-container .table-wrapper .data-table .table-body .table-row:last-child {
+  border-bottom: none;
+}
+.table-container .table-wrapper .data-table .table-body .table-cell {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+.table-container .table-wrapper .data-table .table-body .custom-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #8578B4;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+}
+.table-container .table-wrapper .data-table .table-body .custom-checkbox:checked {
+  background-color: #806EAF;
+  border-color: #806EAF;
+}
+.table-container .table-wrapper .data-table .table-body .custom-checkbox:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
